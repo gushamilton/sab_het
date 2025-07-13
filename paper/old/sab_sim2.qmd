@@ -1,0 +1,810 @@
+---
+title: "Impact of Subgroup Misclassification on Detecting Heterogeneous Treatment Effects in *Staphylococcus aureus* Bacteremia: A Simulation Study"
+author: "Fergus Hamilton"
+format:
+  html:
+    self-contained: true
+    toc: true
+    code-fold: true
+    code-summary: "Show code"
+editor: visual
+execute:
+  echo: true        # Show code chunks
+  warning: false    # Hide warnings
+  message: false    # Hide messages
+  error: true       # Show errors
+---
+
+```{r setup, include=FALSE}
+# Load necessary packages
+pacman::p_load(
+  tidyverse,
+  broom,
+  ggdist,
+  gt,
+  patchwork,
+  scales, # For formatting numbers/percentages
+  future, # For parallel processing
+  furrr   # For parallel map functions
+)
+
+# Set theme for plots
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+# --- Helper Functions Defined Internally ---
+# Define these *before* sourcing, just in case the sourced file relies on them
+# or to ensure these versions are definitely used.
+
+# Function to misclassify group (Based on logic within user's estimate_effect_misclassify)
+misclassify_group <- function(sim_data, accuracy, freq_vector, seed = NULL) {
+  if(!is.null(seed)) set.seed(seed)
+  n <- nrow(sim_data)
+  group_labels <- names(freq_vector)
+  if(is.null(group_labels)) group_labels <- LETTERS[1:length(freq_vector)]
+  names(freq_vector) <- group_labels # Ensure names are set
+  freq_normalized <- freq_vector / sum(freq_vector)
+
+  # Ensure input data has 'group' column
+  if (!"group" %in% names(sim_data)) stop("Input data must have a 'group' column.")
+
+  sim_data_with_assigned <- sim_data |>
+    dplyr::mutate(
+      is_correct = rbinom(dplyr::n(), 1, accuracy),
+      assigned_group = dplyr::case_when(
+        is_correct == 1 ~ group,
+        # Ensure sampling uses the normalized, named vector
+        TRUE ~ sample(names(freq_normalized), dplyr::n(), replace = TRUE, prob = freq_normalized)
+      )
+    ) %>%
+    select(-is_correct) # Remove intermediate column
+  return(sim_data_with_assigned)
+}
+
+
+# Helper function to fit GLM and extract results safely
+# Handles cases with insufficient data or model convergence errors
+fit_glm_safe <- function(data) {
+  # Check for sufficient data and variation before attempting GLM
+  if (nrow(data) < 10 || length(unique(data$treatment)) < 2 || length(unique(data$success)) < 2) {
+    return(tibble(beta = NA_real_, se = NA_real_, pval = NA_real_))
+  }
+  tryCatch({
+    # Ensure treatment is factor with levels 0, 1 for glm reference level
+    data_glm <- data %>% mutate(treatment = factor(treatment, levels = c(0, 1)))
+    model <- glm(success ~ treatment, data = data_glm, family = binomial())
+    tidy_model <- broom::tidy(model)
+    # Find the treatment effect row (usually treatment1 when factor)
+    treatment_row <- tidy_model %>% filter(str_detect(term, "^treatment"))
+
+    if (nrow(treatment_row) == 1) {
+      tibble(
+        beta = treatment_row$estimate,
+        se = treatment_row$std.error,
+        pval = treatment_row$p.value
+      )
+    } else {
+      # Handle cases where treatment effect term isn't found (e.g., perfect separation)
+      tibble(beta = NA_real_, se = NA_real_, pval = NA_real_)
+    }
+  }, error = function(e) {
+    # Handle any other GLM errors
+    # message("GLM error: ", e$message) # Optional: print error message
+    tibble(beta = NA_real_, se = NA_real_, pval = NA_real_)
+  })
+}
+
+# Source the simulation functions using a relative path
+# Assumes simulate_trial_data and replicate_sims are defined here
+# Note: If replicate_sims internally calls estimate_effect_misclassify,
+# ensure that function is also defined/sourced correctly.
+source("../code/functions/functions.R")
+
+# Set seed for overall reproducibility
+set.seed(20240423)
+```
+
+
+## Abstract
+
+*(Placeholder for Abstract: Briefly summarize background, methods, key findings, and conclusion after results are generated)*
+
+
+## Introduction
+
+*Staphylococcus aureus* bacteremia (SAB) is a serious infection characterized by significant clinical heterogeneity in patient presentation, disease course, and outcomes. Recent research by Swets, Russell, et al. (Clinical Infectious Diseases, 2024) identified five distinct clinical subphenotypes within SAB using latent class analysis on data from observational and trial cohorts (Edinburgh, ARREST, SAFO).
+
+Crucially, a secondary analysis of the ARREST trial (Adjunctive Rifampicin for *S. aureus* Bacteraemia) suggested differential treatment effects of adjunctive rifampicin across these subphenotypes. Specifically, rifampicin was associated with increased 84-day mortality in subphenotype B (Nosocomial IV catheter-associated SAB; OR 18.8) and improved microbiologic outcomes in subphenotype C (Community-acquired metastatic SAB; OR 0.17).
+
+This finding raises a critical question for both clinical trial design and potential future stratified treatment approaches: If such treatment effect heterogeneity exists, how accurately must patients be classified into these subphenotypes to reliably detect these differences and avoid misleading conclusions? Misclassification is inevitable with any diagnostic or predictive tool, and understanding its impact is essential.
+
+This simulation study aims to address this question by:
+
+1.  Estimating the sample sizes required to detect the subgroup-specific treatment effects observed by Russell et al. with adequate statistical power, assuming perfect patient classification **when analyzing subgroups within a trial of the general population (post-hoc analysis)**.
+2.  Quantifying the impact of varying levels of classification accuracy on statistical power, estimation bias (Mean Squared Error), and the probability of estimating effects in the wrong direction for both subgroup-specific and overall treatment effects **when analyzing subgroups within a trial of the general population (post-hoc analysis)**.
+3.  Estimating the Number Needed to Screen (`NNS_enrich`) and the resulting average Number Needed to Randomize (`NNR_enrich`) to achieve adequate power in an **enrichment trial** targeting specific subgroups, using a test with varying accuracy.
+
+
+## Methods
+
+### Simulation Model
+
+We developed a simulation model based on the functions defined in `code/functions/functions.R` and helper functions defined herein. The core steps for each simulation run vary by Aim:
+
+1.  **Data Generation (`simulate_trial_data`):** Simulate individual patient data for a hypothetical two-arm (treatment vs. control) trial of size `n`. Patients are assigned a 'true' subgroup (A-E) based on specified frequencies. Treatment is assigned randomly (50/50). An outcome ('success', e.g., death by 84 days, coded as 1) is generated for each patient based on their true subgroup, treatment assignment, the subgroup-specific baseline event probability (`p0`), and the subgroup-specific treatment effect (odds ratio, `or_vector`).
+2.  **Misclassification / Testing (`misclassify_group`):**
+    * Aim 1: Assumes perfect classification (accuracy=1.0). Analysis is on true subgroups (implicitly done by `estimate_effect_misclassify` in `replicate_sims` when accuracy=1.0).
+    * Aim 2: An 'assigned' subgroup is determined post-hoc based on `accuracy` using `misclassify_group` (implicitly called by `estimate_effect_misclassify` in `replicate_sims`). Analysis is on assigned subgroups.
+    * Aim 3: A large cohort is simulated (`n_screened`). An 'assigned' subgroup (test result) is determined for each based on `accuracy` using the internally defined `misclassify_group`. Patients where `assigned_group == target_group` form the `randomized_cohort`. Analysis is on this cohort.
+3.  **Effect Estimation (`estimate_effect_misclassify` / `fit_glm_safe`):** Logistic regression (`glm(success ~ treatment, family = binomial)`) is performed. For Aim 2, this is done for each *assigned* subgroup and overall (handled by `estimate_effect_misclassify` in `replicate_sims`). For Aim 1, it's done post-hoc on true subgroups (handled by `estimate_effect_misclassify` in `replicate_sims` with accuracy=1.0). For Aim 3, it's done on the `randomized_cohort` using `fit_glm_safe`. The estimated log odds ratio (beta), standard error (se), and p-value for the treatment effect are extracted.
+
+### Parameterization
+
+The simulation parameters were chosen to reflect the findings from the Russell et al. analysis of the ARREST trial data, specifically focusing on the 84-day mortality outcome with adjunctive rifampicin vs. placebo.
+
+-   **Treatment Effects (Odds Ratios):** The 'true' underlying ORs for the treatment (rifampicin) effect on 84-day mortality (success=1) compared to control (placebo) within each subgroup were set based on the point estimates reported:
+    -   `or_vector <- c(A = 1.0, B = 18.8, C = 0.79, D = 1.4, E = 0.3)`
+    -   *Note: The OR for subgroup C (0.79) used here relates to 84-day mortality, distinct from the OR of 0.17 for microbiologic outcomes mentioned in the Introduction.*
+-   **Subgroup Frequencies (Population Prevalence):** The proportions of patients in each subgroup were based on the distribution observed in the ARREST placebo arm (n=388):
+    -   `freq_vector <- c(A = 60/388, B = 52/388, C = 138/388, D = 69/388, E = 69/388)`
+-   **Baseline Event Rates (p0):** The baseline probability of the outcome (death by 84 days) in the *control* group for each subgroup was estimated from the ARREST placebo arm:
+    -   `p0_vector <- c(A = 7/60, B = 0/52, C = 11/138, D = 11/69, E = 1/69)`
+    -   `n0_B <- 52` # Number in control group for subgroup B in ARREST placebo arm
+    -   `p0_B_corrected <- 0.5 / (n0_B + 0.5)` # Haldane-Anscombe correction for zero events
+    -   `p0_vector_adjusted <- p0_vector`
+    -   `p0_vector_adjusted["B"] <- p0_B_corrected` # Use corrected p0 for subgroup B (~0.0095)
+
+### Simulation Scenarios
+
+-   **Aim 1 (Post-hoc Power vs N):**\
+    Simulate full population (`freq_vector`). Classification `accuracy` fixed at 1.0. Total sample sizes (`n`) varied over `sample_sizes`. `n_reps = 1000`. Compute power per subgroup (Bonferroni‐corrected alpha = 0.05 / 5). *Estimates power for post-hoc subgroup analysis in a standard trial.*
+-   **Aim 2 (Impact of Accuracy):**\
+    Simulate full population (`freq_vector`). Total sample size fixed (`n = 10000`). Classification `accuracy` varied over `accuracy_levels`. `n_reps = 1000`. Compute power, bias, MSE, and wrong‐direction rate per subgroup (Bonferroni-corrected) and overall (uncorrected alpha = 0.05). *Estimates impact of misclassification on post-hoc subgroup analysis.*
+-   **Aim 3 (Enrichment NNS/NNR vs Accuracy):**\
+    For each target subgroup (B, C, E) and test `accuracy`, simulate screening cohorts of varying sizes (`n_screened`). Apply test (misclassification based on `accuracy`). Analyze the resulting `randomized_cohort` (those testing positive for the target subgroup). `n_reps = 1000`. Find the `n_screened` (NNS) required to achieve 80% power (alpha=0.05) and the corresponding average `n_randomized` (NNR). *Estimates sample sizes for an enrichment trial using an imperfect test.*
+
+### Analysis
+
+Simulation results were aggregated across repetitions; summarized with descriptive tables (`gt`) and plots (`ggplot2`). Power is defined as the proportion of simulations where the p-value for the treatment effect was statistically significant (p < alpha). Bias is the average difference between the estimated log OR and the true log OR (target for the assigned group). MSE is the mean squared error of the log OR estimate against the target log OR. Wrong direction rate is the percentage of simulations where the sign of the estimated log OR differed from the sign of the target log OR.
+
+
+## Results
+
+```{r define_parameters}
+or_mortality       <- c(A = 1.0, B = 18.8, C = 0.79, D = 1.4, E = 0.3)
+freq_arrest        <- c(A = 60/388, B = 52/388, C = 138/388, D = 69/388, E = 69/388)
+p0_arrest_raw      <- c(A = 7/60, B = 0/52, C = 11/138, D = 11/69, E = 1/69)
+n0_B <- 52 # N in control group B from ARREST placebo
+p0_B_corrected <- 0.5 / (n0_B + 0.5) # Haldane-Anscombe correction
+p0_arrest_adjusted <- p0_arrest_raw
+p0_arrest_adjusted["B"] <- p0_B_corrected # Use corrected p0 for B (~0.0095)
+
+# Simulation settings
+n_reps_global      <- 500 # Final desired number of reps
+sample_sizes       <- c(500, 1000, 2000, 3000, 5000, 7500, 10000, 15000, 20000) # For Aim 1
+# Define screening sizes for Aim 3 (needs to cover expected NNS)
+screen_sizes_aim3  <- c(1000, 2500, 5000, 7500, 10000, 15000, 20000, 30000, 40000, 50000, 75000, 100000, 150000, 200000)
+accuracy_levels    <- seq(0.5, 1.0, by = 0.05) # For Aim 2 & Aim 3 test accuracy
+n_fixed_aim2       <- 10000 # Sample size for Aim 2
+alpha_bonferroni   <- 0.05 / 5
+alpha_overall      <- 0.05
+alpha_aim3         <- 0.05 # Standard alpha for primary analysis in enrichment trial
+target_groups_aim3 <- c("B", "C", "E") # Target groups for enrichment
+```{r table_target_or_arrest}
+# Display target ORs for ARREST simulation
+tibble(
+  Subgroup = names(or_mortality),
+  `Target OR (Mortality)` = or_mortality
+) %>%
+  gt() %>%
+  tab_header(title = "Target Treatment Effects (ARREST ORs)") %>%
+  fmt_number(columns = `Target OR (Mortality)`, decimals = 2)
+```
+
+
+### Aim 1: Sample Size Requirements (Post-Hoc Analysis Power)
+
+This section estimates the statistical power for a *post-hoc* subgroup analysis within a standard trial randomizing the full population mix, assuming perfect classification (`accuracy = 1.0`).
+
+```{r aim1_simulations}
+# Run simulations for Aim 1 (No Caching)
+# Requires simulate_trial_data and replicate_sims from sourced file
+# replicate_sims should internally call estimate_effect_misclassify with accuracy=1.0
+results_aim1 <- map_dfr(sample_sizes, ~replicate_sims(
+  or_vector  = or_mortality,
+  freq_vector = freq_arrest, # Full population mix
+  p0_vector  = p0_arrest_adjusted,
+  n          = .x, # Total trial size
+  accuracy   = 1.0,
+  n_reps     = n_reps_global,
+  seed       = 1
+), .id = "size_id") %>%
+  mutate(n_total = sample_sizes[as.numeric(size_id)])
+
+# Calculate power for each subgroup (Bonferroni corrected alpha for post-hoc)
+power_aim1 <- results_aim1 %>%
+  filter(group != "Overall") %>%
+  mutate(pval = as.numeric(pval)) %>%
+  group_by(n_total, group) %>%
+  summarise(power = mean(pval < alpha_bonferroni, na.rm = TRUE), .groups = "drop")
+```{r aim1_table_power}
+power_aim1 %>%
+  mutate(power = scales::percent(power, accuracy = 1)) %>%
+  pivot_wider(names_from = group, values_from = power) %>%
+  gt() %>%
+  cols_label(n_total = "Total Sample Size") %>%
+  tab_header(title = "Aim 1: Power for Post-Hoc Subgroup Analysis vs. Total Trial Size (ARREST ORs, Perfect Classification)") %>%
+  tab_footnote(footnote = paste("Power calculated at Bonferroni-corrected alpha =", round(alpha_bonferroni, 3))) %>%
+  fmt_percent(columns = where(is.character), scale_values = FALSE, decimals = 1)
+```{r aim1_plot_power}
+ggplot(power_aim1, aes(x = n_total, y = power, color = group)) +
+  geom_line() + geom_point() +
+  geom_hline(yintercept = 0.8, linetype = "dashed") +
+  scale_x_continuous(breaks = sample_sizes, labels = scales::comma) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Aim 1: Power for Post-Hoc Subgroup Analysis vs. Total Trial Size (ARREST ORs)",
+    x = "Total Trial Sample Size",
+    y = "Power (Bonferroni Corrected)",
+    color = "Subgroup"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+### Aim 2: Impact of Classification Accuracy (Post-Hoc Analysis)
+
+This section assesses the impact of classification accuracy on the results of a *post-hoc* subgroup analysis within a standard trial of fixed size (N = `r n_fixed_aim2`).
+
+```{r aim2_simulations}
+# Run simulations for Aim 2 (No Caching)
+# Requires simulate_trial_data and replicate_sims from sourced file
+# replicate_sims should internally call estimate_effect_misclassify
+results_aim2 <- map_dfr(accuracy_levels, ~replicate_sims(
+  or_vector  = or_mortality,
+  freq_vector = freq_arrest, # Full population mix
+  p0_vector  = p0_arrest_adjusted,
+  n          = n_fixed_aim2, # Fixed total trial size
+  accuracy   = .x,
+  n_reps     = n_reps_global,
+  seed       = 2
+), .id = "acc_id") %>%
+  mutate(accuracy = accuracy_levels[as.numeric(acc_id)])
+
+# Define the correct target betas
+true_betas_arrest <- tibble(group = names(or_mortality), true_beta_target = log(or_mortality))
+true_beta_overall_arrest <- sum(log(or_mortality) * freq_arrest, na.rm = TRUE)
+true_betas_arrest <- bind_rows(true_betas_arrest, tibble(group="Overall", true_beta_target = true_beta_overall_arrest))
+
+# Join target betas and calculate per-replicate metrics
+# Assumes results_aim2 contains 'beta' and 'pval' from estimate_effect_misclassify output
+results_aim2_processed <- results_aim2 %>%
+  mutate(beta = as.numeric(beta), pval = as.numeric(pval)) %>%
+  left_join(true_betas_arrest, by = "group") %>%
+  mutate(
+    # Use Bonferroni for subgroups, standard alpha for overall in post-hoc setting
+    is_significant = if_else(group == "Overall", pval < alpha_overall, pval < alpha_bonferroni),
+    bias_val = beta - true_beta_target,
+    mse_val = (beta - true_beta_target)^2,
+    wrong_dir_val = if_else(true_beta_target == 0, sign(beta) != 0, sign(beta) != sign(true_beta_target))
+  )
+
+# Summarise across replicates
+summary_aim2 <- results_aim2_processed %>%
+  group_by(accuracy, group) %>%
+  summarise(
+    power     = mean(is_significant, na.rm = TRUE),
+    bias      = mean(bias_val, na.rm = TRUE),
+    mse       = mean(mse_val, na.rm = TRUE),
+    wrong_dir = mean(wrong_dir_val, na.rm = TRUE) * 100,
+    n_reps_successful = sum(!is.na(pval)),
+    .groups   = "drop"
+  ) %>%
+  complete(accuracy, group = c("A", "B", "C", "D", "E", "Overall")) %>%
+  arrange(group, accuracy)
+```{r aim2_table_summary_long}
+# Long format GT table for Aim 2 ARREST results
+summary_aim2 %>%
+  select(
+    group,
+    accuracy,
+    Power = power,
+    Bias = bias,
+    MSE = mse,
+    `Wrong Dir %` = wrong_dir
+  ) %>%
+  gt(groupname_col = "group") %>%
+  fmt_percent(columns = Power, decimals = 1) %>%
+  fmt_number(columns = c(Bias, MSE), decimals = 2) %>%
+  fmt_percent(columns = `Wrong Dir %`, scale_values = FALSE, decimals = 1) %>%
+  fmt_number(columns = accuracy, decimals = 2) %>%
+  cols_label(
+    accuracy = "Accuracy",
+    Power = "Power",
+    Bias = "Bias",
+    MSE = "MSE",
+    `Wrong Dir %` = "Wrong Dir %"
+  ) %>%
+  tab_header(title = paste("Aim 2: Post-Hoc Analysis Summary vs. Accuracy (ARREST ORs, Total N =", n_fixed_aim2, ")")) %>%
+  tab_options(row_group.font.weight = "bold")
+```{r aim2_plot_power}
+ggplot(summary_aim2, aes(x = accuracy, y = power, color = group)) +
+  geom_line() + geom_point() +
+  geom_hline(yintercept = 0.8, linetype = "dashed") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = paste("Aim 2: Post-Hoc Analysis Power vs Accuracy (ARREST ORs, N =", n_fixed_aim2, ")"),
+    x     = "Classification Accuracy",
+    y     = "Power",
+    color = "Subgroup/Overall"
+  )
+```{r aim2_plot_bias}
+# Filter out Overall group for this plot
+ggplot(summary_aim2 %>% filter(group != "Overall"), aes(x = accuracy, y = bias, color = group)) +
+  geom_line() + geom_point() +
+  facet_wrap(~ group, scales = "free_y") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(
+    title = paste("Aim 2: Post-Hoc Estimation Bias vs Accuracy (ARREST ORs, N =", n_fixed_aim2, ")"),
+    x     = "Classification Accuracy",
+    y     = "Bias (log OR)",
+    color = "Subgroup"
+  )
+```{r aim2_plot_wrong_direction}
+# Filter out Overall and Group A for this plot
+ggplot(summary_aim2 %>% filter(group != "Overall", group != "A"), aes(x = accuracy, y = wrong_dir, color = group)) +
+  geom_line() + geom_point() +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  labs(
+    title = paste("Aim 2: Post-Hoc Wrong Direction % vs Accuracy (ARREST ORs, N =", n_fixed_aim2, ")"),
+    subtitle = "Group A (True OR=1) excluded as 'wrong direction' is ill-defined.",
+    x     = "Classification Accuracy",
+    y     = "Wrong Direction (%)",
+    color = "Subgroup"
+  )
+```{r visualization_bias2, echo=FALSE}
+# Plotting bias_val which compares beta to true_beta_target
+if (exists("results_aim2_processed") && nrow(results_aim2_processed) > 0) {
+  # Filter out Overall group for this plot
+  ggplot(results_aim2_processed %>% filter(group != "Overall"), aes(x = factor(accuracy), y = bias_val, fill = group)) +
+    geom_boxplot(position = position_dodge(width = 0.7), outlier.shape = NA) + # Hide outliers
+    # Hline at zero bias
+    geom_hline(data = true_betas_arrest %>% filter(group != "Overall"),
+               aes(yintercept = 0), linetype = "dashed", color = "black") +
+    facet_wrap(~ group, scales = "free_y") +
+    labs(
+      title = paste("Bias Distribution vs Accuracy (ARREST; n =", n_fixed_aim2, ")"),
+      subtitle = "Bias calculated against target log(OR) for each group label",
+      x = "Classification Accuracy",
+      y = "Bias (log OR)"
+    ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+} else {
+  print("results_aim2_processed data frame not found or is empty.")
+}
+```
+
+
+### Aim 3: Sample Size Requirements (Enrichment Trial Simulation)
+
+This section estimates the Number Needed to Screen (NNS) and the average resulting Number Needed to Randomize (NNR) to achieve 80% power in an **enrichment trial**, where recruitment is guided by a test with varying accuracy.
+
+```{r aim3_enrichment_simulations}
+# Function to run enrichment simulation replicates for one scenario
+run_enrichment_scenario <- function(n_screened, target_group, accuracy,
+                                    or_vector, p0_vector, freq_vector,
+                                    n_reps, base_seed) {
+  map_dfr(1:n_reps, ~{
+    # Generate unique seed for this replicate
+    seed <- base_seed + .x
+
+    # 1. Simulate screened cohort
+    screened_data <- simulate_trial_data(
+      or_vector = or_vector,
+      freq_vector = freq_vector,
+      n = n_screened,
+      p0_vector = p0_vector,
+      seed = seed
+    )
+    # 2. Apply test (misclassify) using the SAME logic as Aim 2
+    # Assumes misclassify_group function is available (defined in setup)
+    tested_data <- misclassify_group(
+        screened_data,
+        accuracy = accuracy,
+        freq_vector = freq_vector, # Pass named freq_vector
+        seed = seed + n_reps # Use different seed offset for misclassification step
+        )
+
+    # 3. Select cohort for randomization ("test positives")
+    randomized_cohort <- tested_data %>% filter(assigned_group == target_group)
+    n_randomized_actual <- nrow(randomized_cohort)
+
+    # 4. Analyze if cohort is large enough
+    if(n_randomized_actual >= 10) { # Need minimum size for GLM
+       analysis_results <- fit_glm_safe(randomized_cohort)
+    } else {
+       analysis_results <- tibble(beta = NA_real_, se = NA_real_, pval = NA_real_)
+    }
+
+    # Return results for this replicate
+    tibble(
+        n_randomized_actual = n_randomized_actual
+        ) %>% bind_cols(analysis_results)
+
+  }, .id = "rep")
+}
+
+# --- Run Aim 3 Simulations ---
+# Define parameter grid for Aim 3
+aim3_params <- expand_grid(
+    target_group = target_groups_aim3,
+    accuracy = accuracy_levels, # Use same accuracy levels as Aim 2
+    n_screened = screen_sizes_aim3
+)
+
+# Setup parallel processing using future and furrr
+# library(future) # Loaded in setup
+# library(furrr)  # Loaded in setup
+# Set up workers - use detectCores() - 1 for safety
+n_cores <- parallel::detectCores() - 1
+if (n_cores < 1) n_cores <- 1 # Ensure at least 1 core
+plan(multisession, workers = n_cores)
+# Optional: Increase max size for globals if needed (start without)
+# options(future.globals.maxSize = 2 * 1024^3)
+
+message(paste("Starting Aim 3 simulations using", n_cores, "cores..."))
+
+# Use future_pmap_dfr for parallel execution
+results_aim3 <- future_pmap_dfr(aim3_params, function(target_group, accuracy, n_screened) {
+    # message(paste("Running Aim 3: Group", target_group, "Acc", accuracy, "N_screen", n_screened)) # Progress message per task
+    run_enrichment_scenario(
+        n_screened = n_screened,
+        target_group = target_group,
+        accuracy = accuracy,
+        or_vector = or_mortality,
+        p0_vector = p0_arrest_adjusted,
+        freq_vector = freq_arrest,
+        n_reps = n_reps_global,
+        # Ensure unique base seed for each scenario combination
+        base_seed = 3000 + which(aim3_params$target_group == target_group & aim3_params$accuracy == accuracy & aim3_params$n_screened == n_screened) * n_reps_global
+        ) %>%
+    mutate( # Add parameters back for grouping
+        target_group = target_group,
+        accuracy = accuracy,
+        n_screened = n_screened
+        )
+}, .progress = TRUE, .options = furrr_options(seed = TRUE)) # Use progress bar and ensure seeds work in parallel
+
+# Shut down parallel workers
+plan(sequential)
+
+message("Aim 3 simulations complete. Processing results...")
+
+# --- Process Aim 3 Results ---
+# Calculate power and average N randomized for each scenario
+summary_aim3 <- results_aim3 %>%
+  mutate(pval = as.numeric(pval)) %>%
+  group_by(target_group, accuracy, n_screened) %>%
+  summarise(
+    power = mean(pval < alpha_aim3, na.rm = TRUE),
+    mean_n_randomized = mean(n_randomized_actual, na.rm = TRUE),
+    sd_n_randomized = sd(n_randomized_actual, na.rm = TRUE),
+    n_reps_analyzed = sum(!is.na(pval)),
+    .groups = "drop"
+  )
+
+# Find NNS required for 80% power
+nns_enrich <- summary_aim3 %>%
+  group_by(target_group, accuracy) %>%
+  arrange(n_screened) %>%
+  filter(power >= 0.8) %>%
+  slice(1) %>% # First n_screened where power >= 0.8
+  select(target_group, accuracy, nns_needed_num = n_screened) %>%
+  ungroup() %>%
+  # Ensure all combinations are present, even if power goal not met
+  full_join(expand_grid(target_group = target_groups_aim3, accuracy = accuracy_levels), by = c("target_group", "accuracy")) %>%
+  mutate(
+    max_n_screened_aim3 = max(screen_sizes_aim3),
+    `N Needed to Screen (NNS)` = if_else(
+      is.na(nns_needed_num),
+      paste(">", scales::comma(max_n_screened_aim3)),
+      scales::comma(nns_needed_num)
+    )
+  ) %>%
+  select(target_group, accuracy, `N Needed to Screen (NNS)`, nns_needed_num)
+
+# Get the corresponding average NNR for the NNS found
+nnr_enrich <- nns_enrich %>%
+  # Join back to summary_aim3 only where NNS was determined
+  left_join(summary_aim3 %>% select(target_group, accuracy, n_screened, mean_n_randomized),
+            by = c("target_group", "accuracy", "nns_needed_num" = "n_screened")) %>%
+  mutate(`NNR (Enrichment)` = if_else(
+      is.na(mean_n_randomized), # Check if join failed (i.e., power not reached)
+      "-",
+      scales::comma(round(mean_n_randomized), accuracy = 1)
+      )) %>%
+  select(target_group, accuracy, `NNR (Enrichment)`)
+
+
+# Combine NNS and NNR results
+implications_enrichment <- nns_enrich %>%
+    left_join(nnr_enrich, by = c("target_group", "accuracy")) %>%
+    left_join(
+        tibble(target_group = names(or_mortality), target_or = or_mortality) %>% filter(target_group %in% target_groups_aim3),
+        by = "target_group"
+    ) %>%
+    select(
+        Subgroup = target_group,
+        `Target OR` = target_or,
+        `Test Accuracy` = accuracy,
+        `NNR (Enrichment)`,
+        `N Needed to Screen (NNS)`
+    ) %>%
+    arrange(Subgroup, desc(`Test Accuracy`))
+```{r aim3_plot_power}
+# Plot power vs N Screened
+ggplot(summary_aim3, aes(x = n_screened, y = power, color = factor(accuracy))) +
+  geom_line() + geom_point() +
+  geom_hline(yintercept = 0.8, linetype = "dashed") +
+  facet_wrap(~ target_group, scales = "free_x") +
+  scale_x_continuous(labels = scales::comma) + # Format x-axis
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Aim 3: Power vs. N Screened in Enrichment Trial (Varying Accuracy)",
+    x = "N Screened",
+    y = "Power (alpha = 0.05)",
+    color = "Test Accuracy"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r aim3_plot_nnr_nns}
+# Plot NNR vs Accuracy
+plot_nnr <- ggplot(implications_enrichment %>% filter(`NNR (Enrichment)` != "-"),
+       aes(x = `Test Accuracy`, y = as.numeric(gsub(",", "", `NNR (Enrichment)`)), color = Subgroup)) +
+  geom_line() + geom_point() +
+  scale_y_continuous(labels = scales::comma) +
+  labs(title = "Avg. NNR vs. Test Accuracy", x = "Test Accuracy", y = "Avg. N Randomized")
+
+# Plot NNS vs Accuracy
+plot_nns <- ggplot(implications_enrichment %>% filter(str_detect(`N Needed to Screen (NNS)`, "^>", negate=TRUE)), # Exclude ">" values for plotting
+       aes(x = `Test Accuracy`, y = as.numeric(gsub(",", "", `N Needed to Screen (NNS)`)), color = Subgroup)) +
+  geom_line() + geom_point() +
+  scale_y_log10(labels = scales::comma) + # Use log scale for NNS
+  labs(title = "NNS vs. Test Accuracy", x = "Test Accuracy", y = "N Needed to Screen (Log Scale)")
+
+# Combine plots
+plot_nnr + plot_nns + patchwork::plot_layout(guides = 'collect') & theme(legend.position = 'bottom')
+
+```
+
+
+## Supplementary: Realistic Effects
+
+*(Note: Aim 3 simulation was only run for ARREST ORs. Equivalent simulations could be added here for realistic ORs if desired, following the same structure as Aim 3 above but using `or_realistic`.)*
+
+```{r setup_realistic, include=FALSE}
+or_realistic <- c(A = 1.0, B = 2.0, C = 0.7, D = 1.2, E = 0.8)
+```{r table_target_or_realistic}
+# Display target ORs for Realistic simulation
+tibble(
+  Subgroup = names(or_realistic),
+  `Target OR (Mortality)` = or_realistic
+) %>%
+  gt() %>%
+  tab_header(title = "Target Treatment Effects (Realistic ORs)") %>%
+  fmt_number(columns = `Target OR (Mortality)`, decimals = 2)
+```
+
+
+### Supplementary Aim 1: Power vs. Sample Size (Realistic ORs)
+
+```{r aim1_simulations_realistic}
+results_aim1_real <- map_dfr(sample_sizes, ~replicate_sims(
+  or_vector   = or_realistic,
+  freq_vector = freq_arrest,
+  n           = .x,
+  p0_vector   = p0_arrest_adjusted, # Using corrected p0 for B
+  accuracy    = 1.0,
+  n_reps      = n_reps_global,
+  seed        = 4
+), .id = "size_id") %>%
+  mutate(n_total = sample_sizes[as.numeric(size_id)])
+
+power_aim1_real <- results_aim1_real %>%
+  filter(group != "Overall") %>%
+  mutate(pval = as.numeric(pval)) %>%
+  group_by(n_total, group) %>%
+  summarise(power = mean(pval < alpha_bonferroni, na.rm = TRUE), .groups = "drop")
+```{r aim1_table_power_realistic}
+power_aim1_real %>%
+  mutate(power = scales::percent(power, accuracy = 1)) %>%
+  pivot_wider(names_from = group, values_from = power) %>%
+  gt() %>%
+  cols_label(n_total = "Total Sample Size") %>%
+  tab_header(title = "Supplementary: Power vs. Sample Size (Realistic ORs, Perfect Classification)") %>%
+  tab_footnote(footnote = paste("Power calculated at Bonferroni-corrected alpha =", round(alpha_bonferroni, 3))) %>%
+  fmt_percent(columns = where(is.character), scale_values = FALSE, decimals = 1)
+```{r aim1_plot_power_realistic}
+ggplot(power_aim1_real, aes(x = n_total, y = power, color = group)) +
+  geom_line() + geom_point() +
+  geom_hline(yintercept = 0.8, linetype = "dashed") +
+  scale_x_continuous(breaks = sample_sizes, labels = scales::comma) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Supplementary: Power vs. Sample Size (Realistic ORs)",
+    x     = "Total Sample Size",
+    y     = "Power",
+    color = "Subgroup"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+### Supplementary Aim 2: Power vs. Accuracy (Realistic ORs)
+
+```{r aim2_simulations_realistic}
+results_aim2_real <- map_dfr(accuracy_levels, ~replicate_sims(
+  or_vector   = or_realistic,
+  freq_vector = freq_arrest,
+  n           = n_fixed_aim2,
+  p0_vector   = p0_arrest_adjusted, # Using corrected p0 for B
+  accuracy    = .x,
+  n_reps      = n_reps_global,
+  seed        = 5
+), .id = "acc_id") %>%
+  mutate(accuracy = accuracy_levels[as.numeric(acc_id)])
+
+# Define and join correct target betas for realistic ORs
+true_betas_realistic <- tibble(group = names(or_realistic), true_beta_target = log(or_realistic))
+true_beta_overall_realistic <- sum(log(or_realistic) * freq_arrest, na.rm = TRUE)
+true_betas_realistic <- bind_rows(true_betas_realistic, tibble(group="Overall", true_beta_target = true_beta_overall_realistic))
+
+# Join target betas and calculate per-replicate metrics
+results_aim2_real_processed <- results_aim2_real %>%
+  mutate(beta = as.numeric(beta), pval = as.numeric(pval)) %>%
+  left_join(true_betas_realistic, by = "group") %>%
+  mutate(
+    is_significant = if_else(group == "Overall", pval < alpha_overall, pval < alpha_bonferroni),
+    bias_val = beta - true_beta_target,
+    mse_val = (beta - true_beta_target)^2,
+    wrong_dir_val = if_else(true_beta_target == 0, sign(beta) != 0, sign(beta) != sign(true_beta_target))
+  )
+
+# Summarise across replicates
+summary_aim2_real <- results_aim2_real_processed %>%
+  group_by(accuracy, group) %>%
+  summarise(
+    power     = mean(is_significant, na.rm = TRUE),
+    bias      = mean(bias_val, na.rm = TRUE),
+    mse       = mean(mse_val, na.rm = TRUE),
+    wrong_dir = mean(wrong_dir_val, na.rm = TRUE) * 100,
+    .groups   = "drop"
+  ) %>%
+  complete(accuracy, group = c("A", "B", "C", "D", "E", "Overall")) %>%
+  arrange(group, accuracy)
+```{r aim2_table_summary_realistic_long}
+# Long format GT table for Aim 2 Realistic results
+summary_aim2_real %>%
+  select(
+    group,
+    accuracy,
+    Power = power,
+    Bias = bias,
+    MSE = mse,
+    `Wrong Dir %` = wrong_dir
+  ) %>%
+  gt(groupname_col = "group") %>%
+  fmt_percent(columns = Power, decimals = 1) %>%
+  fmt_number(columns = c(Bias, MSE), decimals = 2) %>%
+  fmt_percent(columns = `Wrong Dir %`, scale_values = FALSE, decimals = 1) %>%
+  fmt_number(columns = accuracy, decimals = 2) %>%
+  cols_label(
+    accuracy = "Accuracy",
+    Power = "Power",
+    Bias = "Bias",
+    MSE = "MSE",
+    `Wrong Dir %` = "Wrong Dir %"
+  ) %>%
+  tab_header(title = paste("Supplementary: Simulation Summary vs. Accuracy (Realistic ORs, N =", n_fixed_aim2, ")")) %>%
+  tab_options(row_group.font.weight = "bold")
+```{r visualization_bias2_realistic, echo=FALSE}
+# Note: Plotting bias_val which compares beta to true_beta_target
+if (exists("results_aim2_real_processed") && nrow(results_aim2_real_processed) > 0) {
+  # Filter out Overall group for this plot
+  ggplot(results_aim2_real_processed %>% filter(group != "Overall"), aes(x = factor(accuracy), y = bias_val, fill = group)) +
+    geom_boxplot(position = position_dodge(width = 0.7), outlier.shape = NA) + # Hide outliers
+    # Hline at zero bias
+    geom_hline(data = true_betas_realistic %>% filter(group != "Overall"),
+               aes(yintercept = 0), linetype = "dashed", color = "black") +
+    facet_wrap(~ group, scales = "free_y") +
+    labs(
+      title = paste("Bias Distribution vs Accuracy (Realistic; n =", n_fixed_aim2, ")"),
+      subtitle = "Bias calculated against target log(OR) for each group label",
+      x = "Classification Accuracy",
+      y = "Bias (log OR)"
+    ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+} else {
+  print("results_aim2_real_processed data frame not found or is empty.")
+}
+```{r aim2_plot_power_realistic}
+ggplot(summary_aim2_real, aes(x = accuracy, y = power, color = group)) +
+  geom_line() + geom_point() +
+  geom_hline(yintercept = 0.8, linetype = "dashed") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = paste("Supplementary: Power vs Accuracy (Realistic; n =", n_fixed_aim2, ")"),
+    x     = "Classification Accuracy",
+    y     = "Power",
+    color = "Subgroup/Overall"
+  )
+```{r aim2_plot_bias_realistic}
+# Filter out Overall group for this plot
+ggplot(summary_aim2_real %>% filter(group != "Overall"), aes(x = accuracy, y = bias, color = group)) +
+  geom_line() + geom_point() +
+  facet_wrap(~ group, scales = "free_y") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(
+    title = paste("Supplementary: Estimation Bias vs Accuracy (Realistic; n =", n_fixed_aim2, ")"),
+    x     = "Classification Accuracy",
+    y     = "Bias (log OR)",
+    color = "Subgroup"
+  )
+```{r aim2_plot_wrong_realistic}
+# Filter out Overall and Group A for this plot
+ggplot(summary_aim2_real %>% filter(group != "Overall", group != "A"), aes(x = accuracy, y = wrong_dir, color = group)) +
+  geom_line() + geom_point() +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  labs(
+    title = paste("Supplementary: Wrong Direction % vs Accuracy (Realistic; n =", n_fixed_aim2, ")"),
+    subtitle = "Group A (True OR=1) excluded as 'wrong direction' is ill-defined.",
+    x     = "Classification Accuracy",
+    y     = "Wrong Direction (%)",
+    color = "Subgroup"
+  )
+```
+
+
+## Discussion
+
+This simulation study demonstrates the significant challenges in detecting heterogeneous treatment effects in the presence of subgroup misclassification, using parameters derived from a real-world *S. aureus* bacteremia trial.
+
+Aim 1 highlights that even with perfect classification, substantial sample sizes are required to achieve adequate power for **post-hoc subgroup analyses** within a standard trial randomizing the full population mix. This is particularly true for less prevalent subgroups or those with smaller effect sizes, or where baseline event rates are low (even if the relative effect is large, as seen for subgroup B).
+
+Aim 2 quantifies the detrimental impact of misclassification accuracy on these post-hoc analyses. As accuracy decreases, statistical power diminishes, bias in effect estimates increases (generally towards the null), and the probability of estimating effects in the wrong direction rises. This underscores the critical importance of highly accurate subgroup classification methods if relying on post-hoc analyses.
+
+### Practical Implications: Enrichment Trials
+
+Aim 3 simulates an **enrichment trial** design, where patients are screened using a test with a given `accuracy` (probability of correct classification), and only those testing positive for the target subgroup are randomized. This allows estimation of the Number Needed to Screen (NNS) and the average resulting Number Needed to Randomize (NNR<sub>Enrich</sub>) within the enriched cohort required to achieve 80% power.
+
+```{r practical_implications_table, echo=FALSE}
+# Create Table for Practical Implications (Enrichment NNR & NNS from Aim 3)
+
+# Display table using gt
+implications_enrichment %>%
+  gt(groupname_col = c("Subgroup", "Target OR")) %>%
+  fmt_number(columns = `Test Accuracy`, decimals = 2) %>%
+  cols_align(align = "right", columns = contains("NNR") | contains("NNS")) %>%
+  cols_label(
+     `Test Accuracy` = "Test Accuracy",
+     `NNR (Enrichment)` = "Avg. NNR",
+     `N Needed to Screen (NNS)` = "NNS"
+  ) %>%
+  tab_header(title = "Estimated Sample Sizes for Enrichment Trial (80% Power)") %>%
+  tab_footnote(footnote = "NNR (Enrichment): Average number needed to randomize *within the enriched cohort* (those testing positive) to achieve 80% power (alpha=0.05), based on test accuracy (from Aim 3). NNS: Number needed to screen in the general population to achieve 80% power.")
+
+```
+
+The table shows the estimated NNS and resulting average NNR for enrichment trials targeting subgroups B, C, and E, based on the accuracy of the test used for screening. For example, the table indicates the approximate NNS and corresponding average NNR required to achieve 80% power for subgroup B using a test with 90% accuracy. As test accuracy decreases, both the required NNS and the average NNR increase substantially, highlighting the critical impact of test performance on the feasibility and efficiency of enrichment designs. The NNR increases with lower accuracy because the enriched cohort becomes more diluted with false positives, weakening the observed treatment effect, while the NNS increases even more dramatically as fewer true positives are correctly identified among the larger number screened.
+
+
+## Conclusion
+
+This simulation study demonstrates that accurate subgroup classification is paramount for reliably detecting heterogeneous treatment effects in *S. aureus* bacteremia. Post-hoc subgroup analyses require large sample sizes and are highly sensitive to misclassification accuracy. Enrichment trial designs can potentially reduce the number of patients randomized but require careful consideration of subgroup prevalence, effect size, baseline risk, and the performance characteristics of the classification test, as lower accuracy dramatically increases both the screening burden (NNS) and the number of patients needed within the enriched cohort (NNR).
+
+
+## References
+
+-   Swets, M. C., Russell, C. D., et al. (2024). Clinical Subphenotypes of Staphylococcus aureus Bacteremia. *Clinical Infectious Diseases*, ciaes338. [https://doi.org/10.1093/cid/ciae338](https://doi.org/10.1093/cid/ciae338)
+-   *(Add other relevant references)*
+

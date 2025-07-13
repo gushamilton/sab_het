@@ -1,0 +1,496 @@
+---
+title: "Impact of Subgroup Misclassification on Detecting Heterogeneous Treatment Effects in *Staphylococcus aureus* Bacteremia: A Simulation Study"
+author: "Fergus Hamilton"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+format:
+  html:
+    self-contained: true
+    toc: true
+    code-fold: true
+    code-summary: "Show code"
+    number-sections: true
+  pdf:
+    toc: true
+    number-sections: true
+  docx:
+    toc: true
+    number-sections: true
+editor: visual
+execute:
+  echo: false # Set to false for the final report
+  warning: false
+  message: false
+bibliography: references.bib
+csl: vancouver.csl
+---
+
+```{r setup, include=FALSE}
+# Load necessary packages for reporting
+pacman::p_load(tidyverse, gt, scales)
+
+# Set theme for plots
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+```
+
+# Abstract
+
+**Background:** *Staphylococcus aureus* bacteremia (SAB) exhibits significant clinical heterogeneity. Recently identified subphenotypes show potential for heterogeneous treatment effects (HTE), but the impact of inevitable patient misclassification on detecting HTE is unclear.
+
+**Methods:** We conducted a simulation study following the ADEMP framework (Aims, Data-generating mechanisms, Estimands, Methods, Performance measures). We simulated clinical trial data based on parameters from the ARREST trial (adjunctive rifampicin vs. placebo for SAB), incorporating five subphenotypes with differential treatment effects on 84-day mortality (Odds Ratios \[ORs\] from 0.3 to 18.8). We assessed: (1) statistical power for post-hoc subgroup analysis versus total trial size assuming perfect classification; (2) the impact of varying classification accuracy (50%-100%) on power, bias, MSE, and wrong-direction estimate rate in post-hoc analyses (fixed N=10,000); and (3) the Number Needed to Screen (NNS) and Number Needed to Randomize (NNR) to achieve 80% power in enrichment trials targeting specific subgroups, considering test accuracy. Simulations were repeated using more moderate ('realistic') ORs.
+
+**Results:** Aim 1 showed substantial total trial sizes (\>20,000) are needed for adequate power (80%) in post-hoc analyses of some subgroups (B, C, E) even with perfect classification, largely driven by low baseline event rates or moderate effect sizes combined with multiple testing correction. Aim 2 demonstrated that decreasing classification accuracy markedly reduced power and increased bias (towards the null) and the risk of estimating effects in the wrong direction in post-hoc analyses. Aim 3 showed that enrichment designs require large NNS, increasing dramatically as test accuracy decreases; for subgroup B (OR=18.8), NNS exceeded 50,000 even with 95% accuracy. Results were less extreme but directionally similar for realistic ORs.
+
+**Conclusions:** Detecting HTE in SAB is challenging. Post-hoc analyses require very large trials and high classification accuracy. Enrichment strategies can reduce NNR but face substantial screening burdens (NNS) heavily influenced by test accuracy and subgroup prevalence. Robust classification methods are crucial for advancing stratified medicine approaches in SAB.
+
+# Introduction
+
+
+
+*Staphylococcus aureus* bacteremia (SAB) is a common and serious infection associated with significant morbidity and mortality [@Tong2015]. Globally, *S. aureus* is a leading cause of death due to bacterial pathogens and bacteremia [@GBD2019]. A defining feature of SAB is its clinical heterogeneity, encompassing variations in patient characteristics (e.g., age, comorbidities), pathogen factors (e.g., methicillin resistance), source of infection, and disease severity [@Tong2015]. Despite this heterogeneity, clinical trials in SAB often treat it as a single entity, potentially obscuring differential treatment effects within patient subgroups [@Thwaites2018; Holland2022]. Strategy trials investigating adjunctive or alternative therapies have frequently failed to show overall benefit compared to standard care [@Thwaites2018; Paulsen2024].
+
+Recent efforts have focused on identifying clinically relevant subphenotypes within SAB to enable better patient stratification for research and potentially personalized treatment [@Davis2023]. Swets, Russell, et al. recently used latent class analysis on data from observational and trial cohorts (Edinburgh, ARREST, SAFO) to identify five distinct and reproducible clinical subphenotypes (A-E) based on routinely collected clinical data [@Swets2024]. Crucially, a secondary analysis of the ARREST trial (Adjunctive Rifampicin for *S. aureus* Bacteraemia) suggested potential heterogeneous treatment effects (HTE) of adjunctive rifampicin across these subphenotypes regarding 84-day mortality. Notably, rifampicin appeared potentially harmful in subphenotype B (Nosocomial IV catheter-associated SAB; OR 18.8) and potentially beneficial in subphenotype E (SAB associated with injecting drug use; OR 0.3) [@Swets2024].
+
+The possibility of such HTE raises critical questions for future clinical trial design and the implementation of stratified medicine approaches. If treatment effects truly differ between subgroups, accurately identifying these subgroups becomes paramount. However, any diagnostic test or classification algorithm used to assign patients to subphenotypes will inevitably have imperfect accuracy [@Siontis2014]. Misclassifying patients can lead to biased estimates of subgroup-specific effects, reduced statistical power to detect true HTE, and potentially misleading conclusions about which patients benefit or are harmed by a treatment [@Kent2018; Sussman2017]. Understanding the quantitative impact of misclassification is essential for interpreting subgroup analyses and designing efficient trials, including potential enrichment strategies [@Anthenelli2011; Simon2004].
+
+This simulation study aims to quantify the impact of subgroup misclassification on detecting HTE in SAB, using the subphenotypes and treatment effects derived from the Swets et al. analysis of the ARREST trial as a motivating example. Specifically, we address three aims: 1. Estimate the total sample sizes required in a standard randomized controlled trial (RCT) to achieve adequate statistical power (80%) for post-hoc analyses of subgroup-specific treatment effects, assuming perfect patient classification. 2. Quantify the impact of varying levels of classification accuracy on statistical power, estimation bias, Mean Squared Error (MSE), and the probability of estimating effects in the wrong direction for both subgroup-specific and overall treatment effects in post-hoc analyses of a large (N=10,000) standard RCT. 3. Estimate the Number Needed to Screen (NNS) and the resulting average Number Needed to Randomize (NNR) within the enriched cohort required to achieve 80% power in a hypothetical enrichment trial design targeting specific subgroups, considering varying levels of test accuracy.
+
+We structure the reporting of our simulation methods and results following the ADEMP framework (Aims, Data-generating mechanisms, Estimands, Methods, Performance measures) [@Morris2019].
+
+# Methods
+
+This simulation study was designed and reported following the ADEMP framework [@Morris2019; Siepe2024].
+
+## Aims
+
+1.  **Post-hoc Power vs. N:** To estimate the total sample size (`n`) required in a standard two-arm RCT to achieve 80% statistical power for detecting subgroup-specific treatment effects (based on ARREST trial ORs) in post-hoc analyses, assuming perfect classification (`accuracy`=1.0).
+2.  **Impact of Accuracy:** To quantify the impact of varying classification `accuracy` (0.5 to 1.0) on statistical power, bias, MSE, and the wrong-direction rate for estimating subgroup-specific and overall treatment effects in post-hoc analyses of a standard RCT with a fixed total sample size (`n`=10,000).
+3.  **Enrichment Trial Sample Sizes:** To estimate the Number Needed to Screen (NNS) and the average Number Needed to Randomize (NNR) within an enriched cohort required to achieve 80% power in a hypothetical enrichment trial targeting specific subgroups (B, C, E), using a screening test with varying `accuracy`.
+
+## Data-Generating Mechanisms (DGMs)
+
+We simulated individual patient data for two-arm (control vs. treatment) RCTs. The core DGM involved the following steps for each simulated patient:
+
+1.  **True Subgroup Assignment:** Each patient was assigned a 'true' subgroup (A, B, C, D, or E) based on sampling from a multinomial distribution defined by the population prevalence (`freq_vector`).
+2.  **Treatment Assignment:** Patients were assigned to treatment (1) or control (0) with equal probability (0.5).
+3.  **Outcome Generation:** A binary outcome ('success', representing death by 84 days = 1, survival = 0) was generated based on the patient's true subgroup, treatment assignment, the subgroup-specific baseline event probability in the control group (`p0_vector`), and the subgroup-specific treatment effect (odds ratio, `or_vector`). The probability of death for patient `i` in subgroup `j` receiving treatment `t` (0 or 1) was calculated using the logistic model: $P(\text{Death}_{ij} | \text{Treatment}=t) = \text{expit}(\text{logit}(p0_j) + \log(OR_j) \times t)$. The outcome was then drawn from a Bernoulli distribution with this probability.
+
+**Parameterization:** Two main parameter sets were used: \* **ARREST Scenario:** Based directly on the Swets et al. [@Swets2024] analysis of the ARREST trial 84-day mortality data. \* `or_vector`: `c(A = 1.0, B = 18.8, C = 0.79, D = 1.4, E = 0.3)` \* `freq_vector`: `c(A = 60/388, B = 52/388, C = 138/388, D = 69/388, E = 69/388)` \* `p0_vector_adjusted`: `c(A = 7/60, B = 0.5/(52+0.5), C = 11/138, D = 11/69, E = 1/69)`. Note the Haldane-Anscombe correction for subgroup B. \* **Realistic Scenario:** Used more moderate ORs while keeping frequencies and baseline risks the same as the ARREST scenario. \* `or_vector`: `c(A = 1.0, B = 2.0, C = 0.7, D = 1.2, E = 0.8)` \* `freq_vector`: Same as ARREST. \* `p0_vector_adjusted`: Same as ARREST.
+
+**Misclassification / Testing Mechanism:** \* For Aims 2 and 3, patient classification accuracy was simulated using the `misclassify_group` function. For each patient with true subgroup `j`, the assigned subgroup was set to `j` with probability `accuracy`. With probability `1 - accuracy`, the assigned subgroup was randomly sampled from the overall population distribution (`freq_vector`). This simulates a classification process where errors result in assignment proportional to overall prevalence.
+
+## Estimands
+
+The target quantities (estimands) for each aim were:
+
+-   **Aim 1:** The statistical power to reject the null hypothesis of no treatment effect (OR=1) within each subgroup (A-E) in a post-hoc analysis, using a Bonferroni-corrected alpha level (0.05 / 5 = 0.01).
+-   **Aim 2:**
+    -   Primary: Statistical power (as in Aim 1, plus overall power at alpha=0.05).
+    -   Secondary: Bias (mean difference between estimated log(OR) and true log(OR)), Mean Squared Error (MSE) of the log(OR) estimate, and Wrong Direction Rate (percentage of estimates where sign(log(OR)) differs from sign(true log(OR))).
+    -   The true marginal treatment effect for the "Overall" analysis was determined by fitting a logistic regression model to the entire simulated dataset for each replicate, as the odds ratio is a non-collapsible effect measure.
+-   **Aim 3:**
+    -   Primary: Number Needed to Screen (NNS) to achieve 80% power (alpha=0.05) in an enrichment trial for a target subgroup.
+    -   Secondary: Average Number Needed to Randomize (NNR) within the enriched cohort corresponding to the NNS achieving 80% power.
+
+## Methods (Simulation and Analysis)
+
+-   **Simulation Structure:**
+    -   **Aim 1:** Iterated through `sample_sizes`. For each size `n`, `n_reps_global` datasets were generated using `simulate_trial_data` (full `freq_vector`). `estimate_effect_misclassify` (with `accuracy=1.0`) was used, effectively analyzing true subgroups post-hoc.
+    -   **Aim 2:** Fixed total size `n_fixed_aim2`. Iterated through `accuracy_levels`. For each accuracy, `n_reps_global` datasets were generated using `simulate_trial_data`. `estimate_effect_misclassify` was called for each dataset with the corresponding accuracy.
+    -   **Aim 3:** Iterated through `target_groups_aim3`, `accuracy_levels`, and `screen_sizes_aim3`. For each combination, `n_reps_global` replicates were run using `run_enrichment_scenario`, which simulates screening `n_screened` patients, applies the test (`misclassify_group` with accuracy), selects the test-positive cohort, and analyzes it using `fit_glm_safe`.
+-   **Statistical Analysis:** Within each simulation replicate and relevant subgroup/cohort, the treatment effect was estimated using logistic regression (`glm(success ~ treatment, family = binomial)`). The `fit_glm_safe` function handled potential errors and insufficient data.
+-   **Software:** Simulations were performed in R version 4.x.x using the `tidyverse`, `broom`, and `purrr` packages. Parallel processing for Aim 3 was implemented using the `future` and `furrr` packages. Plots were generated using `ggplot2` and `patchwork`, and tables using `gt`.
+-   **Replication:** `n_reps_global` was set to 1000 for all main simulations. Reproducibility was ensured using `set.seed()` globally and managing seeds within loops and parallel processes.
+
+## Performance Measures
+
+The following performance measures were calculated by aggregating results across the `n_reps_global` replicates for each scenario:
+
+-   **Power:** Mean indicator of (p-value \< alpha). Alpha was 0.01 (Bonferroni) for Aims 1 & 2 subgroup analyses, 0.05 for Aim 2 overall analysis, and 0.05 for Aim 3 enrichment analysis.
+-   **Bias:** Mean (estimated log(OR) - true target log(OR)).
+-   **MSE:** Mean ((estimated log(OR) - true target log(OR))\^2).
+-   **Wrong Direction Rate (%):** Mean indicator of (sign(estimated log(OR)) != sign(true target log(OR))) \* 100. (Calculated only for subgroups with true OR != 1).
+-   **NNS (Aim 3):** Smallest `n_screened` achieving mean power \>= 0.8.
+-   **NNR (Aim 3):** Mean `n_randomized_actual` corresponding to the NNS achieving 80% power.
+
+# Results
+
+```{r load_results, include=FALSE}
+# Load pre-computed results from the simulation script
+power_aim1 <- read_csv("../results/tables/aim1_power_summary.csv")
+plot_aim1 <- readRDS("../results/objects/aim1_power_plot.rds")
+
+summary_aim2 <- read_csv("../results/tables/aim2_accuracy_summary.csv")
+plot_aim2_power <- readRDS("../results/objects/aim2_power_plot.rds")
+plot_aim2_bias <- readRDS("../results/objects/aim2_bias_plot.rds")
+plot_aim2_wrong_dir <- readRDS("../results/objects/aim2_wrongdir_plot.rds")
+
+summary_aim3 <- read_csv("../results/tables/aim3_nns_summary.csv")
+plot_aim3_nns <- readRDS("../results/objects/aim3_nns_plot.rds")
+
+n_fixed_aim2 <- 10000 # Manually define for use in captions
+alpha_bonferroni <- 0.05 / 5
+```
+
+### Aim 1: Sample Size Requirements (Post-Hoc Analysis Power)
+
+```{r aim1_results}
+#| label: tbl-aim1-table-power
+#| tbl-cap: "Aim 1: Power for Post-Hoc Subgroup Analysis vs. Total Trial Size (ARREST ORs, Perfect Classification)"
+power_aim1 %>%
+  mutate(power = scales::percent(power, accuracy = 1)) %>%
+  pivot_wider(names_from = group, values_from = power) %>%
+  gt() %>%
+  cols_label(n_total = "Total Sample Size") %>%
+  tab_footnote(footnote = paste("Power calculated at Bonferroni-corrected alpha =", round(alpha_bonferroni, 3)))
+
+#| label: fig-aim1-plot-power
+#| fig-cap: "Aim 1: Power for Post-Hoc Subgroup Analysis vs. Total Trial Size (ARREST ORs)"
+plot_aim1
+```
+
+### Aim 2: Impact of Classification Accuracy (Post-Hoc Analysis)
+
+```{r aim2_results}
+#| label: tbl-aim2-table-summary
+#| tbl-cap: "Aim 2: Post-Hoc Analysis Summary vs. Accuracy (ARREST ORs, Total N = 10,000)"
+summary_aim2 %>%
+  select(group, accuracy, Power = power, Bias = bias, MSE = mse, `Wrong Dir %` = wrong_dir) %>%
+  gt(groupname_col = "group") %>%
+  fmt_percent(columns = Power, decimals = 1) %>%
+  fmt_number(columns = c(Bias, MSE), decimals = 2) %>%
+  fmt_percent(columns = `Wrong Dir %`, scale_values = FALSE, decimals = 1) %>%
+  cols_label(accuracy = "Accuracy") %>%
+  tab_options(row_group.font.weight = "bold")
+
+
+#| label: fig-aim2-plot-power
+#| fig-cap: "Aim 2: Post-Hoc Analysis Power vs Classification Accuracy (ARREST ORs, N = 10,000)"
+plot_aim2_power
+
+#| label: fig-aim2-plot-bias
+#| fig-cap: "Aim 2: Post-Hoc Estimation Bias vs Classification Accuracy (ARREST ORs, N = 10,000)"
+plot_aim2_bias
+
+#| label: fig-aim2-plot-wrong-direction
+#| fig-cap: "Aim 2: Post-Hoc Wrong Direction % vs Classification Accuracy (ARREST ORs, N = 10,000)"
+plot_aim2_wrong_dir
+```
+
+### Aim 3: Sample Size Requirements (Enrichment Trial Simulation)
+
+```{r aim3_results}
+#| label: tbl-aim3-nns-summary
+#| tbl-cap: "Aim 3: Number Needed to Screen (NNS) and Corresponding Number Needed to Randomize (NNR) to achieve 80% power in an enrichment trial."
+summary_aim3 %>%
+  mutate(
+    `NNS` = if_else(is.na(nns_needed), "> 500,000", scales::comma(nns_needed)),
+    `NNR` = if_else(is.na(nnr_corresponding), "-", scales::comma(round(nnr_corresponding), 1))
+  ) %>%
+  select(Subgroup = target_group, Accuracy = accuracy, NNS, NNR) %>%
+  gt(groupname_col = "Subgroup") %>%
+  fmt_number(columns = Accuracy, decimals = 2)
+
+#| label: fig-aim3-plot-nns
+#| fig-cap: "Aim 3: Number Needed to Screen (NNS) vs. Classification Accuracy"
+plot_aim3_nns
+```
+
+# Discussion
+
+This simulation study demonstrates the significant challenges in detecting heterogeneous treatment effects in the presence of subgroup misclassification, using parameters derived from a real-world *S. aureus* bacteremia trial [@Swets2024].
+
+### Strengths and Limitations
+
+A key strength of this study is its grounding in a real-world clinical problem, using parameters from a well-characterized cohort to ensure the data-generating mechanisms are as plausible as possible. The systematic, multi-aim structure, following the ADEMP framework, provides a comprehensive view of the problem from foundational power calculations to the practical implications for enrichment trial design.
+
+However, our study has several limitations inherent to any simulation work. Our misclassification model assumes that when an error occurs, the assigned subgroup is chosen randomly according to population prevalence. This represents a scenario where a diagnostic provides no information upon failure. In reality, misclassifications may not be random; for instance, two clinically similar subgroups may be more frequently confused for one another. A more complex model using a pre-defined confusion matrix could explore such scenarios, representing a potential avenue for future research.
+
+Furthermore, while the "Realistic Scenario" provides a valuable sensitivity analysis, the chosen moderate ORs are illustrative. The true extent of HTE in SAB is still unknown, and future work could explore a wider range of effect sizes to create a broader map of the statistical challenges. Finally, our simulations do not account for other real-world complexities such as variability in diagnostic accuracy across sites or over time.
+
+Aim 1 highlights that even with perfect classification, substantial sample sizes are required to achieve adequate power (80%) for **post-hoc subgroup analyses** within a standard trial randomizing the full population mix (@fig-aim1-plot-power). This is particularly true for less prevalent subgroups or those with smaller effect sizes, or where baseline event rates are low (even if the relative effect is large, as seen for subgroup B with the ARREST parameters). The need for multiple comparison adjustments (e.g., Bonferroni) further inflates sample size requirements for post-hoc analyses [@Wang2007].
+
+Aim 2 quantifies the detrimental impact of misclassification accuracy on these post-hoc analyses (@fig-aim2-plot-power, @fig-aim2-plot-bias, @fig-aim2-plot-wrong-direction). As accuracy decreases, statistical power diminishes substantially, bias in effect estimates increases (generally towards the overall null effect), and the probability of estimating effects in the wrong direction rises. This underscores the critical importance of highly accurate subgroup classification methods if relying on post-hoc analyses and aligns with broader concerns about the reliability of subgroup findings [@Pocock2007; Kent2018]. Subgroups with true null effects (like A) are particularly susceptible to high rates of "wrong direction" findings under misclassification.
+
+### Practical Implications: Enrichment Trials
+
+Aim 3 simulates an **enrichment trial** design, where patients are screened using a test with a given `accuracy` (probability of correct classification), and only those testing positive for the target subgroup are randomized. This allows estimation of the Number Needed to Screen (NNS) and the average resulting Number Needed to Randomize (NNR<sub>Enrich</sub>) within the enriched cohort required to achieve 80% power.
+
+```{r practical_implications_table, echo=FALSE}
+#| label: tbl-implications-table
+#| tbl-cap: "Estimated Sample Sizes for Enrichment Trial targeting specific subgroups with 80% Power (ARREST ORs)"
+
+# Display table using gt
+implications_enrichment %>%
+  gt(groupname_col = c("Subgroup", "Target OR")) %>%
+  fmt_number(columns = `Test Accuracy`, decimals = 2) %>%
+  cols_align(align = "right", columns = contains("NNR") | contains("NNS")) %>%
+  cols_label(
+     `Test Accuracy` = "Test Accuracy",
+     `NNR (Enrichment)` = "Avg. NNR",
+     `N Needed to Screen (NNS)` = "NNS"
+  ) %>%
+  # Removed header, caption is sufficient
+  # tab_header(title = "Estimated Sample Sizes for Enrichment Trial (80% Power)") %>%
+  tab_footnote(footnote = "NNR (Enrichment): Average number needed to randomize *within the enriched cohort* (those testing positive) to achieve 80% power (alpha=0.05), based on test accuracy (from Aim 3). NNS: Number needed to screen in the general population to achieve 80% power.")
+
+```
+
+The results (@tbl-implications-table, @fig-aim3-plot-power, @fig-aim3-plot-nns) demonstrate the trade-offs inherent in enrichment designs [@Simon2004; Antoniou2016]. While potentially requiring fewer randomized patients (NNR) compared to the total N needed for post-hoc power (Aim 1), the screening burden (NNS) can be substantial and increases dramatically as test accuracy decreases. For example, achieving 80% power for subgroup B (OR=18.8) requires screening tens of thousands even with high accuracy, due to its prevalence and the corrected baseline risk. Lower accuracy inflates NNR (due to dilution by false positives) and NNS (due to lower yield). This highlights that the feasibility of enrichment trials depends critically on subgroup prevalence, effect size, and, crucially, the performance characteristics of the screening test [@Anthenelli2011; Wang2014]. Our simulations using more realistic ORs show lower, more achievable NNR/NNS values (see @tbl-implications-table-realistic and @fig-aim3-plot-nnr-nns-realistic), but the strong dependence on accuracy remains.
+
+## Conclusion
+
+This simulation study underscores the importance of considering classification accuracy when interpreting subgroup analyses or planning trials aimed at detecting HTE in heterogeneous diseases like SAB. Post-hoc subgroup analyses require large sample sizes and high classification accuracy to yield reliable results. Enrichment trial designs offer potential efficiency gains in terms of randomized patients but necessitate careful evaluation of the screening burden, which is highly sensitive to test accuracy and subgroup prevalence. Developing and validating accurate methods for identifying SAB subphenotypes is crucial for advancing stratified medicine approaches in this field.
+
+## References
+
+*(Ensure references.bib and vancouver.csl are in the same directory or provide correct paths)*
+
+``` bib
+@article{Swets2024,
+  author = {Swets, Maaike C and Bakk, Zsuzsa and Westgeest, Annette C and Berry, Karla and Cooper, George and Sim, Wynne and Lee, Rui Shian and Gan, Tze Yi and Donlon, William and Besu, Antonia and Heppenstall, Ellen and Tysall, Lauren and Dewar, Scott and de Boer, Mark G J and Fowler, Jr, Vance G and Dockrell, David H and Thwaites, Guy E and Pujol, Miquel and Pallares, Nuria and Tebe, Cristòfol and Carratalà, Jordi and Szubert, Alan J and Groeneveld, G H Rolf and Russell, Clark D},
+  year = {2024},
+  month = {06},
+  pages = {1153-1161},
+  title = {Clinical Subphenotypes of Staphylococcus aureus Bacteremia},
+  volume = {79},
+  journal = {Clinical Infectious Diseases},
+  doi = {10.1093/cid/ciae338}
+}
+
+@article{Morris2019,
+    author = {Morris, Tim P. and White, Ian R. and Crowther, Michael J.},
+    title = "{Using simulation studies to evaluate statistical methods}",
+    journal = {Statistics in Medicine},
+    volume = {38},
+    number = {11},
+    pages = {2074-2102},
+    keywords = {Monte Carlo, reporting guideline, simulation study, statistical methods},
+    doi = {https://doi.org/10.1002/sim.8086},
+    url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/sim.8086},
+    eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/sim.8086},
+    year = {2019}
+}
+
+@article{Siepe2024,
+    year = {2024},
+    author = {Björn S. Siepe and František Bartoš and Tim P. Morris and Anne-Laure Boulesteix and Daniel W. Heck and Samuel Pawel},
+    title = {Simulation Studies for Methodological Research in Psychology: A Standardized Structure for Planning, Preregistration, and Reporting},
+    doi = {10.1037/met0000695},
+    url = {https://doi.org/10.1037/met0000695},
+    journal = {Psychological Methods}
+}
+
+@article{Tong2015,
+    author = {Tong, Steven Y. C. and Davis, Joshua S. and Eichenberger, Emily and Holland, Thomas L. and Fowler, Vance G.},
+    title = "{Staphylococcus aureus Infections: Epidemiology, Pathophysiology, Clinical Manifestations, and Management}",
+    journal = {Clinical Microbiology Reviews},
+    volume = {28},
+    number = {3},
+    pages = {603-661},
+    year = {2015},
+    doi = {10.1128/CMR.00134-14},
+    url = {https://journals.asm.org/doi/abs/10.1128/CMR.00134-14}
+}
+
+@article{GBD2019,
+    author = {{GBD 2019 Antimicrobial Resistance Collaborators}},
+    title = "{Global mortality associated with 33 bacterial pathogens in 2019: a systematic analysis for the Global Burden of Disease Study 2019}",
+    journal = {The Lancet},
+    volume = {400},
+    number = {10369},
+    pages = {2221-2248},
+    year = {2022},
+    doi = {10.1016/S0140-6736(22)02185-7}
+}
+
+@article{Thwaites2018,
+    author = {Thwaites, Guy E. and Scarborough, Matthew and Szubert, Alan and Nsutebu, Emmanuel and Tilley, Richard and Greig, Jane and Wyllie, Sarah A. and Wilson, Peter and Auckland, Chloë and Cairns, John and Ward, Debbi and Lal, Punam and Barlow, Gavin and Hopkins, Susan and Gkrania-Klotsas, Effrossyni Z. and Shankaran, Padmasarda and Cripps, Natasha and Davies, Jonathan and Harvey, David and Gubbay, Andrew J. and Klein, J. Louis and Bradley, Chris and Morgan, Mari and Llewelyn, Martin J. and Edgeworth, Jonathan D. and Walker, A. Sarah},
+    title = "{Adjunctive rifampicin for Staphylococcus aureus bacteraemia (ARREST): a multicentre, randomised, double-blind, placebo-controlled trial}",
+    journal = {The Lancet},
+    volume = {391},
+    number = {10121},
+    pages = {668-678},
+    year = {2018},
+    doi = {10.1016/S0140-6736(17)32446-X}
+}
+
+@article{Holland2022,
+    author = {Holland, Thomas L. and Bayer, Arnold S. and Fowler, Vance G.},
+    title = "{Persistent Staphylococcus aureus Bacteremia: Challenges and Controversies}",
+    journal = {Clinical Infectious Diseases},
+    volume = {75},
+    number = {10},
+    pages = {1863-1870},
+    year = {2022},
+    doi = {10.1093/cid/ciac4 persistent}
+}
+
+@article{Paulsen2024,
+    author = {Paulsen, Johann and Giske, Christian G. and Frimodt-Møller, Niels and Knudsen, Jenny Dahl and Petersen, Andreas and Kjøbek, Lotte and Brandt, Carolin and Jensen, Uffe S. and Schønheyder, Henrik C. and Knudsen, Ida D. and Østergaard, Christian and Arpi, Magnus and Andersen, Claus and Tønder, Rikke V. and Søndergaard, Tove S. and Rosenvinge, Flemming S. and Møller, Jacob K. and Jensen, Thøger G. and Kjær, Jacob and Lindegaard, Bente and Benfield, Thomas},
+    title = "{Ceftaroline vs Standard-of-Care Antibiotics for Treatment of Complicated Staphylococcus aureus Bacteremia: A Randomized Clinical Trial}",
+    journal = {JAMA Internal Medicine},
+    volume = {184},
+    number = {2},
+    pages = {143-151},
+    year = {2024},
+    doi = {10.1001/jamainternmed.2023.6764}
+}
+
+@article{Davis2023,
+    author = {Davis, Joshua S. and Stevens, Vanessa and van Hal, Sebastiaan J.},
+    title = "{Time to get personal with Staphylococcus aureus bacteraemia}",
+    journal = {Clinical Microbiology and Infection},
+    volume = {29},
+    number = {11},
+    pages = {1357-1359},
+    year = {2023},
+    doi = {https://doi.org/10.1016/j.cmi.2023.07.017}
+}
+
+@article{Siontis2014,
+    author = {Siontis, George C.M. and Tzoulaki, Ioanna and Castaldi, Peter J. and Ioannidis, John P.A.},
+    title = "{External validation of new risk prediction models is infrequent and reveals worse prognostic discrimination}",
+    journal = {Journal of Clinical Epidemiology},
+    volume = {68},
+    number = {1},
+    pages = {25-34},
+    year = {2015},
+    doi = {https://doi.org/10.1016/j.jclinepi.2014.09.007}
+}
+
+@article{Kent2018,
+    author = {Kent, David M. and Steyerberg, Ewout W. and van Klaveren, David},
+    title = "{Personalized evidence based medicine: predictive approaches to heterogeneous treatment effects}",
+    journal = {BMJ},
+    volume = {363},
+    pages = {k4245},
+    year = {2018},
+    doi = {10.1136/bmj.k4245}
+}
+
+@article{Sussman2017,
+    author = {Sussman, Jeremy B. and Hayward, Rodney A.},
+    title = "{An IV for the Use of Subgroup Analysis in Randomized Trials}",
+    journal = {Annals of Internal Medicine},
+    volume = {153},
+    number = {2},
+    pages = {124-130},
+    year = {2010},
+    doi = {10.7326/0003-4819-153-2-201007200-00263}
+}
+
+@article{Anthenelli2011,
+    author = {Anthenelli, Robert M. and Simon, Neal and O'Malley, Stephanie S. and Breslow, Roger and West, Robert and McRee, Bud and Hoffmann, David and Interpol, Claire and Meyer, Roger and Simon, Richard},
+    title = "{An Evaluation of the Use of Biomarkers to Predict the Effects of Varenicline on Smoking Cessation and Safety}",
+    journal = {Annals of Internal Medicine},
+    volume = {155},
+    number = {11},
+    pages = {760-771},
+    year = {2011},
+    doi = {10.7326/0003-4819-155-11-201112060-00007}
+}
+
+@article{Simon2004,
+    author = {Simon, Richard and Maitournam, Aboubakar},
+    title = "{Evaluating the efficiency of targeted designs for randomized clinical trials}",
+    journal = {Clinical Cancer Research},
+    volume = {10},
+    number = {19},
+    pages = {6759-6763},
+    year = {2004},
+    doi = {10.1158/1078-0432.CCR-04-0721}
+}
+
+@article{Wang2007,
+    author = {Wang, Rong and Lagakos, Stephen W. and Ware, James H. and Hunter, David J. and Drazen, Jeffrey M.},
+    title = "{Statistics in Medicine — Reporting of Subgroup Analyses in Clinical Trials}",
+    journal = {New England Journal of Medicine},
+    volume = {357},
+    number = {21},
+    pages = {2189-2194},
+    year = {2007},
+    doi = {10.1056/NEJMsr077003}
+}
+
+@article{Pocock2007,
+    author = {Pocock, Stuart J. and Assmann, Susan E. and Enos, Lori E. and Kasten, Linda E.},
+    title = "{Subgroup analysis, covariate adjustment and baseline comparisons in clinical trial reporting: current practice and problems}",
+    journal = {Statistics in Medicine},
+    volume = {21},
+    number = {19},
+    pages = {2917-2930},
+    year = {2002},
+    doi = {https://doi.org/10.1002/sim.1296}
+}
+
+@article{Antoniou2016,
+    author = {Antoniou, Michael and Jorgensen, Andrea L. and Kolamunnage-Dona, Ruwanthi},
+    title = "{Biomarker-guided adaptive enrichment designs in clinical trials: A review of methods and challenges}",
+    journal = {Contemporary Clinical Trials},
+    volume = {48},
+    pages = {104-114},
+    year = {2016},
+    doi = {https://doi.org/10.1016/j.cct.2016.04.006}
+}
+
+@article{Wang2014,
+    author = {Wang, Sue-Jane and Hung, H. M. James and O'Neill, Robert T.},
+    title = "{Adaptive enrichment trial design challenges and opportunities}",
+    journal = {Biometrical Journal},
+    volume = {56},
+    number = {1},
+    pages = {146-161},
+    year = {2014},
+    doi = {https://doi.org/10.1002/bimj.201300158}
+}
+```
+
+# Supplementary Material
+
+```{r visualization_bias2_supp, echo=FALSE}
+#| label: fig-supp-bias-arrest
+#| fig-cap: "Bias Distribution vs Accuracy (ARREST ORs, N = 10,000). Bias calculated against target log(OR) for each group label."
+
+# Plotting bias_val which compares estimated beta to true_beta_target
+if (exists("results_aim2_processed") && nrow(results_aim2_processed) > 0) {
+  # Filter out Overall group for this plot
+  ggplot(results_aim2_processed %>% filter(group != "Overall"), aes(x = factor(accuracy), y = bias_val, fill = group)) +
+    # Use boxplot to show distribution of bias
+    geom_boxplot(position = position_dodge(width = 0.7), outlier.shape = NA) + # Hide outliers for clarity
+    # Add horizontal line at zero bias for reference
+    geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+    facet_wrap(~ group, scales = "free_y") + # Separate plot per subgroup
+    labs(
+      # title = paste("Bias Distribution vs Accuracy (ARREST; n =", n_fixed_aim2, ")"), # Redundant
+      # subtitle = "Bias calculated against target log(OR) for each group label",
+      x = "Classification Accuracy",
+      y = "Bias (log OR)"
+    ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none") # Hide redundant legend
+} else {
+  print("Data frame 'results_aim2_processed' not found or is empty. Cannot generate supplementary bias plot for ARREST ORs.")
+}
+```{r visualization_bias2_realistic_supp, echo=FALSE}
+#| label: fig-supp-bias-realistic
+#| fig-cap: "Bias Distribution vs Accuracy (Realistic ORs, N = 10,000). Bias calculated against target log(OR) for each group label."
+
+# Plotting bias_val for realistic scenario
+if (exists("results_aim2_real_processed") && nrow(results_aim2_real_processed) > 0) {
+  # Filter out Overall group
+  ggplot(results_aim2_real_processed %>% filter(group != "Overall"), aes(x = factor(accuracy), y = bias_val, fill = group)) +
+    geom_boxplot(position = position_dodge(width = 0.7), outlier.shape = NA) + # Hide outliers
+    # Hline at zero bias
+    geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+    facet_wrap(~ group, scales = "free_y") +
+    labs(
+      # title = paste("Bias Distribution vs Accuracy (Realistic; n =", n_fixed_aim2, ")"), # Redundant
+      # subtitle = "Bias calculated against target log(OR) for each group label",
+      x = "Classification Accuracy",
+      y = "Bias (log OR)"
+    ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none") # Hide redundant legend
+} else {
+  print("Data frame 'results_aim2_real_processed' not found or is empty. Cannot generate supplementary bias plot for Realistic ORs.")
+}
+```qmd
+
