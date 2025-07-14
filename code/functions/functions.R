@@ -91,16 +91,22 @@ misclassify_group <- function(sim_data, accuracy, freq_vector, seed = NULL) {
       if(length(or_vector) != length(freq_vector)) {
         stop("OR vector and frequency vector must have the same length.")
       }
+
+      # Get group labels from names, ensuring all vectors are named for reliable matching
+      group_labels <- names(or_vector)
+      if(is.null(group_labels)) {
+          group_labels <- LETTERS[1:length(or_vector)]
+          names(or_vector) <- group_labels
+      }
+      if(is.null(names(freq_vector))) names(freq_vector) <- group_labels
+      if(!is.null(p0_vector) && is.null(names(p0_vector))) names(p0_vector) <- group_labels
       
       # Normalize frequency vector to sum to 1
       freq_normalized <- freq_vector / sum(freq_vector)
       
-      # Define group labels (A, B, C, etc.)
-      group_labels <- LETTERS[1:length(or_vector)]
-      
       # If p0_vector is not provided, set to default 0.3 for all groups
       if(is.null(p0_vector)) {
-        p0_vector <- rep(0.3, length(or_vector))
+        p0_vector <- setNames(rep(0.3, length(or_vector)), group_labels)
       } else {
         if(length(p0_vector) != length(or_vector)) {
           stop("p0_vector must be the same length as or_vector and freq_vector.")
@@ -122,8 +128,8 @@ misclassify_group <- function(sim_data, accuracy, freq_vector, seed = NULL) {
         dplyr::mutate(treatment = rbinom(n, 1, 0.5)) |>
         # Map the true OR and baseline p0 to each participant based on their group
         dplyr::mutate(
-          or = or_vector[match(group, group_labels)],
-          p0 = p0_vector[match(group, group_labels)]
+          or = or_vector[group], # Match by name for robustness
+          p0 = p0_vector[group]  # Match by name for robustness
         ) |>
         # Calculate individual probability of the outcome ('success')
         # based on baseline risk (p0), treatment assignment, and subgroup OR

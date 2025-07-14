@@ -52,9 +52,9 @@ Recent efforts have focused on identifying clinically relevant subphenotypes wit
 
 The possibility of such HTE raises critical questions for future clinical trial design and the implementation of stratified medicine approaches. If treatment effects truly differ between subgroups, accurately identifying these subgroups becomes paramount. However, any diagnostic test or classification algorithm used to assign patients to subphenotypes will inevitably have imperfect accuracy [@Siontis2014]. Misclassifying patients can lead to biased estimates of subgroup-specific effects, reduced statistical power to detect true HTE, and potentially misleading conclusions about which patients benefit or are harmed by a treatment [@Kent2018; Sussman2017]. Understanding the quantitative impact of misclassification is essential for interpreting subgroup analyses and designing efficient trials, including potential enrichment strategies [@Anthenelli2011; Simon2004].
 
-This simulation study aims to quantify the impact of subgroup misclassification on detecting HTE in SAB, using the subphenotypes and treatment effects derived from the Swets et al. analysis of the ARREST trial as a motivating example. Specifically, we address three aims: 1. Estimate the total sample sizes required in a standard randomized controlled trial (RCT) to achieve adequate statistical power (80%) for post-hoc analyses of subgroup-specific treatment effects, assuming perfect patient classification. 2. Quantify the impact of varying levels of classification accuracy on statistical power, estimation bias, Mean Squared Error (MSE), and the probability of estimating effects in the wrong direction for both subgroup-specific and overall treatment effects in post-hoc analyses of a large (N=10,000) standard RCT. 3. Estimate the Number Needed to Screen (NNS) and the resulting average Number Needed to Randomize (NNR) within the enriched cohort required to achieve 80% power in a hypothetical enrichment trial design targeting specific subgroups, considering varying levels of test accuracy.
+This simulation study aims to quantify the impact of subgroup misclassification on detecting HTE in SAB, using the subphenotypes and treatment effects derived from the Swets et al. analysis of the ARREST trial as a motivating example. Specifically, we address three aims: 1. Estimate the total sample sizes required in a standard randomized controlled trial (RCT) to achieve adequate statistical power (80%) for post-hoc analyses of subgroup-specific treatment effects (based on ARREST trial ORs) in post-hoc analyses, assuming perfect patient classification. 2. Quantify the impact of varying levels of classification accuracy (0.5 to 1.0) on statistical power, bias, MSE, and the wrong-direction rate for estimating subgroup-specific and overall treatment effects in post-hoc analyses of a standard RCT with a fixed total sample size (`n`=10,000). 3. Estimate the Number Needed to Screen (NNS) and the average Number Needed to Randomize (NNR) within the enriched cohort required to achieve 80% power in a hypothetical enrichment trial design targeting specific subgroups (B, C, E), using a screening test with varying `accuracy`.
 
-We structure the reporting of our simulation methods and results following the ADEMP framework (Aims, Data-generating mechanisms, Estimands, Methods, Performance measures) [@Morris2019].
+We structure the reporting of our simulation methods and results following the ADEMP framework [@Morris2019].
 
 # Methods
 
@@ -116,22 +116,30 @@ The following performance measures were calculated by aggregating results across
 
 ```{r load_results, include=FALSE}
 # Load pre-computed results from the simulation script
-power_aim1 <- read_csv("../results/tables/aim1_power_summary.csv")
+power_aim1 <- read_tsv("../results/tables/aim1_power_summary.tsv")
 plot_aim1 <- readRDS("../results/objects/aim1_power_plot.rds")
 
-summary_aim2 <- read_csv("../results/tables/aim2_accuracy_summary.csv")
-plot_aim2_power <- readRDS("../results/objects/aim2_power_plot.rds")
-plot_aim2_bias <- readRDS("../results/objects/aim2_bias_plot.rds")
-plot_aim2_wrong_dir <- readRDS("../results/objects/aim2_wrongdir_plot.rds")
+summary_aim2 <- read_tsv("../results/tables/aim2_accuracy_summary.tsv")
+aim2_plots <- readRDS("../results/objects/aim2_plots.rds")
+plot_aim2_power <- aim2_plots[[1]]
+plot_aim2_bias <- aim2_plots[[2]]
+plot_aim2_wrong_dir <- aim2_plots[[3]]
 
-summary_aim3 <- read_csv("../results/tables/aim3_nns_summary.csv")
-plot_aim3_nns <- readRDS("../results/objects/aim3_nns_plot.rds")
+summary_aim3 <- read_tsv("../results/tables/aim3_sens_spec_summary.tsv")
+plot_aim3_nns <- readRDS("../results/objects/aim3_plot.rds")
 
 n_fixed_aim2 <- 10000 # Manually define for use in captions
 alpha_bonferroni <- 0.05 / 5
 ```
 
 ### Aim 1: Sample Size Requirements (Post-Hoc Analysis Power)
+
+The statistical power for detecting subgroup-specific treatment effects in a standard two-arm RCT, assuming perfect classification, was highly dependent on the subgroup's prevalence, baseline event rate, and the magnitude of the true odds ratio (OR). The results, summarized in `Table tbl-aim1-table-power` and `Figure fig-aim1-plot-power`, demonstrate that substantial total trial sizes are necessary to achieve 80% power in post-hoc analyses, even under these ideal conditions.
+
+For subgroups with strong treatment effects, the sample size requirements were more modest. For instance, to detect the strong protective effect in Subgroup E (OR = 0.3), a total trial size of approximately 2,500 patients was required. Similarly, for the large harmful effect in Subgroup B (OR = 18.8), a trial size of around 5,000 was needed, with the larger requirement being driven by the very low baseline event rate.
+
+In contrast, for subgroups with more moderate effects, the required sample sizes increased significantly. Subgroup D (OR = 1.4) required over 20,000 participants to reach 80% power. For Subgroup C (OR = 0.79), which has a similar effect magnitude to Subgroup E but a higher baseline risk, the required sample size was still large at around 15,000 participants. As expected, for the null Subgroup A (OR = 1.0), power remained flat at the Bonferroni-corrected alpha level of 1% across all tested sample sizes. These findings establish a crucial baseline: even without the challenge of misclassification, post-hoc HTE analyses demand very large clinical trials.
+
 
 ```{r aim1_results}
 #| label: tbl-aim1-table-power
@@ -149,6 +157,15 @@ plot_aim1
 ```
 
 ### Aim 2: Impact of Classification Accuracy (Post-Hoc Analysis)
+
+We then investigated the impact of imperfect classification accuracy on power, bias, and error rates in a fixed, large trial of 10,000 participants. The results clearly show that decreasing accuracy has a profoundly negative and multifaceted impact on the reliability of post-hoc subgroup analyses.
+
+**Power:** As shown in `Figure fig-aim2-plot-power`, statistical power to detect true effects diminished substantially as classification accuracy decreased. For subgroups B and E, which had nearly 100% power with perfect accuracy, power fell dramatically. For example, in Subgroup E, power dropped to below 70% when accuracy fell to 90%, and to less than 20% with 70% accuracy. This illustrates that even a small degree of misclassification can render a large trial underpowered for its subgroup objectives.
+
+**Bias:** Classification accuracy had a direct impact on the estimation bias, as seen in `Figure fig-aim2-plot-bias`. For all subgroups with a true effect (B, C, D, and E), the estimated OR was consistently biased towards the null value of 1.0 as accuracy worsened. This "dilution" effect occurs because misclassifying patients mixes individuals from subgroups with different true effects, pulling the observed estimate towards the population average. For example, the powerful harmful effect in Subgroup B (OR=18.8) was severely attenuated, with the estimated OR falling below 5.0 when accuracy dropped to 80%.
+
+**Wrong Direction Rate:** Perhaps most critically, the probability of estimating an effect in the wrong direction (a Type S error) increased as accuracy fell (`Figure fig-aim2-plot-wrong-direction`). This was most pronounced for subgroups with true effects close to the null. For the 'Conservative' scenario, where the true ORs are closer to 1.0, the wrong-direction rate for Subgroup E was approximately 30% even with perfect 100% accuracy, a consequence of the low event rate and modest effect size. This error rate climbed to over 40% as accuracy declined to 70%. This demonstrates that misclassification not only reduces the chance of finding a true effect but also significantly increases the risk of drawing a completely incorrect and potentially harmful conclusion.
+
 
 ```{r aim2_results}
 #| label: tbl-aim2-table-summary
@@ -183,16 +200,53 @@ plot_aim2_wrong_dir
 #| tbl-cap: "Aim 3: Number Needed to Screen (NNS) and Corresponding Number Needed to Randomize (NNR) to achieve 80% power in an enrichment trial."
 summary_aim3 %>%
   mutate(
-    `NNS` = if_else(is.na(nns_needed), "> 500,000", scales::comma(nns_needed)),
+    `NNS` = if_else(is.na(nns_needed), paste(">", format(max(summary_aim3$nns_needed, na.rm=T), big.mark=",")), scales::comma(nns_needed)),
     `NNR` = if_else(is.na(nnr_corresponding), "-", scales::comma(round(nnr_corresponding), 1))
   ) %>%
-  select(Subgroup = target_group, Accuracy = accuracy, NNS, NNR) %>%
-  gt(groupname_col = "Subgroup") %>%
-  fmt_number(columns = Accuracy, decimals = 2)
+  select(Scenario = scenario_name, Subgroup = target_group, `Test Type`=test_type, NNS, NNR) %>%
+  arrange(Scenario, Subgroup) %>%
+  gt(groupname_col = "Scenario")
+
 
 #| label: fig-aim3-plot-nns
-#| fig-cap: "Aim 3: Number Needed to Screen (NNS) vs. Classification Accuracy"
-plot_aim3_nns
+#| fig-cap: "Aim 3: Number Needed to Screen (NNS) vs. Test Accuracy for 80% Power"
+
+# Plot NNS vs Accuracy
+# Exclude ">" values for plotting (where power goal wasn't met)
+plot_data_nns <- summary_aim3 %>%
+  filter(!is.na(nns_needed)) %>%
+  mutate(nns_numeric = as.numeric(nns_needed))
+
+ggplot(plot_data_nns, aes(x = test_type, y = nns_numeric, color = target_group, group = target_group)) +
+  geom_line() +
+  geom_point(size = 3) +
+  facet_grid(scenario_name ~ target_group, scales = "free_y") +
+  scale_y_log10(labels = scales::comma) +
+  labs(
+    x = "Test Type",
+    y = "Number Needed to Screen (NNS) (log scale)",
+    color = "Target Subgroup"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")
+
+
+# Plot NNR vs Accuracy
+# Exclude "-" values for plotting
+plot_data_nnr <- summary_aim3 %>%
+  filter(!is.na(nnr_corresponding)) %>%
+  mutate(nnr_numeric = as.numeric(nnr_corresponding))
+
+ggplot(plot_data_nnr, aes(x = test_type, y = nnr_numeric, color = target_group, group = target_group)) +
+  geom_line() +
+  geom_point(size = 3) +
+  facet_grid(scenario_name ~ target_group, scales = "free_y") +
+  scale_y_log10(labels = scales::comma) +
+  labs(
+    x = "Test Type",
+    y = "Avg. Number Needed to Randomize (NNR) (log scale)",
+    color = "Target Subgroup"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")
 ```
 
 # Discussion
@@ -214,26 +268,6 @@ Aim 2 quantifies the detrimental impact of misclassification accuracy on these p
 ### Practical Implications: Enrichment Trials
 
 Aim 3 simulates an **enrichment trial** design, where patients are screened using a test with a given `accuracy` (probability of correct classification), and only those testing positive for the target subgroup are randomized. This allows estimation of the Number Needed to Screen (NNS) and the average resulting Number Needed to Randomize (NNR<sub>Enrich</sub>) within the enriched cohort required to achieve 80% power.
-
-```{r practical_implications_table, echo=FALSE}
-#| label: tbl-implications-table
-#| tbl-cap: "Estimated Sample Sizes for Enrichment Trial targeting specific subgroups with 80% Power (ARREST ORs)"
-
-# Display table using gt
-implications_enrichment %>%
-  gt(groupname_col = c("Subgroup", "Target OR")) %>%
-  fmt_number(columns = `Test Accuracy`, decimals = 2) %>%
-  cols_align(align = "right", columns = contains("NNR") | contains("NNS")) %>%
-  cols_label(
-     `Test Accuracy` = "Test Accuracy",
-     `NNR (Enrichment)` = "Avg. NNR",
-     `N Needed to Screen (NNS)` = "NNS"
-  ) %>%
-  # Removed header, caption is sufficient
-  # tab_header(title = "Estimated Sample Sizes for Enrichment Trial (80% Power)") %>%
-  tab_footnote(footnote = "NNR (Enrichment): Average number needed to randomize *within the enriched cohort* (those testing positive) to achieve 80% power (alpha=0.05), based on test accuracy (from Aim 3). NNS: Number needed to screen in the general population to achieve 80% power.")
-
-```
 
 The results (@tbl-implications-table, @fig-aim3-plot-power, @fig-aim3-plot-nns) demonstrate the trade-offs inherent in enrichment designs [@Simon2004; Antoniou2016]. While potentially requiring fewer randomized patients (NNR) compared to the total N needed for post-hoc power (Aim 1), the screening burden (NNS) can be substantial and increases dramatically as test accuracy decreases. For example, achieving 80% power for subgroup B (OR=18.8) requires screening tens of thousands even with high accuracy, due to its prevalence and the corrected baseline risk. Lower accuracy inflates NNR (due to dilution by false positives) and NNS (due to lower yield). This highlights that the feasibility of enrichment trials depends critically on subgroup prevalence, effect size, and, crucially, the performance characteristics of the screening test [@Anthenelli2011; Wang2014]. Our simulations using more realistic ORs show lower, more achievable NNR/NNS values (see @tbl-implications-table-realistic and @fig-aim3-plot-nnr-nns-realistic), but the strong dependence on accuracy remains.
 
