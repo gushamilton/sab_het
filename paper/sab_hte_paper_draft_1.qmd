@@ -25,6 +25,22 @@ csl: vancouver.csl
 ---
 
 ```{r setup, include=FALSE}
+# --- Instructions for setting the working directory ---
+# To run this script, the working directory should be the 'paper' folder,
+# so that relative paths to results (e.g., '../results/') work correctly.
+#
+# If you are running this from an RStudio project at the root ('sab_het'),
+# this should work automatically. If not, you may need to set it manually.
+#
+# Uncomment ONE of the lines below corresponding to your environment.
+
+# For remote server execution:
+# setwd("/user/work/fh6520/sab_het/paper")
+
+# For local execution (update this path to your machine):
+# setwd("C:/Users/your_username/Documents/sab_het/paper")
+
+
 # Load necessary packages for reporting
 pacman::p_load(tidyverse, gt, scales)
 
