@@ -205,7 +205,7 @@ geom_line() + geom_point() + facet_wrap(~ scenario_name) + labs(title="Aim 2: Po
             
 
 #| label: fig-aim2-plot-bias
-#| fig-cap: "Aim 2: Post-Hoc Estimation Bias vs Classification Accuracy (ARREST ORs, N = 10,000)"
+#| fig-cap: "Aim 2: Post-Hoc Estimation Bias (mean difference between estimated and true log(OR) across 1,000 simulation replicates) vs Classification Accuracy (ARREST ORs, N = 10,000)"
 
 
 
@@ -222,7 +222,7 @@ plot_aim2_bias_a /plot_aim2_bias_c
 
 #| label: fig-aim2-plot-wrong-direction
 #| fig-cap: "Aim 2: Post-Hoc Wrong Direction % vs Classification Accuracy (ARREST ORs, N = 10,000)"
-plot_aim2_wrong_dir
+plot_aim2_wrong_dir + xlab("Accuracy")+ ylab("Wrong Direction %") + ggtitle("")
 ```
 
 ### Aim 3: Sample Size Requirements (Enrichment Trial Simulation)
