@@ -24,7 +24,7 @@ message("--- Defining Simulation Parameters ---")
 
 # --- Repetitions and Parallel Cores ---
 n_reps_aim1_2 <- 1000
-n_reps_aim3 <- 300
+n_reps_aim3 <- 3000  # increased from 300 to reduce Monte Carlo error in Aim 3 power estimates
 n_cores <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK", unset = parallel::detectCores() - 1))
 if (is.na(n_cores) || n_cores < 1) n_cores <- 1
 plan(multisession, workers = n_cores)
@@ -101,7 +101,7 @@ results_aim2 <- map_dfr(1:nrow(scenario_definitions), ~{
   message(paste("  Running Aim 2 for scenario:", scenario))
   
   accuracy_levels <- c(1.0, 0.99, 0.95, 0.9, 0.8, 0.7)
-  n_fixed <- 10000
+  n_fixed <- 20000
   
   future_map_dfr(accuracy_levels, function(acc) {
     replicate_sims(
