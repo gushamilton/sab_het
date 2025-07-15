@@ -38,11 +38,11 @@ csl: vancouver.csl
 # setwd("/user/work/fh6520/sab_het/paper")
 
 # For local execution (update this path to your machine):
-# setwd("C:/Users/your_username/Documents/sab_het/paper")
+ setwd("/Users/fh6520/R/sab_het/paper")
 
 
 # Load necessary packages for reporting
-pacman::p_load(tidyverse, gt, scales)
+pacman::p_load(tidyverse, gt, scales,patchwork)
 
 # Set theme for plots
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
@@ -59,8 +59,6 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 **Conclusions:** Detecting HTE in SAB is challenging. Post-hoc analyses require very large trials and high classification accuracy. Enrichment strategies can reduce NNR but face substantial screening burdens (NNS) heavily influenced by test accuracy and subgroup prevalence. Robust classification methods are crucial for advancing stratified medicine approaches in SAB.
 
 # Introduction
-
-
 
 *Staphylococcus aureus* bacteremia (SAB) is a common and serious infection associated with significant morbidity and mortality [@Tong2015]. Globally, *S. aureus* is a leading cause of death due to bacterial pathogens and bacteremia [@GBD2019]. A defining feature of SAB is its clinical heterogeneity, encompassing variations in patient characteristics (e.g., age, comorbidities), pathogen factors (e.g., methicillin resistance), source of infection, and disease severity [@Tong2015]. Despite this heterogeneity, clinical trials in SAB often treat it as a single entity, potentially obscuring differential treatment effects within patient subgroups [@Thwaites2018; Holland2022]. Strategy trials investigating adjunctive or alternative therapies have frequently failed to show overall benefit compared to standard care [@Thwaites2018; Paulsen2024].
 
@@ -156,7 +154,6 @@ For subgroups with strong treatment effects, the sample size requirements were m
 
 In contrast, for subgroups with more moderate effects, the required sample sizes increased significantly. Subgroup D (OR = 1.4) required over 20,000 participants to reach 80% power. For Subgroup C (OR = 0.79), which has a similar effect magnitude to Subgroup E but a higher baseline risk, the required sample size was still large at around 15,000 participants. As expected, for the null Subgroup A (OR = 1.0), power remained flat at the Bonferroni-corrected alpha level of 1% across all tested sample sizes. These findings establish a crucial baseline: even without the challenge of misclassification, post-hoc HTE analyses demand very large clinical trials.
 
-
 ```{r aim1_results}
 #| label: tbl-aim1-table-power
 #| tbl-cap: "Aim 1: Power for Post-Hoc Subgroup Analysis vs. Total Trial Size (ARREST ORs, Perfect Classification)"
@@ -169,7 +166,8 @@ power_aim1 %>%
 
 #| label: fig-aim1-plot-power
 #| fig-cap: "Aim 1: Power for Post-Hoc Subgroup Analysis vs. Total Trial Size (ARREST ORs)"
-plot_aim1
+plot_aim1 +
+ ggtitle("")
 ```
 
 ### Aim 2: Impact of Classification Accuracy (Post-Hoc Analysis)
@@ -181,7 +179,6 @@ We then investigated the impact of imperfect classification accuracy on power, b
 **Bias:** Classification accuracy had a direct impact on the estimation bias, as seen in `Figure fig-aim2-plot-bias`. For all subgroups with a true effect (B, C, D, and E), the estimated OR was consistently biased towards the null value of 1.0 as accuracy worsened. This "dilution" effect occurs because misclassifying patients mixes individuals from subgroups with different true effects, pulling the observed estimate towards the population average. For example, the powerful harmful effect in Subgroup B (OR=18.8) was severely attenuated, with the estimated OR falling below 5.0 when accuracy dropped to 80%.
 
 **Wrong Direction Rate:** Perhaps most critically, the probability of estimating an effect in the wrong direction (a Type S error) increased as accuracy fell (`Figure fig-aim2-plot-wrong-direction`). This was most pronounced for subgroups with true effects close to the null. For the 'Conservative' scenario, where the true ORs are closer to 1.0, the wrong-direction rate for Subgroup E was approximately 30% even with perfect 100% accuracy, a consequence of the low event rate and modest effect size. This error rate climbed to over 40% as accuracy declined to 70%. This demonstrates that misclassification not only reduces the chance of finding a true effect but also significantly increases the risk of drawing a completely incorrect and potentially harmful conclusion.
-
 
 ```{r aim2_results}
 #| label: tbl-aim2-table-summary
@@ -198,11 +195,30 @@ summary_aim2 %>%
 
 #| label: fig-aim2-plot-power
 #| fig-cap: "Aim 2: Post-Hoc Analysis Power vs Classification Accuracy (ARREST ORs, N = 10,000)"
-plot_aim2_power
+
+plot_aim2_power <- summary_aim2 %>%
+filter(group != "Overall") %>%
+ggplot(aes(x = accuracy, y = power, color = group)) +
+geom_line() + geom_point() + facet_wrap(~ scenario_name) + labs(title="Aim 2: Power vs. Accuracy")
+
+    plot_aim2_power + scale_y_log10()
+            
 
 #| label: fig-aim2-plot-bias
 #| fig-cap: "Aim 2: Post-Hoc Estimation Bias vs Classification Accuracy (ARREST ORs, N = 10,000)"
-plot_aim2_bias
+
+
+
+plot_aim2_bias_a <- ggplot(summary_aim2 %>% filter(group != "Overall" & scenario_name == "ARREST"), aes(x = accuracy, y = bias, color = group)) + geom_line() + geom_point() + facet_wrap(scenario_name ~ group, scales="free_y") + labs(title="Aim 2: Bias vs. Accuracy") + 
+geom_hline(yintercept = 0, linetype = "dashed")
+
+
+
+plot_aim2_bias_c <- ggplot(summary_aim2 %>% filter(group != "Overall" & scenario_name == "Conservative"), aes(x = accuracy, y = bias, color = group)) + geom_line() + geom_point() + facet_wrap(scenario_name ~ group, scales="free_y") + labs(title="Aim 2: Bias vs. Accuracy") + 
+geom_hline(yintercept = 0, linetype = "dashed")
+
+plot_aim2_bias_a /plot_aim2_bias_c
+
 
 #| label: fig-aim2-plot-wrong-direction
 #| fig-cap: "Aim 2: Post-Hoc Wrong Direction % vs Classification Accuracy (ARREST ORs, N = 10,000)"
@@ -497,50 +513,12 @@ This simulation study underscores the importance of considering classification a
 
 # Supplementary Material
 
-```{r visualization_bias2_supp, echo=FALSE}
-#| label: fig-supp-bias-arrest
-#| fig-cap: "Bias Distribution vs Accuracy (ARREST ORs, N = 10,000). Bias calculated against target log(OR) for each group label."
+\`\`\`{r visualization_bias2_supp, echo=FALSE} #\| label: fig-supp-bias-arrest #\| fig-cap: "Bias Distribution vs Accuracy (ARREST ORs, N = 10,000). Bias calculated against target log(OR) for each group label."
 
 # Plotting bias_val which compares estimated beta to true_beta_target
-if (exists("results_aim2_processed") && nrow(results_aim2_processed) > 0) {
-  # Filter out Overall group for this plot
-  ggplot(results_aim2_processed %>% filter(group != "Overall"), aes(x = factor(accuracy), y = bias_val, fill = group)) +
-    # Use boxplot to show distribution of bias
-    geom_boxplot(position = position_dodge(width = 0.7), outlier.shape = NA) + # Hide outliers for clarity
-    # Add horizontal line at zero bias for reference
-    geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
-    facet_wrap(~ group, scales = "free_y") + # Separate plot per subgroup
-    labs(
-      # title = paste("Bias Distribution vs Accuracy (ARREST; n =", n_fixed_aim2, ")"), # Redundant
-      # subtitle = "Bias calculated against target log(OR) for each group label",
-      x = "Classification Accuracy",
-      y = "Bias (log OR)"
-    ) +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none") # Hide redundant legend
-} else {
-  print("Data frame 'results_aim2_processed' not found or is empty. Cannot generate supplementary bias plot for ARREST ORs.")
-}
-```{r visualization_bias2_realistic_supp, echo=FALSE}
-#| label: fig-supp-bias-realistic
-#| fig-cap: "Bias Distribution vs Accuracy (Realistic ORs, N = 10,000). Bias calculated against target log(OR) for each group label."
+
+if (exists("results_aim2_processed") && nrow(results_aim2_processed) \> 0) { \# Filter out Overall group for this plot ggplot(results_aim2_processed %\>% filter(group != "Overall"), aes(x = factor(accuracy), y = bias_val, fill = group)) + \# Use boxplot to show distribution of bias geom_boxplot(position = position_dodge(width = 0.7), outlier.shape = NA) + \# Hide outliers for clarity \# Add horizontal line at zero bias for reference geom_hline(yintercept = 0, linetype = "dashed", color = "black") + facet_wrap(\~ group, scales = "free_y") + \# Separate plot per subgroup labs( \# title = paste("Bias Distribution vs Accuracy (ARREST; n =", n_fixed_aim2, ")"), \# Redundant \# subtitle = "Bias calculated against target log(OR) for each group label", x = "Classification Accuracy", y = "Bias (log OR)" ) + theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none") \# Hide redundant legend } else { print("Data frame 'results_aim2_processed' not found or is empty. Cannot generate supplementary bias plot for ARREST ORs.") } \`\`\`{r visualization_bias2_realistic_supp, echo=FALSE} #\| label: fig-supp-bias-realistic #\| fig-cap: "Bias Distribution vs Accuracy (Realistic ORs, N = 10,000). Bias calculated against target log(OR) for each group label."
 
 # Plotting bias_val for realistic scenario
-if (exists("results_aim2_real_processed") && nrow(results_aim2_real_processed) > 0) {
-  # Filter out Overall group
-  ggplot(results_aim2_real_processed %>% filter(group != "Overall"), aes(x = factor(accuracy), y = bias_val, fill = group)) +
-    geom_boxplot(position = position_dodge(width = 0.7), outlier.shape = NA) + # Hide outliers
-    # Hline at zero bias
-    geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
-    facet_wrap(~ group, scales = "free_y") +
-    labs(
-      # title = paste("Bias Distribution vs Accuracy (Realistic; n =", n_fixed_aim2, ")"), # Redundant
-      # subtitle = "Bias calculated against target log(OR) for each group label",
-      x = "Classification Accuracy",
-      y = "Bias (log OR)"
-    ) +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none") # Hide redundant legend
-} else {
-  print("Data frame 'results_aim2_real_processed' not found or is empty. Cannot generate supplementary bias plot for Realistic ORs.")
-}
-```qmd
 
+if (exists("results_aim2_real_processed") && nrow(results_aim2_real_processed) \> 0) { \# Filter out Overall group ggplot(results_aim2_real_processed %\>% filter(group != "Overall"), aes(x = factor(accuracy), y = bias_val, fill = group)) + geom_boxplot(position = position_dodge(width = 0.7), outlier.shape = NA) + \# Hide outliers \# Hline at zero bias geom_hline(yintercept = 0, linetype = "dashed", color = "black") + facet_wrap(\~ group, scales = "free_y") + labs( \# title = paste("Bias Distribution vs Accuracy (Realistic; n =", n_fixed_aim2, ")"), \# Redundant \# subtitle = "Bias calculated against target log(OR) for each group label", x = "Classification Accuracy", y = "Bias (log OR)" ) + theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none") \# Hide redundant legend } else { print("Data frame 'results_aim2_real_processed' not found or is empty. Cannot generate supplementary bias plot for Realistic ORs.") } \`\`\`qmd
