@@ -138,9 +138,14 @@ results_closed <- pmap_dfr(all_cases, function(scenario_name, or_vector,
                             cohort_props$p1_obs,
                             cohort_props$enrol_rate,
                             z_alpha_half, z_power_target)
+                            
+  # Also calculate the expected bias
+  beta_target <- log(or_vector[target_group])
+  bias <- cohort_props$beta_obs - beta_target
 
   tibble(scenario_name, test_type, sensitivity, specificity, target_group,
-         nns_closed_form = reqs$nns, nnr_closed_form = reqs$n_total)
+         nns_closed_form = reqs$nns, nnr_closed_form = reqs$n_total,
+         bias_closed_form = bias)
 })
 
 # --- 5. OUTPUT ---------------------------------------------------------------
@@ -151,3 +156,6 @@ write_tsv(results_closed,
 cat("Closed-form Aim 3 results saved to results/tables/aim3_closed_form_summary.tsv\n")
 
 results_closed
+
+
+

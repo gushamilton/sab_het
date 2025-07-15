@@ -281,17 +281,18 @@ run_enrichment_scenario_sens_spec <- function(n_screened, target_group, sensitiv
       enrolled_cohort <- tested_pool %>% dplyr::filter(assigned_group == target_group)
       
       if (nrow(enrolled_cohort) < 20) {
-        return(list(pval = 1, n_enrolled = nrow(enrolled_cohort)))
+        return(list(pval = 1, n_enrolled = nrow(enrolled_cohort), beta_hat = NA))
       }
       model <- fit_glm_safe(enrolled_cohort)
-      return(list(pval = model$pval, n_enrolled = nrow(enrolled_cohort)))
+      return(list(pval = model$pval, n_enrolled = nrow(enrolled_cohort), beta_hat = model$beta))
     })
 
     p_values <- sapply(results, `[[`, "pval")
     n_values <- sapply(results, `[[`, "n_enrolled")
+    beta_hats <- sapply(results, `[[`, "beta_hat")
     power <- mean(p_values < 0.05, na.rm = TRUE)
     
-    return(list(power = power, mean_n_enrolled = mean(n_values, na.rm = TRUE)))
+    return(list(power = power, mean_n_enrolled = mean(n_values, na.rm = TRUE), beta_hats = beta_hats))
 }
 
 
@@ -360,10 +361,17 @@ find_nns_for_scenario_sens_spec <- function(target_group, sensitivity, specifici
       or_vector = or_vector, p0_vector = p0_vector, freq_vector = freq_vector,
       n_reps = n_reps_per_calc * 2, base_seed = seed + 999 # More reps for final estimate
   )
+  
+  # Calculate bias and MSE from the final, high-replication run
+  beta_target <- log(or_vector[target_group])
+  beta_hats <- final_scenario_result$beta_hats
+  bias <- mean(beta_hats - beta_target, na.rm = TRUE)
+  mse <- mean((beta_hats - beta_target)^2, na.rm = TRUE)
 
   return(tibble(
     target_group = target_group, sensitivity = sensitivity, specificity = specificity,
-    nns_needed = final_nns, nnr_corresponding = final_scenario_result$mean_n_enrolled
+    nns_needed = final_nns, nnr_corresponding = final_scenario_result$mean_n_enrolled,
+    bias = bias, mse = mse
   ))
 }
 

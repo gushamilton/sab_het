@@ -1,0 +1,8 @@
+Loading R module...
+Starting R simulation script...
+--- Loading Packages ---
+--- Defining Simulation Parameters ---
+--- Parallel processing enabled on 16 cores ---
+
+--- STARTING AIM 1: Power vs. Sample Size ---
+  Running Aim 1 for scenario: ARREST

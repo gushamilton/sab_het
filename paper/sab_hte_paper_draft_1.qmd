@@ -35,10 +35,10 @@ csl: vancouver.csl
 # Uncomment ONE of the lines below corresponding to your environment.
 
 # For remote server execution:
-# setwd("/user/work/fh6520/sab_het/paper")
+setwd("/user/work/fh6520/sab_het/paper")
 
 # For local execution (update this path to your machine):
- setwd("/Users/fh6520/R/sab_het/paper")
+ #setwd("/Users/fh6520/R/sab_het/paper")
 
 
 # Load necessary packages for reporting

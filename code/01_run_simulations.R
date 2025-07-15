@@ -24,7 +24,7 @@ message("--- Defining Simulation Parameters ---")
 
 # --- Repetitions and Parallel Cores ---
 n_reps_aim1_2 <- 1000
-n_reps_aim3 <- 3000  # increased from 300 to reduce Monte Carlo error in Aim 3 power estimates
+n_reps_aim3 <- 2000  # increased from 300 to reduce Monte Carlo error in Aim 3 power estimates
 n_cores <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK", unset = parallel::detectCores() - 1))
 if (is.na(n_cores) || n_cores < 1) n_cores <- 1
 plan(multisession, workers = n_cores)
@@ -211,6 +211,7 @@ message(paste("--- AIM 2 COMPLETE --- (Duration:", round(difftime(Sys.time(), st
       theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none") +
       labs(title="Aim 3: NNS by Scenario, Test Type, and Target Group", x="Test Type", y="Number Needed to Screen (log scale)")
 
+  # Ensure bias and mse columns are included in the final output
   write_tsv(aim3_results_final, "results/tables/aim3_sens_spec_summary.tsv")
   ggsave("results/plots/aim3_nns_summary.pdf", plot_aim3, width = 12, height = 8)
   saveRDS(plot_aim3, "results/objects/aim3_plot.rds")
