@@ -3,8 +3,8 @@
 #
 # Analytic (closed-form) approximation for Aim 3: compute the minimum number of
 # patients to screen (NNS) required to achieve 80 % power for an enrichment
-# trial, without Monte-Carlo simulation. This version uses a more accurate
-# variance calculation based on event rates, not the simplified "4/N" formula.
+# trial. This version uses a more accurate variance calculation based on the
+# expected event rates within the *enrolled (mixed)* cohort.
 # -----------------------------------------------------------------------------
 
 # --- 1. SETUP ----------------------------------------------------------------
@@ -54,61 +54,67 @@ z_power_target <- qnorm(0.80)        # 0.84
 
 # --- 3. HELPER FUNCTIONS -----------------------------------------------------
 
-calc_observed_beta <- function(target_group, sensitivity, specificity,
-                               or_vector, freq_vector) {
-  # Prevalence of each group
+get_or_p1 <- function(or, p0) { (or * p0) / (1 - p0 + (or * p0)) }
+
+calculate_mixed_cohort_properties <- function(target_group, sensitivity, specificity,
+                                              or_vector, p0_vector, freq_vector) {
+
   p_vec <- freq_vector / sum(freq_vector)
   p_target <- p_vec[target_group]
   p_non_target <- 1 - p_target
+  non_target_groups <- names(p_vec)[names(p_vec) != target_group]
 
-  # True-/false-positive rates per screened patient
+  # --- 1. Calculate properties of the two components: True Target vs. Contaminants
+  # True Target
+  beta_target <- log(or_vector[target_group])
+  p0_target <- p0_vector[target_group]
+  p1_target <- get_or_p1(or_vector[target_group], p0_target)
+
+  # Contaminant Mix
+  # Weight each non-target group by its prevalence within the non-target pool
+  weights_mix <- p_vec[non_target_groups] / p_non_target
+  
+  # Weighted average properties of the contaminant mix
+  p0_mix   <- sum(p0_vector[non_target_groups] * weights_mix)
+  beta_mix <- sum(log(or_vector[non_target_groups]) * weights_mix)
+  p1_mix   <- sum(get_or_p1(or_vector[non_target_groups], p0_vector[non_target_groups]) * weights_mix)
+
+  # --- 2. Calculate properties of the final enrolled (mixed) cohort
+  # Proportion of enrolled cohort that is true target vs. contaminant
   tp_rate <- sensitivity * p_target
   fp_rate <- (1 - specificity) * p_non_target
-  enrol_rate <- tp_rate + fp_rate      # Pr(test +) per screen
+  enrol_rate <- tp_rate + fp_rate
+  
+  if (enrol_rate == 0) return(list(beta_obs = 0, p0_obs = 0, p1_obs = 0, enrol_rate = 0))
 
-  # Proportion of enrolled who are true target
-  p_true <- tp_rate / enrol_rate
+  p_true_in_enrolled <- tp_rate / enrol_rate
+  p_mix_in_enrolled  <- fp_rate / enrol_rate
 
-  # Average log-OR among contaminating patients (weighted by prevalence)
-  log_or_vec <- log(or_vector)
-  avg_beta_mix <- sum(log_or_vec[names(p_vec) != target_group] *
-                      (p_vec[names(p_vec) != target_group] / p_non_target))
+  # Observed (diluted) properties in the final enrolled cohort
+  beta_obs <- p_true_in_enrolled * beta_target + p_mix_in_enrolled * beta_mix
+  p0_obs   <- p_true_in_enrolled * p0_target   + p_mix_in_enrolled * p0_mix
+  p1_obs   <- p_true_in_enrolled * p1_target   + p_mix_in_enrolled * p1_mix
 
-  beta_target <- log_or_vec[target_group]
-  beta_obs    <- p_true * beta_target + (1 - p_true) * avg_beta_mix
-
-  list(beta_obs = beta_obs,
-       enrol_rate = enrol_rate)
+  list(beta_obs = beta_obs, p0_obs = p0_obs, p1_obs = p1_obs, enrol_rate = enrol_rate)
 }
 
-calc_required_nns <- function(beta_obs, enrol_rate,
-                              p0_target, or_target,
+
+calc_required_nns <- function(beta_obs, p0_obs, p1_obs, enrol_rate,
                               z_alpha_half, z_power_target) {
-  
-  if (abs(beta_obs) < 1e-6 || is.na(beta_obs) || enrol_rate == 0) {
+
+  if (abs(beta_obs) < 1e-6 || is.na(beta_obs) || enrol_rate == 0 ||
+      p0_obs %in% c(0, 1) || p1_obs %in% c(0, 1)) {
     return(list(n_total = Inf, nns = Inf))
   }
 
-  # Calculate event rate in the treatment arm for the *true* target subgroup
-  p1_target <- (or_target * p0_target) / (1 - p0_target + (or_target * p0_target))
-  
-  # Check for p=0 or p=1 which would make variance infinite
-  if (p0_target %in% c(0, 1) || p1_target %in% c(0, 1)) {
-     return(list(n_total = Inf, nns = Inf))
-  }
-
-  # More accurate variance formula for log-OR from a cohort study/RCT.
-  # Var(logOR) = 1/(N_t*p_t) + 1/(N_t*(1-p_t)) + 1/(N_c*p_c) + 1/(N_c*(1-p_c))
-  # This uses event rates from the true target group as a proxy for the enrolled group's variance.
-  var_term <- (1 / (p0_target * (1 - p0_target))) + (1 / (p1_target * (1 - p1_target)))
-  
+  # Variance for log-OR based on the OBSERVED event rates in the mixed, enrolled cohort
+  var_term <- (1 / (p0_obs * (1 - p0_obs))) + (1 / (p1_obs * (1 - p1_obs)))
   if (is.infinite(var_term)) return(list(n_total = Inf, nns = Inf))
-  
-  # Assuming balanced arms (n_total / 2 per arm)
-  # Rearranging the standard sample size formula for log-OR to solve for n_total:
+
+  # Standard sample size formula, assuming balanced arms (n_total / 2 per arm)
   n_total <- (z_alpha_half + z_power_target)^2 * var_term / (beta_obs^2)
-  
   nns <- ceiling(n_total / enrol_rate)
+
   list(n_total = ceiling(n_total), nns = nns)
 }
 
@@ -121,16 +127,16 @@ all_cases <- expand_grid(scenario_definitions,
 results_closed <- pmap_dfr(all_cases, function(scenario_name, or_vector,
                                                test_type, sensitivity, specificity,
                                                target_group) {
-  # Calculate diluted effect size and enrolment rate
-  vals <- calc_observed_beta(target_group, sensitivity, specificity,
-                             or_vector, freq_arrest)
-  beta_obs   <- vals$beta_obs
-  enrol_rate <- vals$enrol_rate
 
-  # Calculate required NNS/NNR using the more accurate variance formula
-  reqs <- calc_required_nns(beta_obs, enrol_rate,
-                            p0_target = p0_arrest_adjusted[target_group],
-                            or_target = or_vector[target_group],
+  # Calculate diluted effect size AND diluted event rates for the enrolled cohort
+  cohort_props <- calculate_mixed_cohort_properties(target_group, sensitivity, specificity,
+                                                    or_vector, p0_arrest_adjusted, freq_arrest)
+
+  # Use these observed properties to calculate required NNS/NNR
+  reqs <- calc_required_nns(cohort_props$beta_obs,
+                            cohort_props$p0_obs,
+                            cohort_props$p1_obs,
+                            cohort_props$enrol_rate,
                             z_alpha_half, z_power_target)
 
   tibble(scenario_name, test_type, sensitivity, specificity, target_group,
@@ -142,6 +148,6 @@ results_closed <- pmap_dfr(all_cases, function(scenario_name, or_vector,
 write_tsv(results_closed,
           "results/tables/aim3_closed_form_summary.tsv")
 
-cat("Closed-form Aim 3 results saved to results/tables/aim3_closed_form_summary.tsv\n") 
+cat("Closed-form Aim 3 results saved to results/tables/aim3_closed_form_summary.tsv\n")
 
 results_closed
