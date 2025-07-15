@@ -1,49 +1,49 @@
-scenario_name	test_type	sensitivity	specificity	target_group	nns_closed_form	nnr_closed_form
-ARREST	Perfect	1	1	B	774	104
-ARREST	Perfect	1	1	C	12040	4283
-ARREST	Perfect	1	1	D	5261	936
-ARREST	Perfect	1	1	E	9095	1618
-ARREST	Near-Perfect	0.99	0.99	B	581	83
-ARREST	Near-Perfect	0.99	0.99	C	13029	4672
-ARREST	Near-Perfect	0.99	0.99	D	5508	1015
-ARREST	Near-Perfect	0.99	0.99	E	5415	998
-ARREST	High Sens/High Spec	0.95	0.95	B	441	76
-ARREST	High Sens/High Spec	0.95	0.95	C	18545	6864
-ARREST	High Sens/High Spec	0.95	0.95	D	6503	1366
-ARREST	High Sens/High Spec	0.95	0.95	E	3504	736
-ARREST	High Sens/Low Spec	0.95	0.7	B	900	349
-ARREST	High Sens/Low Spec	0.95	0.7	C	1754088	931746
-ARREST	High Sens/Low Spec	0.95	0.7	D	8870	3687
-ARREST	High Sens/Low Spec	0.95	0.7	E	12276	5102
-ARREST	Low Sens/High Spec	0.7	0.95	B	598	82
-ARREST	Low Sens/High Spec	0.7	0.95	C	29252	8225
-ARREST	Low Sens/High Spec	0.7	0.95	D	9225	1528
-ARREST	Low Sens/High Spec	0.7	0.95	E	4654	771
-ARREST	Balanced/Moderate	0.8	0.8	B	863	242
-ARREST	Balanced/Moderate	0.8	0.8	C	236627	97822
-ARREST	Balanced/Moderate	0.8	0.8	D	10163	3117
-ARREST	Balanced/Moderate	0.8	0.8	E	8863	2719
-Conservative	Perfect	1	1	B	19507	2615
-Conservative	Perfect	1	1	C	5584	1986
-Conservative	Perfect	1	1	D	18700	3326
-Conservative	Perfect	1	1	E	139186	24753
-Conservative	Near-Perfect	0.99	0.99	B	15546	2198
-Conservative	Near-Perfect	0.99	0.99	C	5795	2078
-Conservative	Near-Perfect	0.99	0.99	D	21212	3909
-Conservative	Near-Perfect	0.99	0.99	E	115952	21368
-Conservative	High Sens/High Spec	0.95	0.95	B	12841	2191
-Conservative	High Sens/High Spec	0.95	0.95	C	6767	2505
-Conservative	High Sens/High Spec	0.95	0.95	D	35333	7422
-Conservative	High Sens/High Spec	0.95	0.95	E	84103	17666
-Conservative	High Sens/Low Spec	0.95	0.7	B	44602	17266
-Conservative	High Sens/Low Spec	0.95	0.7	C	13707	7281
-Conservative	High Sens/Low Spec	0.95	0.7	D	925855	384779
-Conservative	High Sens/Low Spec	0.95	0.7	E	80213	33336
-Conservative	Low Sens/High Spec	0.7	0.95	B	17747	2434
-Conservative	Low Sens/High Spec	0.7	0.95	C	9657	2716
-Conservative	Low Sens/High Spec	0.7	0.95	D	58623	9708
-Conservative	Low Sens/High Spec	0.7	0.95	E	106908	17704
-Conservative	Balanced/Moderate	0.8	0.8	B	35052	9829
-Conservative	Balanced/Moderate	0.8	0.8	C	13625	5633
-Conservative	Balanced/Moderate	0.8	0.8	D	390625	119806
-Conservative	Balanced/Moderate	0.8	0.8	E	90317	27701
+scenario_name	test_type	sensitivity	specificity	target_group	nns_closed_form	nnr_closed_form	bias_closed_form
+ARREST	Perfect	1	1	B	774	104	0
+ARREST	Perfect	1	1	C	12040	4283	0
+ARREST	Perfect	1	1	D	5261	936	0
+ARREST	Perfect	1	1	E	9095	1618	0
+ARREST	Near-Perfect	0.99	0.99	B	581	83	-0.19660159180568915
+ARREST	Near-Perfect	0.99	0.99	C	13029	4672	0.010899482564700136
+ARREST	Near-Perfect	0.99	0.99	D	5508	1015	-0.009843061786726892
+ARREST	Near-Perfect	0.99	0.99	E	5415	998	0.07375031945627941
+ARREST	High Sens/High Spec	0.95	0.95	B	441	76	-0.8143226053341377
+ARREST	High Sens/High Spec	0.95	0.95	C	18545	6864	0.05279721498611026
+ARREST	High Sens/High Spec	0.95	0.95	D	6503	1366	-0.043176620720918546
+ARREST	High Sens/High Spec	0.95	0.95	E	3504	736	0.3235060025229429
+ARREST	High Sens/Low Spec	0.95	0.7	B	900	349	-2.153454985610647
+ARREST	High Sens/Low Spec	0.95	0.7	C	1754088	931746	0.22071848826798915
+ARREST	High Sens/Low Spec	0.95	0.7	D	8870	3687	-0.130935612604832
+ARREST	High Sens/Low Spec	0.95	0.7	E	12276	5102	0.9810507611393426
+ARREST	Low Sens/High Spec	0.7	0.95	B	598	82	-1.0133112119007501
+ARREST	Low Sens/High Spec	0.7	0.95	C	29252	8225	0.06949294291480687
+ARREST	Low Sens/High Spec	0.7	0.95	D	9225	1528	-0.05476878737361651
+ARREST	Low Sens/High Spec	0.7	0.95	E	4654	771	0.41036169969836345
+ARREST	Balanced/Moderate	0.8	0.8	B	863	242	-1.9819175173941126
+ARREST	Balanced/Moderate	0.8	0.8	C	236627	97822	0.1890693284789383
+ARREST	Balanced/Moderate	0.8	0.8	D	10163	3117	-0.11828217105058347
+ARREST	Balanced/Moderate	0.8	0.8	E	8863	2719	0.8862433346426832
+Conservative	Perfect	1	1	B	19507	2615	0
+Conservative	Perfect	1	1	C	5584	1986	0
+Conservative	Perfect	1	1	D	18700	3326	0
+Conservative	Perfect	1	1	E	139186	24753	0
+Conservative	Near-Perfect	0.99	0.99	B	15546	2198	-0.05195756975813004
+Conservative	Near-Perfect	0.99	0.99	C	5795	2078	0.008797848745823955
+Conservative	Near-Perfect	0.99	0.99	D	21212	3909	-0.012130765109423763
+Conservative	Near-Perfect	0.99	0.99	E	115952	21368	0.009872096701201094
+Conservative	High Sens/High Spec	0.95	0.95	B	12841	2191	-0.21520793999515442
+Conservative	High Sens/High Spec	0.95	0.95	C	6767	2505	0.04261687735094105
+Conservative	High Sens/High Spec	0.95	0.95	D	35333	7422	-0.05321163836342327
+Conservative	High Sens/High Spec	0.95	0.95	E	84103	17666	0.04330398246232384
+Conservative	High Sens/Low Spec	0.95	0.7	B	44602	17266	-0.5691118093613535
+Conservative	High Sens/Low Spec	0.95	0.7	C	13707	7281	0.17815963864905776
+Conservative	High Sens/Low Spec	0.95	0.7	D	925855	384779	-0.1613673870369859
+Conservative	High Sens/Low Spec	0.95	0.7	E	80213	33336	0.13132184449039597
+Conservative	Low Sens/High Spec	0.7	0.95	B	17747	2434	-0.26779634638494787
+Conservative	Low Sens/High Spec	0.7	0.95	C	9657	2716	0.05609334177447417
+Conservative	Low Sens/High Spec	0.7	0.95	D	58623	9708	-0.06749803154270814
+Conservative	Low Sens/High Spec	0.7	0.95	E	106908	17704	0.05493034351251974
+Conservative	Balanced/Moderate	0.8	0.8	B	35052	9829	-0.5237781480764416
+Conservative	Balanced/Moderate	0.8	0.8	C	13625	5633	0.15261305704726014
+Conservative	Balanced/Moderate	0.8	0.8	D	390625	119806	-0.14577305971828552
+Conservative	Balanced/Moderate	0.8	0.8	E	90317	27701	0.11863107800602994

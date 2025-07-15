@@ -6,3 +6,8 @@ Starting R simulation script...
 
 --- STARTING AIM 1: Power vs. Sample Size ---
   Running Aim 1 for scenario: ARREST
+  Running Aim 1 for scenario: Conservative
+--- AIM 1 COMPLETE --- (Duration: 118.7 minutes) ---
+
+--- STARTING AIM 2: Impact of Accuracy ---
+  Running Aim 2 for scenario: ARREST
