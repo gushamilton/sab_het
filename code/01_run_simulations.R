@@ -121,9 +121,9 @@ summary_aim2 <- results_aim2 %>%
   group_by(scenario_name, accuracy, group) %>%
   summarise(
     power = mean(pval < alpha_bonferroni, na.rm = TRUE),
-    bias = mean(log(or_hat) - log(or_true), na.rm = TRUE),
-    mse = mean((log(or_hat) - log(or_true))^2, na.rm = TRUE),
-    wrong_dir = mean(sign(or_hat - 1) != sign(or_true - 1), na.rm = TRUE) * 100,
+    bias = mean(log(or) - log(true_or), na.rm = TRUE),
+    mse = mean((log(or) - log(true_or))^2, na.rm = TRUE),
+    wrong_dir = mean(sign(or - 1) != sign(true_or - 1), na.rm = TRUE) * 100,
     .groups = "drop"
   )
 
