@@ -37,7 +37,7 @@ p0_arrest_adjusted["B"] <- p0_B_corrected
 # Sensitivity/specificity test grid (including the “Perfect” test)
 sens_spec_scenarios <- tribble(
   ~test_type,            ~sensitivity, ~specificity,
-  "Perfect",            1.00,         1.00,
+  "Perfect (100%)",            1.00,         1.00,
   "Near-Perfect",       0.99,         0.99,
   "High Sens/High Spec",0.95,         0.95,
   "High Sens/Low Spec", 0.95,         0.70,
@@ -155,7 +155,7 @@ write_tsv(results_closed,
 
 cat("Closed-form Aim 3 results saved to results/tables/aim3_closed_form_summary.tsv\n")
 
-results_closed
+results_closed %>% gt::gt()
 
 
 
