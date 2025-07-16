@@ -28,7 +28,7 @@ freq_vec <- c(A = 60/388, B = 52/388, C = 138/388, D = 69/388, E = 69/388)
 p0_raw <- c(A = 7/60,  B = 0/52,  C = 11/138, D = 11/69, E = 1/69)
 p0_raw["B"] <- 0.5 / (52 + 0.5)  # continuity correction
 
-target_group  <- "D"
+target_group  <- "C"
 n_screened    <- 3284
 
 # Latent predictor settings --------------------------------------------------
