@@ -1,10 +1,14 @@
 # -----------------------------------------------------------------------------
-# 02_closed_form_aim3.R
+# 02_closed_form_aim3_fixed.R
 #
 # Analytic (closed-form) approximation for Aim 3: compute the minimum number of
 # patients to screen (NNS) required to achieve 80 % power for an enrichment
-# trial. This version uses a more accurate variance calculation based on the
-# expected event rates within the *enrolled (mixed)* cohort.
+# trial. This version corrects two internal-logic errors identified in review:
+#   1. The sample-size formula for log-OR omitted a factor of 2.
+#   2. The observed (diluted) log-OR in the enrolled mixed cohort must be
+#      derived from the pooled observed event rates, not as a weighted average
+#      of subgroup log-ORs.
+# Minor defensive/clarity edits are also included (see "FIX:" comments below).
 # -----------------------------------------------------------------------------
 
 # --- 1. SETUP ----------------------------------------------------------------
@@ -28,11 +32,25 @@ scenario_definitions <- tribble(
 # Prevalence and baseline risks (from 01_run_simulations.R)
 freq_arrest <- c(A = 60/388, B = 52/388, C = 138/388, D = 69/388, E = 69/388)
 p0_arrest_raw      <- c(A = 7/60, B = 0/52, C = 11/138, D = 11/69, E = 1/69)
-# Correct for zero events in Group B
-p0_B_corrected     <- 0.5 / (52 + 0.5)
-p0_arrest_adjusted <- p0_arrest_raw
-p0_arrest_adjusted["B"] <- p0_B_corrected
 
+# --- Continuity correction helper -------------------------------------------
+# FIX: Generalize the previously hard-coded continuity correction that was only
+# applied to Group B. We replicate the original correction form (0.5/(n+0.5))
+# whenever a 0 event count would produce p == 0.
+apply_zero_cc <- function(p_vec, freq_vec, add = 0.5) {
+  # p_vec: vector of raw risks (events/n)
+  # freq_vec: denominators (n) on the same scale/order as p_vec
+  # For elements where p_vec == 0, replace with add / (n + add)
+  out <- p_vec
+  zero_idx <- which(p_vec == 0)
+  if (length(zero_idx)) {
+    out[zero_idx] <- add / (freq_vec[zero_idx] + add)
+  }
+  out
+}
+
+# Apply the continuity correction
+p0_arrest_adjusted <- apply_zero_cc(p0_arrest_raw, freq_arrest)
 
 # Sensitivity/specificity test grid (including the “Perfect” test)
 sens_spec_scenarios <- tribble(
@@ -56,6 +74,9 @@ z_power_target <- qnorm(0.80)        # 0.84
 
 get_or_p1 <- function(or, p0) { (or * p0) / (1 - p0 + (or * p0)) }
 
+# FIX: calculate_mixed_cohort_properties now returns beta_obs computed from the
+# pooled observed risks (p0_obs, p1_obs), *not* a weighted average of log-ORs.
+# This yields an internally consistent effect size with the variance calculation.
 calculate_mixed_cohort_properties <- function(target_group, sensitivity, specificity,
                                               or_vector, p0_vector, freq_vector) {
 
@@ -70,49 +91,84 @@ calculate_mixed_cohort_properties <- function(target_group, sensitivity, specifi
   p0_target <- p0_vector[target_group]
   p1_target <- get_or_p1(or_vector[target_group], p0_target)
 
-  # Contaminant Mix
-  # Weight each non-target group by its prevalence within the non-target pool
-  weights_mix <- p_vec[non_target_groups] / p_non_target
-  
-  # Weighted average properties of the contaminant mix
-  p0_mix   <- sum(p0_vector[non_target_groups] * weights_mix)
-  beta_mix <- sum(log(or_vector[non_target_groups]) * weights_mix)
-  p1_mix   <- sum(get_or_p1(or_vector[non_target_groups], p0_vector[non_target_groups]) * weights_mix)
+  # Contaminant Mix -----------------------------------------------------------
+  if (p_non_target > 0) {
+    # Weight each non-target group by its prevalence within the non-target pool
+    weights_mix <- p_vec[non_target_groups] / p_non_target
 
-  # --- 2. Calculate properties of the final enrolled (mixed) cohort
+    # Weighted average properties of the contaminant mix
+    p0_mix   <- sum(p0_vector[non_target_groups] * weights_mix)
+    beta_mix <- sum(log(or_vector[non_target_groups]) * weights_mix)
+    p1_mix   <- sum(get_or_p1(or_vector[non_target_groups], p0_vector[non_target_groups]) * weights_mix)
+  } else {
+    # Degenerate case: no contaminants
+    p0_mix   <- NA_real_
+    beta_mix <- NA_real_
+    p1_mix   <- NA_real_
+  }
+
+  # --- 2. Calculate properties of the final enrolled (mixed) cohort ----------
   # Proportion of enrolled cohort that is true target vs. contaminant
   tp_rate <- sensitivity * p_target
   fp_rate <- (1 - specificity) * p_non_target
   enrol_rate <- tp_rate + fp_rate
-  
-  if (enrol_rate == 0) return(list(beta_obs = 0, p0_obs = 0, p1_obs = 0, enrol_rate = 0))
+
+  if (enrol_rate == 0) {
+    return(list(beta_obs = 0, p0_obs = 0, p1_obs = 0, enrol_rate = 0,
+                p_true_in_enrolled = NA_real_, p_mix_in_enrolled = NA_real_,
+                beta_target = beta_target))
+  }
 
   p_true_in_enrolled <- tp_rate / enrol_rate
   p_mix_in_enrolled  <- fp_rate / enrol_rate
 
-  # Observed (diluted) properties in the final enrolled cohort
-  beta_obs <- p_true_in_enrolled * beta_target + p_mix_in_enrolled * beta_mix
-  p0_obs   <- p_true_in_enrolled * p0_target   + p_mix_in_enrolled * p0_mix
-  p1_obs   <- p_true_in_enrolled * p1_target   + p_mix_in_enrolled * p1_mix
+  # Observed (diluted) baseline & treated risks in the final enrolled cohort
+  if (p_non_target > 0) {
+    p0_obs   <- p_true_in_enrolled * p0_target + p_mix_in_enrolled * p0_mix
+    p1_obs   <- p_true_in_enrolled * p1_target + p_mix_in_enrolled * p1_mix
+  } else {
+    # All enrolled are true targets
+    p0_obs <- p0_target
+    p1_obs <- p1_target
+  }
 
-  list(beta_obs = beta_obs, p0_obs = p0_obs, p1_obs = p1_obs, enrol_rate = enrol_rate)
+  # FIX: derive observed log-OR from pooled risks so that
+  # beta_obs == log( (p1_obs/(1-p1_obs)) / (p0_obs/(1-p0_obs)) ).
+  if (p0_obs %in% c(0,1) || p1_obs %in% c(0,1)) {
+    beta_obs <- 0  # will be trapped upstream in sample-size fn
+  } else {
+    beta_obs <- log( (p1_obs / (1 - p1_obs)) / (p0_obs / (1 - p0_obs)) )
+  }
+
+  list(beta_obs = beta_obs,
+       p0_obs = p0_obs,
+       p1_obs = p1_obs,
+       enrol_rate = enrol_rate,
+       p_true_in_enrolled = p_true_in_enrolled,
+       p_mix_in_enrolled  = p_mix_in_enrolled,
+       beta_target = beta_target)
 }
 
 
 calc_required_nns <- function(beta_obs, p0_obs, p1_obs, enrol_rate,
                               z_alpha_half, z_power_target) {
 
+  # Guard against degenerate inputs ------------------------------------------------
   if (abs(beta_obs) < 1e-6 || is.na(beta_obs) || enrol_rate == 0 ||
-      p0_obs %in% c(0, 1) || p1_obs %in% c(0, 1)) {
+      p0_obs == 0 || p0_obs == 1 || p1_obs == 0 || p1_obs == 1) {
     return(list(n_total = Inf, nns = Inf))
   }
 
-  # Variance for log-OR based on the OBSERVED event rates in the mixed, enrolled cohort
+  # Variance for log-OR based on the OBSERVED event rates in the mixed cohort
+  # var_term is the sum of inverse cell probabilities; true Wald variance adds
+  # a factor 2/n_total under balanced allocation. (FIX: multiply by 2 below.)
   var_term <- (1 / (p0_obs * (1 - p0_obs))) + (1 / (p1_obs * (1 - p1_obs)))
-  if (is.infinite(var_term)) return(list(n_total = Inf, nns = Inf))
+  if (!is.finite(var_term)) return(list(n_total = Inf, nns = Inf))
 
-  # Standard sample size formula, assuming balanced arms (n_total / 2 per arm)
-  n_total <- (z_alpha_half + z_power_target)^2 * var_term / (beta_obs^2)
+  # Standard sample size formula, assuming 1:1 allocation.
+  # n_total = 2 * (z_{alpha/2} + z_{power})^2 * var_term / beta^2
+  n_total <- 2 * (z_alpha_half + z_power_target)^2 * var_term / (beta_obs^2)  # FIX
+
   nns <- ceiling(n_total / enrol_rate)
 
   list(n_total = ceiling(n_total), nns = nns)
@@ -138,17 +194,21 @@ results_closed <- pmap_dfr(all_cases, function(scenario_name, or_vector,
                             cohort_props$p1_obs,
                             cohort_props$enrol_rate,
                             z_alpha_half, z_power_target)
-                            
-  # Also calculate the expected bias
-  beta_target <- log(or_vector[target_group])
-  bias <- cohort_props$beta_obs - beta_target
+
+  # Also calculate the expected bias relative to the *true* target-group log-OR
+  beta_target <- cohort_props$beta_target
+  beta_obs <- cohort_props$beta_obs
+  bias <- beta_obs - beta_target
 
   tibble(scenario_name, test_type, sensitivity, specificity, target_group,
          nns_closed_form = reqs$nns, nnr_closed_form = reqs$n_total,
-         bias_closed_form = bias)
+         true_beta = beta_target, predicted_beta = beta_obs, bias_closed_form = bias)
 })
 
 # --- 5. OUTPUT ---------------------------------------------------------------
+
+# Ensure output directory exists -------------------------------------------------
+dir.create("results/tables", showWarnings = FALSE, recursive = TRUE)
 
 write_tsv(results_closed,
           "results/tables/aim3_closed_form_summary.tsv")
@@ -156,6 +216,3 @@ write_tsv(results_closed,
 cat("Closed-form Aim 3 results saved to results/tables/aim3_closed_form_summary.tsv\n")
 
 results_closed %>% gt::gt()
-
-
-

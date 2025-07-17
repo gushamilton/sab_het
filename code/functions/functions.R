@@ -301,7 +301,7 @@ find_nns_for_scenario_sens_spec <- function(target_group, sensitivity, specifici
                                   or_vector, p0_vector, freq_vector, n_reps_per_calc,
                                   target_power = 0.8,
                                   initial_nns = 4000,
-                                  max_nns = 2000000,
+                                  max_nns = 1000000,
                                   max_iter = 8) {
 
   message(sprintf("\n[%s/%s] Searching: Group '%s', Sens: %s, Spec: %s, Scenario: %s",

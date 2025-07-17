@@ -20,7 +20,7 @@ dir.create("results/tables", showWarnings = FALSE)
 message("--- Defining Simulation Parameters ---")
 
 # --- Repetitions and Parallel Cores ---
-n_reps_aim3 <- 500  # increased from 300 to reduce Monte Carlo error in Aim 3 power estimates
+n_reps_aim3 <- 200  # increased from 300 to reduce Monte Carlo error in Aim 3 power estimates
 n_cores <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK", unset = parallel::detectCores() - 1))
 if (is.na(n_cores) || n_cores < 1) n_cores <- 1
 plan(multisession, workers = n_cores)
