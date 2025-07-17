@@ -1,0 +1,373 @@
+test_type	multiplier	nns	nnr	bias_closed_form	scenario	subgroup	multiplier_type
+Balanced/Moderate	1	24080	8565	0	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	1.1	22041	7840	0	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	1.2	20344	7236	0	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	1.3	18911	6726	0	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	1.4	17684	6290	0	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	1.5	16624	5913	0	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	1.6	15698	5583	0	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	1.7000000000000002	14882	5294	0	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	1.8	14160	5037	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	1.9	13515	4807	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	2	12937	4602	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	2.1	12416	4416	0	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	2.2	11943	4248	2.7755575615628914e-16	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	2.3	11514	4096	0	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	2.4000000000000004	11122	3956	1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	2.5	10763	3829	0	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	2.6	10434	3711	0	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	2.7	10130	3603	2.7755575615628914e-16	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	2.8	9850	3504	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	2.9000000000000004	9591	3412	0	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	3	9351	3326	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Balanced/Moderate	1	24080	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	1.1	22669	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	1.2	21494	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	1.3	20500	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	1.4	19647	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	1.5	18908	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	1.6	18262	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	1.7000000000000002	17691	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	1.8	17184	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	1.9	16731	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	2	16322	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	2.1	15953	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	2.2	15617	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	2.3	15311	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	2.4000000000000004	15029	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	2.5	14771	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	2.6	14532	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	2.7	14311	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	2.8	14106	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	2.9000000000000004	13915	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	3	13737	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	3.1	13570	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	3.2	13413	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	3.3000000000000003	13266	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	3.4000000000000004	13128	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	3.5	12998	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	3.6	12875	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	3.7	12758	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	3.8000000000000003	12648	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	3.9000000000000004	12543	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	4	12444	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	4.1	12349	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	4.2	12259	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	4.300000000000001	12173	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	4.4	12091	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	4.5	12013	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	4.6	11938	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	4.7	11866	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	4.800000000000001	11797	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	4.9	11731	8565	0	Proportion Multiplier	C	Proportion
+Balanced/Moderate	5	11668	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	1	24080	8565	0	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	1.1	22041	7840	0	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	1.2	20344	7236	0	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	1.3	18911	6726	0	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	1.4	17684	6290	0	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	1.5	16624	5913	0	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	1.6	15698	5583	0	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	1.7000000000000002	14882	5294	0	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	1.8	14160	5037	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	1.9	13515	4807	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	2	12937	4602	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	2.1	12416	4416	0	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	2.2	11943	4248	2.7755575615628914e-16	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	2.3	11514	4096	0	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	2.4000000000000004	11122	3956	1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	2.5	10763	3829	0	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	2.6	10434	3711	0	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	2.7	10130	3603	2.7755575615628914e-16	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	2.8	9850	3504	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	2.9000000000000004	9591	3412	0	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	3	9351	3326	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+High Sens/High Spec	1	24080	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	1.1	22669	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	1.2	21494	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	1.3	20500	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	1.4	19647	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	1.5	18908	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	1.6	18262	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	1.7000000000000002	17691	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	1.8	17184	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	1.9	16731	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	2	16322	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	2.1	15953	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	2.2	15617	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	2.3	15311	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	2.4000000000000004	15029	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	2.5	14771	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	2.6	14532	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	2.7	14311	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	2.8	14106	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	2.9000000000000004	13915	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	3	13737	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	3.1	13570	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	3.2	13413	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	3.3000000000000003	13266	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	3.4000000000000004	13128	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	3.5	12998	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	3.6	12875	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	3.7	12758	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	3.8000000000000003	12648	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	3.9000000000000004	12543	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	4	12444	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	4.1	12349	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	4.2	12259	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	4.300000000000001	12173	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	4.4	12091	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	4.5	12013	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	4.6	11938	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	4.7	11866	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	4.800000000000001	11797	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	4.9	11731	8565	0	Proportion Multiplier	C	Proportion
+High Sens/High Spec	5	11668	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	1	24080	8565	0	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	1.1	22041	7840	0	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	1.2	20344	7236	0	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	1.3	18911	6726	0	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	1.4	17684	6290	0	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	1.5	16624	5913	0	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	1.6	15698	5583	0	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	1.7000000000000002	14882	5294	0	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	1.8	14160	5037	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	1.9	13515	4807	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	2	12937	4602	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	2.1	12416	4416	0	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	2.2	11943	4248	2.7755575615628914e-16	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	2.3	11514	4096	0	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	2.4000000000000004	11122	3956	1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	2.5	10763	3829	0	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	2.6	10434	3711	0	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	2.7	10130	3603	2.7755575615628914e-16	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	2.8	9850	3504	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	2.9000000000000004	9591	3412	0	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	3	9351	3326	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+High Sens/Low Spec	1	24080	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	1.1	22669	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	1.2	21494	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	1.3	20500	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	1.4	19647	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	1.5	18908	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	1.6	18262	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	1.7000000000000002	17691	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	1.8	17184	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	1.9	16731	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	2	16322	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	2.1	15953	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	2.2	15617	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	2.3	15311	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	2.4000000000000004	15029	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	2.5	14771	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	2.6	14532	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	2.7	14311	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	2.8	14106	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	2.9000000000000004	13915	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	3	13737	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	3.1	13570	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	3.2	13413	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	3.3000000000000003	13266	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	3.4000000000000004	13128	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	3.5	12998	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	3.6	12875	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	3.7	12758	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	3.8000000000000003	12648	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	3.9000000000000004	12543	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	4	12444	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	4.1	12349	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	4.2	12259	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	4.300000000000001	12173	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	4.4	12091	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	4.5	12013	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	4.6	11938	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	4.7	11866	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	4.800000000000001	11797	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	4.9	11731	8565	0	Proportion Multiplier	C	Proportion
+High Sens/Low Spec	5	11668	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	1	24080	8565	0	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	1.1	22041	7840	0	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	1.2	20344	7236	0	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	1.3	18911	6726	0	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	1.4	17684	6290	0	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	1.5	16624	5913	0	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	1.6	15698	5583	0	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	1.7000000000000002	14882	5294	0	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	1.8	14160	5037	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	1.9	13515	4807	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	2	12937	4602	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	2.1	12416	4416	0	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	2.2	11943	4248	2.7755575615628914e-16	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	2.3	11514	4096	0	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	2.4000000000000004	11122	3956	1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	2.5	10763	3829	0	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	2.6	10434	3711	0	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	2.7	10130	3603	2.7755575615628914e-16	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	2.8	9850	3504	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	2.9000000000000004	9591	3412	0	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	3	9351	3326	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Low Sens/High Spec	1	24080	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	1.1	22669	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	1.2	21494	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	1.3	20500	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	1.4	19647	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	1.5	18908	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	1.6	18262	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	1.7000000000000002	17691	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	1.8	17184	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	1.9	16731	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	2	16322	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	2.1	15953	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	2.2	15617	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	2.3	15311	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	2.4000000000000004	15029	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	2.5	14771	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	2.6	14532	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	2.7	14311	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	2.8	14106	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	2.9000000000000004	13915	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	3	13737	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	3.1	13570	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	3.2	13413	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	3.3000000000000003	13266	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	3.4000000000000004	13128	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	3.5	12998	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	3.6	12875	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	3.7	12758	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	3.8000000000000003	12648	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	3.9000000000000004	12543	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	4	12444	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	4.1	12349	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	4.2	12259	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	4.300000000000001	12173	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	4.4	12091	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	4.5	12013	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	4.6	11938	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	4.7	11866	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	4.800000000000001	11797	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	4.9	11731	8565	0	Proportion Multiplier	C	Proportion
+Low Sens/High Spec	5	11668	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	1	24080	8565	0	Event Rate Multiplier	C	Event Rate
+Near-Perfect	1.1	22041	7840	0	Event Rate Multiplier	C	Event Rate
+Near-Perfect	1.2	20344	7236	0	Event Rate Multiplier	C	Event Rate
+Near-Perfect	1.3	18911	6726	0	Event Rate Multiplier	C	Event Rate
+Near-Perfect	1.4	17684	6290	0	Event Rate Multiplier	C	Event Rate
+Near-Perfect	1.5	16624	5913	0	Event Rate Multiplier	C	Event Rate
+Near-Perfect	1.6	15698	5583	0	Event Rate Multiplier	C	Event Rate
+Near-Perfect	1.7000000000000002	14882	5294	0	Event Rate Multiplier	C	Event Rate
+Near-Perfect	1.8	14160	5037	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Near-Perfect	1.9	13515	4807	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Near-Perfect	2	12937	4602	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Near-Perfect	2.1	12416	4416	0	Event Rate Multiplier	C	Event Rate
+Near-Perfect	2.2	11943	4248	2.7755575615628914e-16	Event Rate Multiplier	C	Event Rate
+Near-Perfect	2.3	11514	4096	0	Event Rate Multiplier	C	Event Rate
+Near-Perfect	2.4000000000000004	11122	3956	1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Near-Perfect	2.5	10763	3829	0	Event Rate Multiplier	C	Event Rate
+Near-Perfect	2.6	10434	3711	0	Event Rate Multiplier	C	Event Rate
+Near-Perfect	2.7	10130	3603	2.7755575615628914e-16	Event Rate Multiplier	C	Event Rate
+Near-Perfect	2.8	9850	3504	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Near-Perfect	2.9000000000000004	9591	3412	0	Event Rate Multiplier	C	Event Rate
+Near-Perfect	3	9351	3326	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Near-Perfect	1	24080	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	1.1	22669	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	1.2	21494	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	1.3	20500	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	1.4	19647	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	1.5	18908	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	1.6	18262	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	1.7000000000000002	17691	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	1.8	17184	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	1.9	16731	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	2	16322	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	2.1	15953	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	2.2	15617	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	2.3	15311	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	2.4000000000000004	15029	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	2.5	14771	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	2.6	14532	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	2.7	14311	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	2.8	14106	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	2.9000000000000004	13915	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	3	13737	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	3.1	13570	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	3.2	13413	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	3.3000000000000003	13266	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	3.4000000000000004	13128	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	3.5	12998	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	3.6	12875	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	3.7	12758	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	3.8000000000000003	12648	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	3.9000000000000004	12543	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	4	12444	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	4.1	12349	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	4.2	12259	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	4.300000000000001	12173	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	4.4	12091	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	4.5	12013	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	4.6	11938	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	4.7	11866	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	4.800000000000001	11797	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	4.9	11731	8565	0	Proportion Multiplier	C	Proportion
+Near-Perfect	5	11668	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	1	24080	8565	0	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	1.1	22041	7840	0	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	1.2	20344	7236	0	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	1.3	18911	6726	0	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	1.4	17684	6290	0	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	1.5	16624	5913	0	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	1.6	15698	5583	0	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	1.7000000000000002	14882	5294	0	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	1.8	14160	5037	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	1.9	13515	4807	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	2	12937	4602	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	2.1	12416	4416	0	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	2.2	11943	4248	2.7755575615628914e-16	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	2.3	11514	4096	0	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	2.4000000000000004	11122	3956	1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	2.5	10763	3829	0	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	2.6	10434	3711	0	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	2.7	10130	3603	2.7755575615628914e-16	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	2.8	9850	3504	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	2.9000000000000004	9591	3412	0	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	3	9351	3326	-1.3877787807814457e-16	Event Rate Multiplier	C	Event Rate
+Perfect (100%)	1	24080	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	1.1	22669	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	1.2	21494	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	1.3	20500	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	1.4	19647	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	1.5	18908	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	1.6	18262	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	1.7000000000000002	17691	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	1.8	17184	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	1.9	16731	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	2	16322	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	2.1	15953	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	2.2	15617	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	2.3	15311	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	2.4000000000000004	15029	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	2.5	14771	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	2.6	14532	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	2.7	14311	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	2.8	14106	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	2.9000000000000004	13915	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	3	13737	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	3.1	13570	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	3.2	13413	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	3.3000000000000003	13266	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	3.4000000000000004	13128	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	3.5	12998	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	3.6	12875	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	3.7	12758	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	3.8000000000000003	12648	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	3.9000000000000004	12543	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	4	12444	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	4.1	12349	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	4.2	12259	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	4.300000000000001	12173	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	4.4	12091	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	4.5	12013	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	4.6	11938	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	4.7	11866	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	4.800000000000001	11797	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	4.9	11731	8565	0	Proportion Multiplier	C	Proportion
+Perfect (100%)	5	11668	8565	0	Proportion Multiplier	C	Proportion
