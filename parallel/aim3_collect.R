@@ -51,7 +51,7 @@ message(paste("--- Collecting results for", total_scenarios, "scenarios ---"))
 # --- 3. COLLECT SUMMARY RESULTS ---
 message("--- Collecting summary results ---")
 
-summary_files <- list.files("results", pattern = "aim3_summary_scenario_.*\\.tsv", full.names = TRUE)
+summary_files <- list.files("parallel/results", pattern = "aim3_summary_scenario_.*\\.tsv", full.names = TRUE)
 message(paste("Found", length(summary_files), "summary files"))
 
 if (length(summary_files) == 0) {
@@ -70,14 +70,14 @@ summary_results <- map_dfr(summary_files, read_tsv, .id = "file_id") %>%
 summary_results_final <- all_aim3_scenarios %>%
   select(scenario_name, test_type, sensitivity, specificity, target_group) %>%
   mutate(scenario_id = 1:n()) %>%
-  right_join(summary_results, by = "scenario_id") %>%
+  right_join(summary_results) %>%
   select(-scenario_id) %>%
   arrange(scenario_name, target_group, sensitivity, specificity)
 
 # --- 4. COLLECT DETAILED RESULTS ---
 message("--- Collecting detailed results ---")
 
-detailed_files <- list.files("results", pattern = "aim3_detailed_scenario_.*\\.tsv", full.names = TRUE)
+detailed_files <- list.files("parallel/results", pattern = "aim3_detailed_scenario_.*\\.tsv", full.names = TRUE)
 message(paste("Found", length(detailed_files), "detailed files"))
 
 if (length(detailed_files) > 0) {
@@ -105,17 +105,17 @@ if (length(detailed_files) > 0) {
 message("--- Saving combined results ---")
 
 # Create main results directory if it doesn't exist
-dir.create("../results", showWarnings = FALSE)
-dir.create("../results/tables", showWarnings = FALSE)
+dir.create("parallel/results", showWarnings = FALSE)
+dir.create("parallel/results/tables", showWarnings = FALSE)
 
 # Save summary results
-write_tsv(summary_results_final, "../results/tables/aim3_sens_spec_summary.tsv")
-message("Summary results saved to: ../results/tables/aim3_sens_spec_summary.tsv")
+write_tsv(summary_results_final, "parallel/results/tables/aim3_sens_spec_summary.tsv")
+message("Summary results saved to: parallel/results/tables/aim3_sens_spec_summary.tsv")
 
 # Save detailed results if available
 if (!is.null(detailed_results_final)) {
-  write_tsv(detailed_results_final, "../results/tables/aim3_detailed_all_scenarios.tsv")
-  message("Detailed results saved to: ../results/tables/aim3_detailed_all_scenarios.tsv")
+  write_tsv(detailed_results_final, "parallel/results/tables/aim3_detailed_all_scenarios.tsv")
+  message("Detailed results saved to: parallel/results/tables/aim3_detailed_all_scenarios.tsv")
 }
 
 # --- 6. CREATE PLOT ---
@@ -129,12 +129,12 @@ if (nrow(summary_results_final) > 0) {
     theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none") +
     labs(title="Aim 3: NNS by Scenario, Test Type, and Target Group", x="Test Type", y="Number Needed to Screen (log scale)")
   
-  dir.create("../results/plots", showWarnings = FALSE)
-  dir.create("../results/objects", showWarnings = FALSE)
+  dir.create("parallel/results/plots", showWarnings = FALSE)
+  dir.create("parallel/results/objects", showWarnings = FALSE)
   
-  ggsave("../results/plots/aim3_nns_summary.pdf", plot_aim3, width = 12, height = 8)
-  saveRDS(plot_aim3, "../results/objects/aim3_plot.rds")
-  message("Plot saved to: ../results/plots/aim3_nns_summary.pdf")
+  ggsave("parallel/results/plots/aim3_nns_summary.pdf", plot_aim3, width = 12, height = 8)
+  saveRDS(plot_aim3, "parallel/results/objects/aim3_plot.rds")
+  message("Plot saved to: parallel/results/plots/aim3_nns_summary.pdf")
 }
 
 # --- 7. SUMMARY STATISTICS ---
