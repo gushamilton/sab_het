@@ -1,0 +1,2 @@
+scenario_name	test_type	sensitivity	specificity	target_group	nns_needed	nnr_corresponding	true_beta	mean_beta_hat	bias	mse	rmse	sd_beta_hat	wrong_direction	significant_wrong
+Conservative	Near-Perfect	0.99	0.99	B	56250	7950.0425	0.6931471805599453	0.4761805172680601	-0.21696666329188516	0.07900478541183019	0.28107789918780557	0.1789141641322278	0.005	0

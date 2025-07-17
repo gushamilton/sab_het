@@ -1,0 +1,22 @@
+--- Loading Packages ---
+--- Defining Simulation Parameters ---
+--- Parallel processing enabled on 16 cores ---
+--- Running Scenario 21 of 48 ---
+Scenario: ARREST, Group: B, Test: Balanced/Moderate (Sens: 0.80, Spec: 0.80)
+
+[0/0] Searching: Group 'B', Sens: 0.8, Spec: 0.8, Scenario: N/A
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=94%
+    NNS=2,000 -> Power=64%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=3,000 -> Power=82%
+    Testing NNS=2,500 -> Power=74%
+    Testing NNS=2,750 -> Power=82%
+    Testing NNS=2,625 -> Power=80%
+    Testing NNS=2,687 -> Power=80%
+    Testing NNS=2,718 -> Power=75%
+    Testing NNS=2,734 -> Power=78%
+    Testing NNS=2,742 -> Power=78%
+Detailed results saved to: results/aim3_detailed_scenario_021.tsv
+Summary results saved to: results/aim3_summary_scenario_021.tsv
+--- Scenario 21 COMPLETE --- (Duration: 1.8 minutes) ---

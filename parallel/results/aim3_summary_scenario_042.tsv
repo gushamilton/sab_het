@@ -1,0 +1,2 @@
+scenario_name	test_type	sensitivity	specificity	target_group	nns_needed	nnr_corresponding	true_beta	mean_beta_hat	bias	mse	rmse	sd_beta_hat	wrong_direction	significant_wrong
+Conservative	Low Sens/High Spec	0.7	0.95	C	20062	5636.19	-0.35667494393873245	-0.298869657097565	0.057805286841167404	0.01462188038557703	0.12092096751836313	0.10634237608387967	0	0

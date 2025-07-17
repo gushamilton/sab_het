@@ -1,0 +1,20 @@
+--- Loading Packages ---
+--- Defining Simulation Parameters ---
+--- Parallel processing enabled on 16 cores ---
+--- Running Scenario 45 of 48 ---
+Scenario: Conservative, Group: B, Test: Balanced/Moderate (Sens: 0.80, Spec: 0.80)
+
+[0/0] Searching: Group 'B', Sens: 0.8, Spec: 0.8, Scenario: N/A
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=4%
+    NNS=8,000 -> Power=6%
+    NNS=16,000 -> Power=6%
+    NNS=32,000 -> Power=6%
+    NNS=64,000 -> Power=7%
+    NNS=128,000 -> Power=4%
+    NNS=256,000 -> Power=6%
+    NNS=512,000 -> Power=10%
+    NNS=1,024,000 -> Power=10%
+  Power goal not reached below 1e+06 NNS.
+Summary results saved to: results/aim3_summary_scenario_045.tsv
+--- Scenario 45 COMPLETE --- (Duration: 33.8 minutes) ---

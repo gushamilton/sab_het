@@ -1,0 +1,2 @@
+scenario_name	test_type	sensitivity	specificity	target_group	nns_needed	nnr_corresponding	true_beta	mean_beta_hat	bias	mse	rmse	sd_beta_hat	wrong_direction	significant_wrong
+ARREST	Perfect (100%)	1	1	C	22875	8133.69	-0.23572233352106983	-0.24396213703387312	-0.008239803512803293	0.007140557985832802	0.0845018223817262	0.08420445117627655	0.005	0

@@ -448,3 +448,367 @@ SLURM_CPUS_PER_TASK = 16
     Testing NNS=288,000 -> Power=83%
     Testing NNS=272,000 -> Power=78%
     Testing NNS=280,000 -> Power=80%
+    Testing NNS=276,000 -> Power=82%
+    Testing NNS=274,000 -> Power=80%
+    Testing NNS=273,000 -> Power=83%
+
+[29/48] Searching: Group 'B', Sens: 0.99, Spec: 0.99, Scenario: Conservative
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=5%
+    NNS=8,000 -> Power=19%
+    NNS=16,000 -> Power=32%
+    NNS=32,000 -> Power=57%
+    NNS=64,000 -> Power=86%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=48,000 -> Power=74%
+    Testing NNS=56,000 -> Power=78%
+    Testing NNS=60,000 -> Power=84%
+    Testing NNS=58,000 -> Power=83%
+    Testing NNS=57,000 -> Power=84%
+    Testing NNS=56,500 -> Power=81%
+    Testing NNS=56,250 -> Power=81%
+    Testing NNS=56,125 -> Power=79%
+
+[30/48] Searching: Group 'C', Sens: 0.99, Spec: 0.99, Scenario: Conservative
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=36%
+    NNS=8,000 -> Power=65%
+    NNS=16,000 -> Power=87%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=12,000 -> Power=83%
+    Testing NNS=10,000 -> Power=70%
+    Testing NNS=11,000 -> Power=80%
+    Testing NNS=11,500 -> Power=81%
+    Testing NNS=11,250 -> Power=77%
+    Testing NNS=11,375 -> Power=77%
+    Testing NNS=11,437 -> Power=80%
+    Testing NNS=11,468 -> Power=82%
+
+[31/48] Searching: Group 'D', Sens: 0.99, Spec: 0.99, Scenario: Conservative
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=15%
+    NNS=8,000 -> Power=21%
+    NNS=16,000 -> Power=49%
+    NNS=32,000 -> Power=72%
+    NNS=64,000 -> Power=94%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=48,000 -> Power=88%
+    Testing NNS=40,000 -> Power=79%
+    Testing NNS=44,000 -> Power=83%
+    Testing NNS=42,000 -> Power=83%
+    Testing NNS=41,000 -> Power=80%
+    Testing NNS=41,500 -> Power=82%
+    Testing NNS=41,250 -> Power=83%
+    Testing NNS=41,125 -> Power=83%
+
+[32/48] Searching: Group 'E', Sens: 0.99, Spec: 0.99, Scenario: Conservative
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=5%
+    NNS=8,000 -> Power=7%
+    NNS=16,000 -> Power=12%
+    NNS=32,000 -> Power=11%
+    NNS=64,000 -> Power=23%
+    NNS=128,000 -> Power=42%
+    NNS=256,000 -> Power=67%
+    NNS=512,000 -> Power=92%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=384,000 -> Power=84%
+    Testing NNS=320,000 -> Power=76%
+    Testing NNS=352,000 -> Power=82%
+    Testing NNS=336,000 -> Power=79%
+    Testing NNS=344,000 -> Power=80%
+    Testing NNS=340,000 -> Power=80%
+    Testing NNS=338,000 -> Power=84%
+    Testing NNS=337,000 -> Power=80%
+
+[33/48] Searching: Group 'B', Sens: 0.95, Spec: 0.95, Scenario: Conservative
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=7%
+    NNS=8,000 -> Power=10%
+    NNS=16,000 -> Power=15%
+    NNS=32,000 -> Power=21%
+    NNS=64,000 -> Power=38%
+    NNS=128,000 -> Power=66%
+    NNS=256,000 -> Power=93%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=192,000 -> Power=86%
+    Testing NNS=160,000 -> Power=76%
+    Testing NNS=176,000 -> Power=79%
+    Testing NNS=184,000 -> Power=82%
+    Testing NNS=180,000 -> Power=83%
+    Testing NNS=178,000 -> Power=79%
+    Testing NNS=179,000 -> Power=83%
+    Testing NNS=178,500 -> Power=79%
+
+[34/48] Searching: Group 'C', Sens: 0.95, Spec: 0.95, Scenario: Conservative
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=31%
+    NNS=8,000 -> Power=57%
+    NNS=16,000 -> Power=82%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=12,000 -> Power=75%
+    Testing NNS=14,000 -> Power=81%
+    Testing NNS=13,000 -> Power=76%
+    Testing NNS=13,500 -> Power=76%
+    Testing NNS=13,750 -> Power=79%
+    Testing NNS=13,875 -> Power=78%
+    Testing NNS=13,937 -> Power=81%
+    Testing NNS=13,906 -> Power=75%
+
+[35/48] Searching: Group 'D', Sens: 0.95, Spec: 0.95, Scenario: Conservative
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=15%
+    NNS=8,000 -> Power=17%
+    NNS=16,000 -> Power=41%
+    NNS=32,000 -> Power=61%
+    NNS=64,000 -> Power=88%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=48,000 -> Power=81%
+    Testing NNS=40,000 -> Power=65%
+    Testing NNS=44,000 -> Power=74%
+    Testing NNS=46,000 -> Power=76%
+    Testing NNS=47,000 -> Power=78%
+    Testing NNS=47,500 -> Power=72%
+    Testing NNS=47,750 -> Power=80%
+    Testing NNS=47,625 -> Power=77%
+
+[36/48] Searching: Group 'E', Sens: 0.95, Spec: 0.95, Scenario: Conservative
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=6%
+    NNS=8,000 -> Power=6%
+    NNS=16,000 -> Power=8%
+    NNS=32,000 -> Power=9%
+    NNS=64,000 -> Power=16%
+    NNS=128,000 -> Power=29%
+    NNS=256,000 -> Power=53%
+    NNS=512,000 -> Power=79%
+    NNS=1,024,000 -> Power=97%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=768,000 -> Power=92%
+    Testing NNS=640,000 -> Power=88%
+    Testing NNS=576,000 -> Power=81%
+    Testing NNS=544,000 -> Power=82%
+    Testing NNS=528,000 -> Power=81%
+    Testing NNS=520,000 -> Power=79%
+    Testing NNS=524,000 -> Power=81%
+    Testing NNS=522,000 -> Power=78%
+
+[37/48] Searching: Group 'B', Sens: 0.95, Spec: 0.7, Scenario: Conservative
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=6%
+    NNS=8,000 -> Power=6%
+    NNS=16,000 -> Power=6%
+    NNS=32,000 -> Power=3%
+    NNS=64,000 -> Power=5%
+    NNS=128,000 -> Power=6%
+    NNS=256,000 -> Power=5%
+    NNS=512,000 -> Power=4%
+    NNS=1,024,000 -> Power=5%
+  Power goal not reached below 1e+06 NNS.
+
+[38/48] Searching: Group 'C', Sens: 0.95, Spec: 0.7, Scenario: Conservative
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=17%
+    NNS=8,000 -> Power=30%
+    NNS=16,000 -> Power=50%
+    NNS=32,000 -> Power=80%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=24,000 -> Power=70%
+    Testing NNS=28,000 -> Power=75%
+    Testing NNS=30,000 -> Power=76%
+    Testing NNS=31,000 -> Power=78%
+    Testing NNS=31,500 -> Power=80%
+    Testing NNS=31,250 -> Power=78%
+    Testing NNS=31,375 -> Power=80%
+    Testing NNS=31,312 -> Power=83%
+
+[39/48] Searching: Group 'D', Sens: 0.95, Spec: 0.7, Scenario: Conservative
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=7%
+    NNS=8,000 -> Power=8%
+    NNS=16,000 -> Power=14%
+    NNS=32,000 -> Power=19%
+    NNS=64,000 -> Power=26%
+    NNS=128,000 -> Power=53%
+    NNS=256,000 -> Power=82%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=192,000 -> Power=73%
+    Testing NNS=224,000 -> Power=77%
+    Testing NNS=240,000 -> Power=83%
+    Testing NNS=232,000 -> Power=77%
+    Testing NNS=236,000 -> Power=74%
+    Testing NNS=238,000 -> Power=77%
+    Testing NNS=239,000 -> Power=79%
+    Testing NNS=239,500 -> Power=80%
+
+[40/48] Searching: Group 'E', Sens: 0.95, Spec: 0.7, Scenario: Conservative
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=7%
+    NNS=8,000 -> Power=6%
+    NNS=16,000 -> Power=9%
+    NNS=32,000 -> Power=9%
+    NNS=64,000 -> Power=19%
+    NNS=128,000 -> Power=27%
+    NNS=256,000 -> Power=46%
+    NNS=512,000 -> Power=78%
+    NNS=1,024,000 -> Power=96%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=768,000 -> Power=89%
+    Testing NNS=640,000 -> Power=83%
+    Testing NNS=576,000 -> Power=80%
+    Testing NNS=544,000 -> Power=78%
+    Testing NNS=560,000 -> Power=77%
+    Testing NNS=568,000 -> Power=79%
+    Testing NNS=572,000 -> Power=80%
+    Testing NNS=574,000 -> Power=82%
+
+[41/48] Searching: Group 'B', Sens: 0.7, Spec: 0.95, Scenario: Conservative
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=5%
+    NNS=8,000 -> Power=9%
+    NNS=16,000 -> Power=9%
+    NNS=32,000 -> Power=13%
+    NNS=64,000 -> Power=21%
+    NNS=128,000 -> Power=39%
+    NNS=256,000 -> Power=67%
+    NNS=512,000 -> Power=94%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=384,000 -> Power=88%
+    Testing NNS=320,000 -> Power=77%
+    Testing NNS=352,000 -> Power=82%
+    Testing NNS=336,000 -> Power=81%
+    Testing NNS=328,000 -> Power=76%
+    Testing NNS=332,000 -> Power=80%
+    Testing NNS=334,000 -> Power=80%
+    Testing NNS=335,000 -> Power=83%
+
+[42/48] Searching: Group 'C', Sens: 0.7, Spec: 0.95, Scenario: Conservative
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=23%
+    NNS=8,000 -> Power=43%
+    NNS=16,000 -> Power=67%
+    NNS=32,000 -> Power=95%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=24,000 -> Power=88%
+    Testing NNS=20,000 -> Power=81%
+    Testing NNS=18,000 -> Power=73%
+    Testing NNS=19,000 -> Power=78%
+    Testing NNS=19,500 -> Power=78%
+    Testing NNS=19,750 -> Power=79%
+    Testing NNS=19,875 -> Power=80%
+    Testing NNS=19,812 -> Power=81%
+
+[43/48] Searching: Group 'D', Sens: 0.7, Spec: 0.95, Scenario: Conservative
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=9%
+    NNS=8,000 -> Power=14%
+    NNS=16,000 -> Power=28%
+    NNS=32,000 -> Power=48%
+    NNS=64,000 -> Power=71%
+    NNS=128,000 -> Power=93%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=96,000 -> Power=86%
+    Testing NNS=80,000 -> Power=81%
+    Testing NNS=72,000 -> Power=79%
+    Testing NNS=76,000 -> Power=78%
+    Testing NNS=78,000 -> Power=77%
+    Testing NNS=79,000 -> Power=80%
+    Testing NNS=78,500 -> Power=80%
+    Testing NNS=78,250 -> Power=81%
+
+[44/48] Searching: Group 'E', Sens: 0.7, Spec: 0.95, Scenario: Conservative
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=5%
+    NNS=8,000 -> Power=4%
+    NNS=16,000 -> Power=7%
+    NNS=32,000 -> Power=7%
+    NNS=64,000 -> Power=12%
+    NNS=128,000 -> Power=25%
+    NNS=256,000 -> Power=39%
+    NNS=512,000 -> Power=65%
+    NNS=1,024,000 -> Power=90%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=768,000 -> Power=81%
+    Testing NNS=640,000 -> Power=72%
+    Testing NNS=704,000 -> Power=77%
+    Testing NNS=736,000 -> Power=79%
+    Testing NNS=752,000 -> Power=77%
+    Testing NNS=760,000 -> Power=82%
+    Testing NNS=756,000 -> Power=80%
+    Testing NNS=758,000 -> Power=76%
+
+[45/48] Searching: Group 'B', Sens: 0.8, Spec: 0.8, Scenario: Conservative
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=6%
+    NNS=8,000 -> Power=7%
+    NNS=16,000 -> Power=4%
+    NNS=32,000 -> Power=4%
+    NNS=64,000 -> Power=6%
+    NNS=128,000 -> Power=8%
+    NNS=256,000 -> Power=6%
+    NNS=512,000 -> Power=9%
+    NNS=1,024,000 -> Power=15%
+  Power goal not reached below 1e+06 NNS.
+
+[46/48] Searching: Group 'C', Sens: 0.8, Spec: 0.8, Scenario: Conservative
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=17%
+    NNS=8,000 -> Power=32%
+    NNS=16,000 -> Power=48%
+    NNS=32,000 -> Power=81%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=24,000 -> Power=71%
+    Testing NNS=28,000 -> Power=74%
+    Testing NNS=30,000 -> Power=77%
+    Testing NNS=31,000 -> Power=77%
+    Testing NNS=31,500 -> Power=80%
+    Testing NNS=31,250 -> Power=77%
+    Testing NNS=31,375 -> Power=81%
+    Testing NNS=31,312 -> Power=85%
+
+[47/48] Searching: Group 'D', Sens: 0.8, Spec: 0.8, Scenario: Conservative
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=8%
+    NNS=8,000 -> Power=8%
+    NNS=16,000 -> Power=16%
+    NNS=32,000 -> Power=24%
+    NNS=64,000 -> Power=34%
+    NNS=128,000 -> Power=66%
+    NNS=256,000 -> Power=90%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=192,000 -> Power=83%
+    Testing NNS=160,000 -> Power=73%
+    Testing NNS=176,000 -> Power=75%
+    Testing NNS=184,000 -> Power=78%
+    Testing NNS=188,000 -> Power=81%
+    Testing NNS=186,000 -> Power=78%
+    Testing NNS=187,000 -> Power=81%
+    Testing NNS=186,500 -> Power=79%
+
+[48/48] Searching: Group 'E', Sens: 0.8, Spec: 0.8, Scenario: Conservative
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=7%
+    NNS=8,000 -> Power=6%
+    NNS=16,000 -> Power=7%
+    NNS=32,000 -> Power=9%
+    NNS=64,000 -> Power=17%
+    NNS=128,000 -> Power=22%
+    NNS=256,000 -> Power=39%
+    NNS=512,000 -> Power=64%
+    NNS=1,024,000 -> Power=91%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=768,000 -> Power=81%
+    Testing NNS=640,000 -> Power=75%
+    Testing NNS=704,000 -> Power=80%
+    Testing NNS=736,000 -> Power=79%
+    Testing NNS=752,000 -> Power=79%
+    Testing NNS=760,000 -> Power=80%
+    Testing NNS=756,000 -> Power=82%
+    Testing NNS=754,000 -> Power=80%
+Warning message:
+Removed 4 rows containing missing values or values outside the scale range
+(`geom_point()`). 
+--- AIM 3 COMPLETE --- (Duration: 1147.5 minutes) ---
+Error: unexpected ',' in "message("\n\n--- AIM 3 SIMULATION COMPLETE ---")  = (empirical_beta - true_beta)^2,"
+Execution halted
+Simulation script finished.

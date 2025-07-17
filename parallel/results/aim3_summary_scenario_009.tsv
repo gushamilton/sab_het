@@ -1,0 +1,2 @@
+scenario_name	test_type	sensitivity	specificity	target_group	nns_needed	nnr_corresponding	true_beta	mean_beta_hat	bias	mse	rmse	sd_beta_hat	wrong_direction	significant_wrong
+ARREST	High Sens/High Spec	0.95	0.95	B	1253	213.4375	2.9338568698359038	1.6085943696095006	-1.3252625002264031	2.1667325382241795	1.4719825196734435	0.6414362359813462	0.005	0

@@ -1,0 +1,2 @@
+scenario_name	test_type	sensitivity	specificity	target_group	nns_needed	nnr_corresponding	true_beta	mean_beta_hat	bias	mse	rmse	sd_beta_hat	wrong_direction	significant_wrong
+ARREST	Balanced/Moderate	0.8	0.8	B	2750	771.695	2.9338568698359038	0.7475218845336256	-2.1863349853022784	4.850807546900626	2.2024548910024526	0.26631595787232903	0.005	0

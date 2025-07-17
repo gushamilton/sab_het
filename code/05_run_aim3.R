@@ -1,5 +1,11 @@
 # -----------------------------------------------------------------------------
 # 05_run_aim3.R - AIM 3: Enrichment Trial (Sensitivity/Specificity Scenarios)
+# 
+# This script runs enrichment trial simulations with various sensitivity/specificity
+# scenarios and saves both summary results and detailed individual simulation results.
+# 
+# Summary results include: NNS, bias, MSE, RMSE, sign flipping rates, etc.
+# Detailed results include: individual simulation betas, p-values, bias, MSE for each rep.
 # -----------------------------------------------------------------------------
 
 # --- 1. SETUP ---
@@ -68,6 +74,56 @@ all_aim3_scenarios <- expand_grid(
 
 reset_global_counter(nrow(all_aim3_scenarios))
 
+# Function to run one scenario and save detailed results
+run_scenario_with_details <- function(scenario_name, or_vector, target_group, sensitivity, specificity, seed) {
+  set_current_scenario(scenario_name)
+  increment_global_counter()
+  
+  # Run the main function to get summary results
+  summary_result <- find_nns_for_scenario_sens_spec(
+    target_group = target_group, sensitivity = sensitivity, specificity = specificity, seed = seed,
+    or_vector = or_vector, p0_vector = p0_arrest_adjusted, freq_vector = freq_arrest,
+    n_reps_per_calc = n_reps_aim3
+  ) %>%
+    dplyr::mutate(scenario_name = scenario_name)
+  
+  # Also run the final scenario to get individual simulation results
+  if (!is.na(summary_result$nns_needed)) {
+    final_nns <- summary_result$nns_needed
+    final_scenario_result <- run_enrichment_scenario_sens_spec(
+      n_screened = final_nns, target_group = target_group, sensitivity = sensitivity, specificity = specificity,
+      or_vector = or_vector, p0_vector = p0_arrest_adjusted, freq_vector = freq_arrest,
+      n_reps = n_reps_aim3 * 2, base_seed = seed + 999
+    )
+    
+    # Create detailed results dataframe
+    true_beta <- log(or_vector[target_group])
+    detailed_results <- tibble(
+      scenario_name = scenario_name,
+      target_group = target_group,
+      sensitivity = sensitivity,
+      specificity = specificity,
+      sim_id = 1:length(final_scenario_result$beta_hats),
+      true_beta = true_beta,
+      empirical_beta = final_scenario_result$beta_hats,
+      p_value = final_scenario_result$p_values,
+      n_enrolled = final_scenario_result$mean_n_enrolled,
+      bias = empirical_beta - true_beta,
+      mse = (empirical_beta - true_beta)^2,
+      significant = p_value < 0.05,
+      wrong_direction = sign(empirical_beta) != sign(true_beta),
+      significant_wrong = significant & wrong_direction
+    )
+    
+    # Save detailed results to file
+    detailed_filename <- sprintf("results/tables/aim3_detailed_%s_%s_sens%.2f_spec%.2f.tsv", 
+                                scenario_name, target_group, sensitivity, specificity)
+    write_tsv(detailed_results, detailed_filename)
+  }
+  
+  return(summary_result)
+}
+
 aim3_results <- pmap_dfr(list(
     scenario_name = all_aim3_scenarios$scenario_name,
     or_vector = all_aim3_scenarios$or_vector,
@@ -75,18 +131,7 @@ aim3_results <- pmap_dfr(list(
     sensitivity = all_aim3_scenarios$sensitivity,
     specificity = all_aim3_scenarios$specificity,
     seed = all_aim3_scenarios$seed
-  ), function(scenario_name, or_vector, target_group, sensitivity, specificity, seed) {
-    
-  set_current_scenario(scenario_name)
-  increment_global_counter()
-  
-  find_nns_for_scenario_sens_spec(
-    target_group = target_group, sensitivity = sensitivity, specificity = specificity, seed = seed,
-    or_vector = or_vector, p0_vector = p0_arrest_adjusted, freq_vector = freq_arrest,
-    n_reps_per_calc = n_reps_aim3
-  ) %>%
-    dplyr::mutate(scenario_name = scenario_name) # <--- add scenario name to results
-})
+  ), run_scenario_with_details)
 
 aim3_results_final <- all_aim3_scenarios %>%
   dplyr::select(scenario_name, test_type, sensitivity, specificity, target_group) %>%
@@ -99,7 +144,7 @@ plot_aim3 <- ggplot(aim3_results_final, aes(x = test_type, y = nns_needed, color
     theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none") +
     labs(title="Aim 3: NNS by Scenario, Test Type, and Target Group", x="Test Type", y="Number Needed to Screen (log scale)")
 
-# Ensure bias and mse columns are included in the final output
+# Save summary results with enhanced metrics
 write_tsv(aim3_results_final, "results/tables/aim3_sens_spec_summary.tsv")
 ggsave("results/plots/aim3_nns_summary.pdf", plot_aim3, width = 12, height = 8)
 saveRDS(plot_aim3, "results/objects/aim3_plot.rds")

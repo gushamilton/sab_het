@@ -1,0 +1,20 @@
+--- Loading Packages ---
+--- Defining Simulation Parameters ---
+--- Parallel processing enabled on 16 cores ---
+--- Running Scenario 22 of 48 ---
+Scenario: ARREST, Group: C, Test: Balanced/Moderate (Sens: 0.80, Spec: 0.80)
+
+[0/0] Searching: Group 'C', Sens: 0.8, Spec: 0.8, Scenario: N/A
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=4%
+    NNS=8,000 -> Power=6%
+    NNS=16,000 -> Power=8%
+    NNS=32,000 -> Power=4%
+    NNS=64,000 -> Power=10%
+    NNS=128,000 -> Power=18%
+    NNS=256,000 -> Power=20%
+    NNS=512,000 -> Power=43%
+    NNS=1,024,000 -> Power=63%
+  Power goal not reached below 1e+06 NNS.
+Summary results saved to: results/aim3_summary_scenario_022.tsv
+--- Scenario 22 COMPLETE --- (Duration: 45.5 minutes) ---

@@ -1,0 +1,2 @@
+scenario_name	test_type	sensitivity	specificity	target_group	nns_needed	nnr_corresponding	true_beta	mean_beta_hat	bias	mse	rmse	sd_beta_hat	wrong_direction	significant_wrong
+ARREST	Near-Perfect	0.99	0.99	E	30750	5663.1875	-1.2039728043259361	-0.64935229722021	0.5546205071057261	0.3631910709830844	0.6026533588913981	0.2360645680350517	0	0

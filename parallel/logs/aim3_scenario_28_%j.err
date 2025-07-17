@@ -1,0 +1,28 @@
+--- Loading Packages ---
+--- Defining Simulation Parameters ---
+--- Parallel processing enabled on 16 cores ---
+--- Running Scenario 28 of 48 ---
+Scenario: Conservative, Group: E, Test: Perfect (100%) (Sens: 1.00, Spec: 1.00)
+
+[0/0] Searching: Group 'E', Sens: 1, Spec: 1, Scenario: N/A
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=4%
+    NNS=8,000 -> Power=8%
+    NNS=16,000 -> Power=16%
+    NNS=32,000 -> Power=14%
+    NNS=64,000 -> Power=25%
+    NNS=128,000 -> Power=52%
+    NNS=256,000 -> Power=75%
+    NNS=512,000 -> Power=97%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=384,000 -> Power=90%
+    Testing NNS=320,000 -> Power=86%
+    Testing NNS=288,000 -> Power=80%
+    Testing NNS=272,000 -> Power=74%
+    Testing NNS=280,000 -> Power=83%
+    Testing NNS=276,000 -> Power=81%
+    Testing NNS=274,000 -> Power=83%
+    Testing NNS=273,000 -> Power=82%
+Detailed results saved to: results/aim3_detailed_scenario_028.tsv
+Summary results saved to: results/aim3_summary_scenario_028.tsv
+--- Scenario 28 COMPLETE --- (Duration: 47.1 minutes) ---

@@ -4,31 +4,44 @@
 # Handles cases with insufficient data or model convergence errors
 # -----------------------------------------------------------------------------
 fit_glm_safe <- function(data) {
-  # Check for sufficient data and variation before attempting GLM
+  pacman::p_load(logistf) # Ensure logistf is available
   if (nrow(data) < 10 || length(unique(data$treatment)) < 2 || length(unique(data$success)) < 2) {
     return(tibble(beta = NA_real_, se = NA_real_, pval = NA_real_))
   }
+  # Try Firth's penalized logistic regression first
   tryCatch({
-    # Ensure treatment is factor with levels 0, 1 for glm reference level
-    data_glm <- data %>% mutate(treatment = factor(treatment, levels = c(0, 1)))
-    model <- glm(success ~ treatment, data = data_glm, family = binomial())
-    tidy_model <- broom::tidy(model)
-    # Find the treatment effect row (usually treatment1 when factor)
-    treatment_row <- tidy_model %>% filter(str_detect(term, "^treatment"))
-
-    if (nrow(treatment_row) == 1) {
+    data_glm <- data %>% mutate(treatment = factor(treatment))
+    model <- logistf::logistf(success ~ treatment, data = data_glm)
+    # Find the treatment coefficient (should be 'treatment1')
+    idx <- which(names(model$coefficients) == "treatment1")
+    if (length(idx) == 1) {
       tibble(
-        beta = treatment_row$estimate,
-        se = treatment_row$std.error,
-        pval = treatment_row$p.value
+        beta = model$coefficients[[idx]],
+        se = sqrt(diag(model$var))[idx],
+        pval = model$prob[idx]
       )
     } else {
-      # Handle cases where treatment effect term isn't found (e.g., perfect separation)
       tibble(beta = NA_real_, se = NA_real_, pval = NA_real_)
     }
   }, error = function(e) {
-    # Handle any other GLM errors
-    tibble(beta = NA_real_, se = NA_real_, pval = NA_real_)
+    # Fallback to standard GLM if logistf fails
+    tryCatch({
+      data_glm <- data %>% mutate(treatment = factor(treatment))
+      model <- glm(success ~ treatment, data = data_glm, family = binomial())
+      tidy_model <- broom::tidy(model)
+      treatment_row <- tidy_model %>% filter(str_detect(term, "^treatment"))
+      if (nrow(treatment_row) == 1) {
+        tibble(
+          beta = treatment_row$estimate,
+          se = treatment_row$std.error,
+          pval = treatment_row$p.value
+        )
+      } else {
+        tibble(beta = NA_real_, se = NA_real_, pval = NA_real_)
+      }
+    }, error = function(e) {
+      tibble(beta = NA_real_, se = NA_real_, pval = NA_real_)
+    })
   })
 }
 
@@ -292,7 +305,7 @@ run_enrichment_scenario_sens_spec <- function(n_screened, target_group, sensitiv
     beta_hats <- sapply(results, `[[`, "beta_hat")
     power <- mean(p_values < 0.05, na.rm = TRUE)
     
-    return(list(power = power, mean_n_enrolled = mean(n_values, na.rm = TRUE), beta_hats = beta_hats))
+    return(list(power = power, mean_n_enrolled = mean(n_values, na.rm = TRUE), beta_hats = beta_hats, p_values = p_values))
 }
 
 
@@ -359,19 +372,33 @@ find_nns_for_scenario_sens_spec <- function(target_group, sensitivity, specifici
   final_scenario_result <- run_enrichment_scenario_sens_spec(
       n_screened = final_nns, target_group = target_group, sensitivity = sensitivity, specificity = specificity,
       or_vector = or_vector, p0_vector = p0_vector, freq_vector = freq_vector,
-      n_reps = n_reps_per_calc * 2, base_seed = seed + 999 # More reps for final estimate
+      n_reps = n_reps_per_calc * 2, base_seed = seed # Use same seed as power search
   )
   
   # Calculate bias and MSE from the final, high-replication run
   beta_target <- log(or_vector[target_group])
   beta_hats <- final_scenario_result$beta_hats
+  final_p_values <- final_scenario_result$p_values
+  
   bias <- mean(beta_hats - beta_target, na.rm = TRUE)
   mse <- mean((beta_hats - beta_target)^2, na.rm = TRUE)
+  
+  # Calculate additional metrics
+  mean_beta_hat <- mean(beta_hats, na.rm = TRUE)
+  sd_beta_hat <- sd(beta_hats, na.rm = TRUE)
+  rmse <- sqrt(mse)
+  
+  # Calculate proportion of trials with wrong direction (sign flipping)
+  wrong_direction <- mean(sign(beta_hats) != sign(beta_target), na.rm = TRUE)
+  
+  # Calculate proportion of trials with significant results in wrong direction
+  significant_wrong <- mean(final_p_values < 0.05 & sign(beta_hats) != sign(beta_target), na.rm = TRUE)
 
   return(tibble(
     target_group = target_group, sensitivity = sensitivity, specificity = specificity,
     nns_needed = final_nns, nnr_corresponding = final_scenario_result$mean_n_enrolled,
-    bias = bias, mse = mse
+    true_beta = beta_target, mean_beta_hat = mean_beta_hat, bias = bias, mse = mse, rmse = rmse,
+    sd_beta_hat = sd_beta_hat, wrong_direction = wrong_direction, significant_wrong = significant_wrong
   ))
 }
 

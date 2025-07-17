@@ -1,0 +1,2 @@
+scenario_name	test_type	sensitivity	specificity	target_group	nns_needed	nnr_corresponding	true_beta	mean_beta_hat	bias	mse	rmse	sd_beta_hat	wrong_direction	significant_wrong
+Conservative	Balanced/Moderate	0.8	0.8	B	NA	NA	0.6931471805599453	NA	NA	NA	NA	NA	NA	NA
