@@ -1,93 +1,93 @@
-scenario_name	test_type_clean	target_group	data_source	NNS	NNR	Bias	MSE	Wrong_Dir
-ARREST	Balanced/Moderate	B	Closed Form	4,573	1,283	-2.613	-	-
-ARREST	Balanced/Moderate	B	Simulation	2,750	772	-2.186	4.851	0.5%
-ARREST	High Sens/High Spec	B	Closed Form	1,847	315	-2.240	-	-
-ARREST	High Sens/High Spec	B	Simulation	1,253	213	-1.325	2.167	0.5%
-ARREST	High Sens/Low Spec	B	Closed Form	4,242	1,642	-2.643	-	-
-ARREST	High Sens/Low Spec	B	Simulation	2,562	992	-2.317	5.426	0.2%
-ARREST	Low Sens/High Spec	B	Closed Form	2,911	400	-2.343	-	-
-ARREST	Low Sens/High Spec	B	Simulation	1,625	222	-1.491	2.596	0.2%
-ARREST	Near-Perfect	B	Closed Form	993	141	-1.406	-	-
-ARREST	Near-Perfect	B	Simulation	781	111	-0.659	1.035	0.0%
-ARREST	Perfect	B	Closed Form	1,064	143	0.000	-	-
-ARREST	Perfect	B	Simulation	726	98	-0.472	0.798	0.2%
-ARREST	Balanced/Moderate	C	Closed Form	290,895	120,257	0.283	-	-
-ARREST	High Sens/High Spec	C	Closed Form	72,073	26,675	0.115	-	-
-ARREST	High Sens/High Spec	C	Simulation	50,750	18,778	0.076	0.009	0.2%
-ARREST	High Sens/Low Spec	C	Closed Form	88,896	47,220	0.310	-	-
-ARREST	High Sens/Low Spec	C	Simulation	181,000	96,139	0.299	0.090	100.0%
-ARREST	Low Sens/High Spec	C	Closed Form	152,807	42,968	0.143	-	-
-ARREST	Low Sens/High Spec	C	Simulation	97,250	27,349	0.105	0.013	0.2%
-ARREST	Near-Perfect	C	Closed Form	29,314	10,511	0.028	-	-
-ARREST	Near-Perfect	C	Simulation	29,312	10,509	0.014	0.006	0.0%
-ARREST	Perfect	C	Closed Form	24,080	8,565	0.000	-	-
-ARREST	Perfect	C	Simulation	22,875	8,134	-0.008	0.007	0.5%
-ARREST	Balanced/Moderate	D	Closed Form	12,446	3,818	-0.106	-	-
-ARREST	Balanced/Moderate	D	Simulation	10,500	3,222	-0.041	0.014	0.8%
-ARREST	High Sens/High Spec	D	Closed Form	11,259	2,365	-0.040	-	-
-ARREST	High Sens/High Spec	D	Simulation	10,375	2,181	-0.023	0.014	0.8%
-ARREST	High Sens/Low Spec	D	Closed Form	10,072	4,186	-0.117	-	-
-ARREST	High Sens/Low Spec	D	Simulation	8,468	3,521	-0.044	0.014	0.2%
-ARREST	Low Sens/High Spec	D	Closed Form	15,277	2,530	-0.050	-	-
-ARREST	Low Sens/High Spec	D	Simulation	14,000	2,317	-0.021	0.013	0.0%
-ARREST	Near-Perfect	D	Closed Form	10,688	1,970	-0.009	-	-
-ARREST	Near-Perfect	D	Simulation	10,375	1,912	-0.017	0.015	0.8%
-ARREST	Perfect	D	Closed Form	10,522	1,872	0.000	-	-
-ARREST	Perfect	D	Simulation	10,250	1,823	0.000	0.015	0.0%
-ARREST	Balanced/Moderate	E	Closed Form	53,735	16,481	1.333	-	-
-ARREST	Balanced/Moderate	E	Simulation	57,500	17,639	1.371	1.884	99.5%
-ARREST	High Sens/High Spec	E	Closed Form	7,322,119	1,538,023	1.184	-	-
-ARREST	High Sens/High Spec	E	Simulation	570,000	119,735	1.104	1.220	0.2%
-ARREST	High Sens/Low Spec	E	Closed Form	30,834	12,814	1.345	-	-
-ARREST	High Sens/Low Spec	E	Simulation	32,125	13,345	1.403	1.973	99.2%
-ARREST	Low Sens/High Spec	E	Closed Form	5,841,387	967,292	1.227	-	-
-ARREST	Near-Perfect	E	Closed Form	51,539	9,498	0.781	-	-
-ARREST	Near-Perfect	E	Simulation	30,750	5,663	0.555	0.363	0.0%
-ARREST	Perfect	E	Closed Form	18,189	3,235	0.000	-	-
-ARREST	Perfect	E	Simulation	14,593	2,596	-0.013	0.271	0.0%
-Conservative	Balanced/Moderate	B	Closed Form	24,284	6,810	-0.553	-	-
-Conservative	High Sens/High Spec	B	Closed Form	9,023	1,540	-0.394	-	-
-Conservative	High Sens/High Spec	B	Simulation	179,000	30,535	-0.511	0.266	0.5%
-Conservative	High Sens/Low Spec	B	Closed Form	23,622	9,145	-0.569	-	-
-Conservative	Low Sens/High Spec	B	Closed Form	14,174	1,944	-0.433	-	-
-Conservative	Low Sens/High Spec	B	Simulation	322,000	44,143	-0.556	0.311	0.5%
-Conservative	Near-Perfect	B	Closed Form	4,914	695	-0.162	-	-
-Conservative	Near-Perfect	B	Simulation	56,250	7,950	-0.217	0.079	0.5%
-Conservative	Perfect	B	Closed Form	3,802	510	0.000	-	-
-Conservative	Perfect	B	Simulation	32,000	4,292	0.009	0.070	0.5%
-Conservative	Balanced/Moderate	C	Closed Form	149,179	61,671	0.289	-	-
-Conservative	Balanced/Moderate	C	Simulation	30,687	12,681	0.165	0.032	0.5%
-Conservative	High Sens/High Spec	C	Closed Form	19,579	7,246	0.119	-	-
-Conservative	High Sens/High Spec	C	Simulation	13,718	5,075	0.043	0.013	0.0%
-Conservative	High Sens/Low Spec	C	Closed Form	280,873	149,196	0.314	-	-
-Conservative	High Sens/Low Spec	C	Simulation	31,000	16,465	0.195	0.042	0.0%
-Conservative	Low Sens/High Spec	C	Closed Form	31,553	8,873	0.148	-	-
-Conservative	Low Sens/High Spec	C	Simulation	20,062	5,636	0.058	0.015	0.0%
-Conservative	Near-Perfect	C	Closed Form	12,500	4,482	0.029	-	-
-Conservative	Near-Perfect	C	Simulation	11,781	4,223	0.009	0.015	0.2%
-Conservative	Perfect	C	Closed Form	11,167	3,972	-0.000	-	-
-Conservative	Perfect	C	Simulation	10,875	3,866	-0.011	0.016	0.0%
-Conservative	Balanced/Moderate	D	Closed Form	71,252	21,854	-0.084	-	-
-Conservative	Balanced/Moderate	D	Simulation	183,500	56,275	-0.106	0.012	0.0%
-Conservative	High Sens/High Spec	D	Closed Form	45,512	9,560	-0.032	-	-
-Conservative	High Sens/High Spec	D	Simulation	57,125	11,998	-0.033	0.003	0.0%
-Conservative	High Sens/Low Spec	D	Closed Form	62,794	26,097	-0.093	-	-
-Conservative	High Sens/Low Spec	D	Simulation	224,000	93,091	-0.124	0.016	0.2%
-Conservative	Low Sens/High Spec	D	Closed Form	64,355	10,657	-0.040	-	-
-Conservative	Low Sens/High Spec	D	Simulation	81,250	13,450	-0.041	0.004	0.0%
-Conservative	Near-Perfect	D	Closed Form	39,005	7,188	-0.007	-	-
-Conservative	Near-Perfect	D	Simulation	40,500	7,464	-0.005	0.004	0.2%
-Conservative	Perfect	D	Closed Form	37,400	6,651	0.000	-	-
-Conservative	Perfect	D	Simulation	40,375	7,180	0.003	0.004	0.2%
-Conservative	Balanced/Moderate	E	Closed Form	535,463	164,228	0.265	-	-
-Conservative	Balanced/Moderate	E	Simulation	770,000	236,160	0.169	0.029	0.2%
-Conservative	High Sens/High Spec	E	Closed Form	391,749,876	82,287,668	0.220	-	-
-Conservative	High Sens/High Spec	E	Simulation	514,000	107,962	0.118	0.015	0.0%
-Conservative	High Sens/Low Spec	E	Closed Form	310,053	128,856	0.268	-	-
-Conservative	High Sens/Low Spec	E	Simulation	602,000	250,169	0.175	0.031	0.0%
-Conservative	Low Sens/High Spec	E	Closed Form	33,279,075	5,510,775	0.233	-	-
-Conservative	Low Sens/High Spec	E	Simulation	818,000	135,471	0.132	0.018	0.5%
-Conservative	Near-Perfect	E	Closed Form	745,424	137,366	0.121	-	-
-Conservative	Near-Perfect	E	Simulation	322,000	59,332	0.042	0.006	0.0%
-Conservative	Perfect	E	Closed Form	278,372	49,505	0.000	-	-
-Conservative	Perfect	E	Simulation	273,000	48,545	-0.003	0.006	0.2%
+scenario_name	test_type_clean	target_group	data_source	NNS	NNR	Bias	MSE	Wrong_Dir	True_Beta	Predicted_Beta	Empirical_Beta
+ARREST	Balanced/Moderate	B	Closed Form	4,573	1,283	-2.613	-	-	2.934	0.321	0.321
+ARREST	Balanced/Moderate	B	Simulation	2,750	772	-2.186	4.851	0.5%	-	-	NaN
+ARREST	High Sens/High Spec	B	Closed Form	1,847	315	-2.240	-	-	2.934	0.694	0.694
+ARREST	High Sens/High Spec	B	Simulation	1,253	213	-1.325	2.167	0.5%	-	-	NaN
+ARREST	High Sens/Low Spec	B	Closed Form	4,242	1,642	-2.643	-	-	2.934	0.290	0.290
+ARREST	High Sens/Low Spec	B	Simulation	2,562	992	-2.317	5.426	0.2%	-	-	NaN
+ARREST	Low Sens/High Spec	B	Closed Form	2,911	400	-2.343	-	-	2.934	0.591	0.591
+ARREST	Low Sens/High Spec	B	Simulation	1,625	222	-1.491	2.596	0.2%	-	-	NaN
+ARREST	Near-Perfect	B	Closed Form	993	141	-1.406	-	-	2.934	1.528	1.528
+ARREST	Near-Perfect	B	Simulation	781	111	-0.659	1.035	0.0%	-	-	NaN
+ARREST	Perfect	B	Closed Form	1,064	143	0.000	-	-	2.934	2.934	2.934
+ARREST	Perfect	B	Simulation	726	98	-0.472	0.798	0.2%	-	-	NaN
+ARREST	Balanced/Moderate	C	Closed Form	290,895	120,257	0.283	-	-	-0.236	0.048	0.048
+ARREST	High Sens/High Spec	C	Closed Form	72,073	26,675	0.115	-	-	-0.236	-0.121	-0.121
+ARREST	High Sens/High Spec	C	Simulation	50,750	18,778	0.076	0.009	0.2%	-	-	NaN
+ARREST	High Sens/Low Spec	C	Closed Form	88,896	47,220	0.310	-	-	-0.236	0.074	0.074
+ARREST	High Sens/Low Spec	C	Simulation	181,000	96,139	0.299	0.090	100.0%	-	-	NaN
+ARREST	Low Sens/High Spec	C	Closed Form	152,807	42,968	0.143	-	-	-0.236	-0.093	-0.093
+ARREST	Low Sens/High Spec	C	Simulation	97,250	27,349	0.105	0.013	0.2%	-	-	NaN
+ARREST	Near-Perfect	C	Closed Form	29,314	10,511	0.028	-	-	-0.236	-0.208	-0.208
+ARREST	Near-Perfect	C	Simulation	29,312	10,509	0.014	0.006	0.0%	-	-	NaN
+ARREST	Perfect	C	Closed Form	24,080	8,565	0.000	-	-	-0.236	-0.236	-0.236
+ARREST	Perfect	C	Simulation	22,875	8,134	-0.008	0.007	0.5%	-	-	NaN
+ARREST	Balanced/Moderate	D	Closed Form	12,446	3,818	-0.106	-	-	0.336	0.231	0.231
+ARREST	Balanced/Moderate	D	Simulation	10,500	3,222	-0.041	0.014	0.8%	-	-	NaN
+ARREST	High Sens/High Spec	D	Closed Form	11,259	2,365	-0.040	-	-	0.336	0.297	0.297
+ARREST	High Sens/High Spec	D	Simulation	10,375	2,181	-0.023	0.014	0.8%	-	-	NaN
+ARREST	High Sens/Low Spec	D	Closed Form	10,072	4,186	-0.117	-	-	0.336	0.220	0.220
+ARREST	High Sens/Low Spec	D	Simulation	8,468	3,521	-0.044	0.014	0.2%	-	-	NaN
+ARREST	Low Sens/High Spec	D	Closed Form	15,277	2,530	-0.050	-	-	0.336	0.287	0.287
+ARREST	Low Sens/High Spec	D	Simulation	14,000	2,317	-0.021	0.013	0.0%	-	-	NaN
+ARREST	Near-Perfect	D	Closed Form	10,688	1,970	-0.009	-	-	0.336	0.327	0.327
+ARREST	Near-Perfect	D	Simulation	10,375	1,912	-0.017	0.015	0.8%	-	-	NaN
+ARREST	Perfect	D	Closed Form	10,522	1,872	0.000	-	-	0.336	0.336	0.336
+ARREST	Perfect	D	Simulation	10,250	1,823	0.000	0.015	0.0%	-	-	NaN
+ARREST	Balanced/Moderate	E	Closed Form	53,735	16,481	1.333	-	-	-1.204	0.129	0.129
+ARREST	Balanced/Moderate	E	Simulation	57,500	17,639	1.371	1.884	99.5%	-	-	NaN
+ARREST	High Sens/High Spec	E	Closed Form	7,322,119	1,538,023	1.184	-	-	-1.204	-0.020	-0.020
+ARREST	High Sens/High Spec	E	Simulation	570,000	119,735	1.104	1.220	0.2%	-	-	NaN
+ARREST	High Sens/Low Spec	E	Closed Form	30,834	12,814	1.345	-	-	-1.204	0.141	0.141
+ARREST	High Sens/Low Spec	E	Simulation	32,125	13,345	1.403	1.973	99.2%	-	-	NaN
+ARREST	Low Sens/High Spec	E	Closed Form	5,841,387	967,292	1.227	-	-	-1.204	0.023	0.023
+ARREST	Near-Perfect	E	Closed Form	51,539	9,498	0.781	-	-	-1.204	-0.423	-0.423
+ARREST	Near-Perfect	E	Simulation	30,750	5,663	0.555	0.363	0.0%	-	-	NaN
+ARREST	Perfect	E	Closed Form	18,189	3,235	0.000	-	-	-1.204	-1.204	-1.204
+ARREST	Perfect	E	Simulation	14,593	2,596	-0.013	0.271	0.0%	-	-	NaN
+Conservative	Balanced/Moderate	B	Closed Form	24,284	6,810	-0.553	-	-	0.693	0.141	0.141
+Conservative	High Sens/High Spec	B	Closed Form	9,023	1,540	-0.394	-	-	0.693	0.300	0.300
+Conservative	High Sens/High Spec	B	Simulation	179,000	30,535	-0.511	0.266	0.5%	-	-	NaN
+Conservative	High Sens/Low Spec	B	Closed Form	23,622	9,145	-0.569	-	-	0.693	0.124	0.124
+Conservative	Low Sens/High Spec	B	Closed Form	14,174	1,944	-0.433	-	-	0.693	0.260	0.260
+Conservative	Low Sens/High Spec	B	Simulation	322,000	44,143	-0.556	0.311	0.5%	-	-	NaN
+Conservative	Near-Perfect	B	Closed Form	4,914	695	-0.162	-	-	0.693	0.531	0.531
+Conservative	Near-Perfect	B	Simulation	56,250	7,950	-0.217	0.079	0.5%	-	-	NaN
+Conservative	Perfect	B	Closed Form	3,802	510	0.000	-	-	0.693	0.693	0.693
+Conservative	Perfect	B	Simulation	32,000	4,292	0.009	0.070	0.5%	-	-	NaN
+Conservative	Balanced/Moderate	C	Closed Form	149,179	61,671	0.289	-	-	-0.357	-0.068	-0.068
+Conservative	Balanced/Moderate	C	Simulation	30,687	12,681	0.165	0.032	0.5%	-	-	NaN
+Conservative	High Sens/High Spec	C	Closed Form	19,579	7,246	0.119	-	-	-0.357	-0.238	-0.238
+Conservative	High Sens/High Spec	C	Simulation	13,718	5,075	0.043	0.013	0.0%	-	-	NaN
+Conservative	High Sens/Low Spec	C	Closed Form	280,873	149,196	0.314	-	-	-0.357	-0.042	-0.042
+Conservative	High Sens/Low Spec	C	Simulation	31,000	16,465	0.195	0.042	0.0%	-	-	NaN
+Conservative	Low Sens/High Spec	C	Closed Form	31,553	8,873	0.148	-	-	-0.357	-0.209	-0.209
+Conservative	Low Sens/High Spec	C	Simulation	20,062	5,636	0.058	0.015	0.0%	-	-	NaN
+Conservative	Near-Perfect	C	Closed Form	12,500	4,482	0.029	-	-	-0.357	-0.328	-0.328
+Conservative	Near-Perfect	C	Simulation	11,781	4,223	0.009	0.015	0.2%	-	-	NaN
+Conservative	Perfect	C	Closed Form	11,167	3,972	-0.000	-	-	-0.357	-0.357	-0.357
+Conservative	Perfect	C	Simulation	10,875	3,866	-0.011	0.016	0.0%	-	-	NaN
+Conservative	Balanced/Moderate	D	Closed Form	71,252	21,854	-0.084	-	-	0.182	0.098	0.098
+Conservative	Balanced/Moderate	D	Simulation	183,500	56,275	-0.106	0.012	0.0%	-	-	NaN
+Conservative	High Sens/High Spec	D	Closed Form	45,512	9,560	-0.032	-	-	0.182	0.151	0.151
+Conservative	High Sens/High Spec	D	Simulation	57,125	11,998	-0.033	0.003	0.0%	-	-	NaN
+Conservative	High Sens/Low Spec	D	Closed Form	62,794	26,097	-0.093	-	-	0.182	0.090	0.090
+Conservative	High Sens/Low Spec	D	Simulation	224,000	93,091	-0.124	0.016	0.2%	-	-	NaN
+Conservative	Low Sens/High Spec	D	Closed Form	64,355	10,657	-0.040	-	-	0.182	0.142	0.142
+Conservative	Low Sens/High Spec	D	Simulation	81,250	13,450	-0.041	0.004	0.0%	-	-	NaN
+Conservative	Near-Perfect	D	Closed Form	39,005	7,188	-0.007	-	-	0.182	0.175	0.175
+Conservative	Near-Perfect	D	Simulation	40,500	7,464	-0.005	0.004	0.2%	-	-	NaN
+Conservative	Perfect	D	Closed Form	37,400	6,651	0.000	-	-	0.182	0.182	0.182
+Conservative	Perfect	D	Simulation	40,375	7,180	0.003	0.004	0.2%	-	-	NaN
+Conservative	Balanced/Moderate	E	Closed Form	535,463	164,228	0.265	-	-	-0.223	0.042	0.042
+Conservative	Balanced/Moderate	E	Simulation	770,000	236,160	0.169	0.029	0.2%	-	-	NaN
+Conservative	High Sens/High Spec	E	Closed Form	391,749,876	82,287,668	0.220	-	-	-0.223	-0.003	-0.003
+Conservative	High Sens/High Spec	E	Simulation	514,000	107,962	0.118	0.015	0.0%	-	-	NaN
+Conservative	High Sens/Low Spec	E	Closed Form	310,053	128,856	0.268	-	-	-0.223	0.045	0.045
+Conservative	High Sens/Low Spec	E	Simulation	602,000	250,169	0.175	0.031	0.0%	-	-	NaN
+Conservative	Low Sens/High Spec	E	Closed Form	33,279,075	5,510,775	0.233	-	-	-0.223	0.010	0.010
+Conservative	Low Sens/High Spec	E	Simulation	818,000	135,471	0.132	0.018	0.5%	-	-	NaN
+Conservative	Near-Perfect	E	Closed Form	745,424	137,366	0.121	-	-	-0.223	-0.102	-0.102
+Conservative	Near-Perfect	E	Simulation	322,000	59,332	0.042	0.006	0.0%	-	-	NaN
+Conservative	Perfect	E	Closed Form	278,372	49,505	0.000	-	-	-0.223	-0.223	-0.223
+Conservative	Perfect	E	Simulation	273,000	48,545	-0.003	0.006	0.2%	-	-	NaN

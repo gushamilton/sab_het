@@ -72,6 +72,13 @@ summary_table <- combined_results %>%
                  sprintf("%.3f", mean(mse, na.rm = TRUE))),
     Wrong_Dir = ifelse(all(is.na(wrong_direction)), "-", 
                        scales::percent(mean(wrong_direction, na.rm = TRUE), accuracy = 0.1)),
+    # Add beta columns
+    True_Beta = ifelse(all(is.na(true_beta)), "-", 
+                       sprintf("%.3f", mean(true_beta, na.rm = TRUE))),
+    Predicted_Beta = ifelse(all(is.na(predicted_beta)), "-", 
+                            sprintf("%.3f", mean(predicted_beta, na.rm = TRUE))),
+    Empirical_Beta = ifelse(all(is.na(bias)), "-", 
+                            sprintf("%.3f", mean(true_beta, na.rm = TRUE) + mean(bias, na.rm = TRUE))),
     .groups = "drop"
   ) %>%
   arrange(scenario_name, target_group, test_type_clean, data_source)
@@ -86,7 +93,10 @@ gt_table <- summary_table %>%
     NNR = "NNR", 
     Bias = "Bias",
     MSE = "MSE",
-    Wrong_Dir = "Wrong Dir %"
+    Wrong_Dir = "Wrong Dir %",
+    True_Beta = "True β",
+    Predicted_Beta = "Predicted β",
+    Empirical_Beta = "Empirical β"
   ) %>%
   tab_header(title = "Aim 3: NNS, NNR, and Performance Metrics by Method") %>%
   tab_options(table.width = "100%")
