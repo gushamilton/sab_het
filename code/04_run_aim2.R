@@ -52,9 +52,36 @@ alpha_overall      <- 0.05
 message("\n--- STARTING AIM 2: Impact of Accuracy ---")
 start_time_aim2 <- Sys.time()
 
+# --- Pre-calculate the true marginal OR for each scenario ---
+message("--- Pre-calculating true marginal ORs with large simulation (N=10M) ---")
+true_marginal_ors <- scenario_definitions %>%
+  mutate(
+    true_overall_beta = map_dbl(or_vector, function(or_vec) {
+      large_sim_data <- simulate_trial_data(
+        or_vector = or_vec,
+        freq_vector = freq_arrest,
+        p0_vector = p0_arrest_adjusted,
+        n = 10e6, # 10 million
+        seed = 20240729
+      )
+      
+      model <- glm(success ~ treatment, data = large_sim_data, family = binomial())
+      coef(model)["treatment"]
+    })
+  ) %>%
+  select(scenario_name, true_overall_beta)
+
+print(true_marginal_ors)
+
 results_aim2 <- map_dfr(1:nrow(scenario_definitions), ~{
   scenario <- scenario_definitions$scenario_name[.x]
   or_vec <- scenario_definitions$or_vector[[.x]]
+  
+  # Get the pre-calculated true overall beta for the current scenario
+  true_beta_overall_scenario <- true_marginal_ors %>%
+    filter(scenario_name == scenario) %>%
+    pull(true_overall_beta)
+    
   message(paste("  Running Aim 2 for scenario:", scenario))
   
   accuracy_levels <- c(1.0, 0.99, 0.95, 0.9, 0.8, 0.7)
@@ -67,19 +94,34 @@ results_aim2 <- map_dfr(1:nrow(scenario_definitions), ~{
       p0_vector  = p0_arrest_adjusted,
       n          = n_fixed,
       accuracy   = acc,
-      n_reps     = n_reps_aim2
+      n_reps     = n_reps_aim2,
+      true_overall_beta = true_beta_overall_scenario # Pass the correct value
     )
   }, .options = furrr_options(seed = TRUE), .id = "acc_id") %>%
     mutate(accuracy = accuracy_levels[as.numeric(acc_id)], scenario_name = scenario)
 })
 
 summary_aim2 <- results_aim2 %>%
-  filter(group != "Overall") %>%
+  # Separate summary for overall group because it uses a different alpha
+  # and has a different 'true' effect to compare against
+  bind_rows(
+    results_aim2 %>%
+      filter(group == "Overall") %>%
+      group_by(scenario_name, accuracy, group) %>%
+      summarise(
+        power = mean(pval < alpha_overall, na.rm = TRUE),
+        bias = mean(beta - true_beta, na.rm = TRUE),
+        mse = mean((beta - true_beta)^2, na.rm = TRUE),
+        wrong_dir = mean(sign(or - 1) != sign(true_or - 1), na.rm = TRUE) * 100,
+        .groups = "drop"
+      )
+  ) %>%
+  filter(group != "Overall") %>% # Now remove the original overall rows
   group_by(scenario_name, accuracy, group) %>%
   summarise(
     power = mean(pval < alpha_bonferroni, na.rm = TRUE),
-    bias = mean(log(or) - log(true_or), na.rm = TRUE),
-    mse = mean((log(or) - log(true_or))^2, na.rm = TRUE),
+    bias = mean(beta - true_beta, na.rm = TRUE),
+    mse = mean((beta - true_beta)^2, na.rm = TRUE),
     wrong_dir = mean(sign(or - 1) != sign(true_or - 1), na.rm = TRUE) * 100,
     .groups = "drop"
   )

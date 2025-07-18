@@ -30,8 +30,17 @@ scenario_definitions <- tribble(
 )
 
 # Prevalence and baseline risks (from 01_run_simulations.R)
-freq_arrest <- c(A = 60/388, B = 52/388, C = 138/388, D = 69/388, E = 69/388)
-p0_arrest_raw      <- c(A = 7/60, B = 0/52, C = 11/138, D = 11/69, E = 1/69)
+# Updated to use overall prevalence (both treatment and control arms combined)
+# From Swets et al. CID Supplementary Table 2:
+# Group A: 60+55=115, Group B: 52+55=107, Group C: 138+138=276, Group D: 69+52=121, Group E: 69+70=139
+# Total: 115+107+276+121+139 = 758
+freq_arrest <- c(A = 115/758, B = 107/758, C = 276/758, D = 121/758, E = 139/758)
+# Updated mortality data based on paper (overall mortality across both arms)
+# From Swets et al. CID Supplementary Table 2:
+# Group A: (13+12)/(60+55)=25/115=21.7%, Group B: (0+8)/(52+55)=8/107=7.5%, 
+# Group C: (29+24)/(138+138)=53/276=19.2%, Group D: (11+11)/(69+52)=22/121=18.2%, 
+# Group E: (3+1)/(69+70)=4/139=2.9%
+p0_arrest_raw      <- c(A = 25/115, B = 8/107, C = 53/276, D = 22/121, E = 4/139)
 
 # --- Continuity correction helper -------------------------------------------
 # FIX: Generalize the previously hard-coded continuity correction that was only
@@ -80,95 +89,113 @@ get_or_p1 <- function(or, p0) { (or * p0) / (1 - p0 + (or * p0)) }
 calculate_mixed_cohort_properties <- function(target_group, sensitivity, specificity,
                                               or_vector, p0_vector, freq_vector) {
 
-  p_vec <- freq_vector / sum(freq_vector)
-  p_target <- p_vec[target_group]
-  p_non_target <- 1 - p_target
+  # --- PREP: Calculate population-level parameters ---
+  p_vec <- freq_vector / sum(freq_vector) # Normalize prevalences
+  p_target <- p_vec[target_group]         # Prevalence of the target subgroup
+  p_non_target <- 1 - p_target            # Prevalence of all other (contaminant) subgroups
+
+  # Define which groups are contaminants
   non_target_groups <- names(p_vec)[names(p_vec) != target_group]
 
-  # --- 1. Calculate properties of the two components: True Target vs. Contaminants
-  # True Target
-  beta_target <- log(or_vector[target_group])
-  p0_target <- p0_vector[target_group]
-  p1_target <- get_or_p1(or_vector[target_group], p0_target)
+  # --- 1. Calculate properties of the two conceptual components: TRUE TARGET vs. CONTAMINANTS ---
+  
+  # A. Properties of the TRUE TARGET subgroup
+  beta_target <- log(or_vector[target_group]) # True log(OR) in the target group
+  p0_target <- p0_vector[target_group]        # True baseline risk in the target group
+  p1_target <- get_or_p1(or_vector[target_group], p0_target) # True risk under treatment in the target group
 
-  # Contaminant Mix -----------------------------------------------------------
+  # B. Properties of the CONTAMINANT MIX (a weighted average of all non-target groups)
   if (p_non_target > 0) {
-    # Weight each non-target group by its prevalence within the non-target pool
+    # Weight each non-target group by its prevalence *within the contaminant pool*
     weights_mix <- p_vec[non_target_groups] / p_non_target
 
-    # Weighted average properties of the contaminant mix
+    # Calculate weighted average baseline risk (p0) and treated risk (p1) for the contaminant mix
     p0_mix   <- sum(p0_vector[non_target_groups] * weights_mix)
-    beta_mix <- sum(log(or_vector[non_target_groups]) * weights_mix)
     p1_mix   <- sum(get_or_p1(or_vector[non_target_groups], p0_vector[non_target_groups]) * weights_mix)
   } else {
-    # Degenerate case: no contaminants
+    # Handle the edge case where the target group is 100% prevalent (no contaminants)
     p0_mix   <- NA_real_
-    beta_mix <- NA_real_
     p1_mix   <- NA_real_
   }
 
-  # --- 2. Calculate properties of the final enrolled (mixed) cohort ----------
-  # Proportion of enrolled cohort that is true target vs. contaminant
-  tp_rate <- sensitivity * p_target
-  fp_rate <- (1 - specificity) * p_non_target
+  # --- 2. Calculate properties of the final ENROLLED (mixed) cohort ---
+  # The enrolled cohort consists of true positives and false positives.
+
+  # Calculate the proportion of the *entire screened population* that are true positives (TP) and false positives (FP)
+  tp_rate <- sensitivity * p_target     # Correctly identified targets
+  fp_rate <- (1 - specificity) * p_non_target # Incorrectly identified non-targets
+  
+  # The overall enrollment rate is the sum of TP and FP rates
   enrol_rate <- tp_rate + fp_rate
 
+  # Handle the case of a perfect test that perfectly excludes everyone (enroll rate is 0)
   if (enrol_rate == 0) {
     return(list(beta_obs = 0, p0_obs = 0, p1_obs = 0, enrol_rate = 0,
-                p_true_in_enrolled = NA_real_, p_mix_in_enrolled = NA_real_,
+                p_true_in_enrolled = NA_real_,
                 beta_target = beta_target))
   }
 
-  p_true_in_enrolled <- tp_rate / enrol_rate
-  p_mix_in_enrolled  <- fp_rate / enrol_rate
+  # Calculate the composition of the *enrolled cohort*
+  p_true_in_enrolled <- tp_rate / enrol_rate # Proportion of enrolled patients who are true targets
+  p_mix_in_enrolled  <- fp_rate / enrol_rate # Proportion of enrolled patients who are contaminants
 
-  # Observed (diluted) baseline & treated risks in the final enrolled cohort
+  # Calculate the OBSERVED (diluted) event rates in the final enrolled cohort
+  # This is a weighted average of the rates from the true targets and the contaminant mix
   if (p_non_target > 0) {
-    p0_obs   <- p_true_in_enrolled * p0_target + p_mix_in_enrolled * p0_mix
-    p1_obs   <- p_true_in_enrolled * p1_target + p_mix_in_enrolled * p1_mix
+    p0_obs   <- p_true_in_enrolled * p0_target + p_mix_in_enrolled * p0_mix # Observed baseline risk
+    p1_obs   <- p_true_in_enrolled * p1_target + p_mix_in_enrolled * p1_mix # Observed treated risk
   } else {
-    # All enrolled are true targets
+    # If no contaminants, the observed rates are just the true target rates
     p0_obs <- p0_target
     p1_obs <- p1_target
   }
 
   # FIX: derive observed log-OR from pooled risks so that
   # beta_obs == log( (p1_obs/(1-p1_obs)) / (p0_obs/(1-p0_obs)) ).
+  # This is the diluted effect size we expect to observe in the trial.
   if (p0_obs %in% c(0,1) || p1_obs %in% c(0,1)) {
-    beta_obs <- 0  # will be trapped upstream in sample-size fn
+    beta_obs <- 0  # Handle edge cases where OR is undefined; will be trapped by next function
   } else {
     beta_obs <- log( (p1_obs / (1 - p1_obs)) / (p0_obs / (1 - p0_obs)) )
   }
 
-  list(beta_obs = beta_obs,
-       p0_obs = p0_obs,
-       p1_obs = p1_obs,
-       enrol_rate = enrol_rate,
-       p_true_in_enrolled = p_true_in_enrolled,
-       p_mix_in_enrolled  = p_mix_in_enrolled,
-       beta_target = beta_target)
+  # Return all calculated properties of the enrolled cohort
+  list(beta_obs = beta_obs,           # The OBSERVED log(OR) in the enrolled cohort
+       p0_obs = p0_obs,               # The OBSERVED baseline risk
+       p1_obs = p1_obs,               # The OBSERVED risk under treatment
+       enrol_rate = enrol_rate,       # The proportion of the screened population that is enrolled
+       p_true_in_enrolled = p_true_in_enrolled, # The purity of the enrolled cohort
+       beta_target = beta_target)     # The TRUE log(OR) for the target group (for bias calculation)
 }
 
 
 calc_required_nns <- function(beta_obs, p0_obs, p1_obs, enrol_rate,
                               z_alpha_half, z_power_target) {
 
-  # Guard against degenerate inputs ------------------------------------------------
+  # --- INPUT GUARD: Check for degenerate cases ---
+  # If the observed effect size is zero, or rates are 0/1, power is undefined, so N is infinite.
   if (abs(beta_obs) < 1e-6 || is.na(beta_obs) || enrol_rate == 0 ||
       p0_obs == 0 || p0_obs == 1 || p1_obs == 0 || p1_obs == 1) {
     return(list(n_total = Inf, nns = Inf))
   }
 
-  # Variance for log-OR based on the OBSERVED event rates in the mixed cohort
-  # var_term is the sum of inverse cell probabilities; true Wald variance adds
-  # a factor 2/n_total under balanced allocation. (FIX: multiply by 2 below.)
+  # --- SAMPLE SIZE CALCULATION ---
+  # This uses the standard formula for comparing two proportions (via log-OR).
+  # The variance of the log(OR) is approximated by the sum of the inverse variances of the two binomials.
+  
+  # 1. Calculate the variance term for the log(OR) based on the OBSERVED event rates in the mixed cohort.
+  # This term is 1/p0(1-p0) + 1/p1(1-p1).
   var_term <- (1 / (p0_obs * (1 - p0_obs))) + (1 / (p1_obs * (1 - p1_obs)))
   if (!is.finite(var_term)) return(list(n_total = Inf, nns = Inf))
 
-  # Standard sample size formula, assuming 1:1 allocation.
-  # n_total = 2 * (z_{alpha/2} + z_{power})^2 * var_term / beta^2
+  # 2. Apply the standard sample size formula for a two-group comparison with 1:1 allocation.
+  # N_total = 2 * (Z_alpha/2 + Z_power)^2 * (variance_term) / (log(OR))^2
+  # The factor of 2 at the start accounts for the two groups (treatment and control).
   n_total <- 2 * (z_alpha_half + z_power_target)^2 * var_term / (beta_obs^2)  # FIX
 
+  # 3. Calculate Number Needed to Screen (NNS).
+  # This is the total required sample size (n_total, or NNR) divided by the proportion of
+  # screened patients who are actually enrolled.
   nns <- ceiling(n_total / enrol_rate)
 
   list(n_total = ceiling(n_total), nns = nns)
