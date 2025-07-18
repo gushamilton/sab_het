@@ -9,7 +9,7 @@
 # Usage: Rscript aim3_parallel.R <scenario_id>
 # 
 # This script runs one specific scenario from the aim3 simulation and saves
-# both summary and detailed results to the parallel/results/ directory.
+# both summary and detailed results to the main results/ directory.
 # -----------------------------------------------------------------------------
 
 # --- 1. SETUP ---
@@ -18,6 +18,16 @@ pacman::p_load(tidyverse, broom, furrr, scales)
 
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 source("../code/functions/functions.R")
+# +++ NEW: load shared constants +++
+source("../code/common_parameters.R")
+params <- get_common_params()
+attach(params, warn.conflicts = FALSE)
+
+# Ensure local variable names expected later map to shared params
+p0_arrest_adjusted <- p0_ctrl
+freq_arrest        <- freq_arrest
+sens_spec_scenarios <- sens_spec_scenarios
+target_groups_aim3  <- target_groups_aim3
 
 # --- 2. GET COMMAND LINE ARGUMENTS ---
 args <- commandArgs(trailingOnly = TRUE)
@@ -59,7 +69,7 @@ freq_arrest        <- c(A = 115/758, B = 107/758, C = 276/758, D = 121/758, E = 
 # Group E: (3+1)/(69+70)=4/139=2.9%
 p0_arrest_raw      <- c(A = 25/115, B = 8/107, C = 53/276, D = 22/121, E = 4/139)
 p0_B_corrected     <- 0.5 / (107 + 0.5)
-p0_arrest_adjusted <- p0_arrest_raw
+p0_arrest_adjusted <- p0_ctrl
 p0_arrest_adjusted["B"] <- p0_B_corrected
 
 # --- 4. DEFINE ALL SCENARIOS ---
@@ -169,13 +179,13 @@ if (!is.na(summary_result$nns_needed)) {
   )
   
   # Save detailed results to file
-  detailed_filename <- sprintf("results/aim3_detailed_scenario_%03d.tsv", scenario_id)
+  detailed_filename <- sprintf("../results/aim3_detailed_scenario_%03d.tsv", scenario_id)
   write_tsv(detailed_results, detailed_filename)
   message(paste("Detailed results saved to:", detailed_filename))
 }
 
 # Save summary results to file
-summary_filename <- sprintf("results/aim3_summary_scenario_%03d.tsv", scenario_id)
+summary_filename <- sprintf("../results/aim3_summary_scenario_%03d.tsv", scenario_id)
 write_tsv(summary_result, summary_filename)
 message(paste("Summary results saved to:", summary_filename))
 

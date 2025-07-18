@@ -422,3 +422,12 @@ freq_arrest <- c(A = 115/758, B = 107/758, C = 276/758, D = 121/758, E = 139/758
 # Group E: (3+1)/(69+70)=4/139=2.9%
 p0_arrest_raw <- c(A = 25/115, B = 8/107, C = 53/276, D = 22/121, E = 4/139)
 n0_B <- 107; p0_B_corrected <- 0.5 / (n0_B + 0.5); p0_arrest_adjusted <- p0_arrest_raw; p0_arrest_adjusted["B"] <- p0_B_corrected
+
+## Load common parameters (Swets control-arm risks, frequencies, etc.)
+source("code/common_parameters.R", local = FALSE)
+params_common <- get_common_params()
+attach(params_common, warn.conflicts = FALSE)
+
+# Provide compatibility variable names expected elsewhere
+p0_arrest_adjusted <- p0_ctrl
+freq_arrest        <- freq_arrest
