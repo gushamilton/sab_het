@@ -1,0 +1,21 @@
+cpu-bind=MASK - bp1-compute132, task  0  0 [3885260]: mask 0xff000000ff0000 set
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) slurm/23.11.6-77s5
+Starting Aim 1 sensitivity at Tue Dec 30 15:57:46 GMT 2025
+SLURM_CPUS_PER_TASK = 16
+--- Loading Packages ---
+--- Defining Simulation Parameters ---
+--- Parallel processing enabled on 16 cores ---
+
+--- STARTING AIM 1 SENSITIVITY ---
+  Running: ARREST_raw cohort= ARREST
+  Running: ARREST_raw cohort= Edinburgh
+  Running: ARREST_raw cohort= Edinburgh 2
+  Running: ARREST_raw cohort= IDISA
+  Running: ARREST_raw cohort= SABG-PCS
+--- AIM 1 SENSITIVITY COMPLETE --- (Duration: 90.9 minutes) ---
+Error: unexpected ',' in "          n          = ss,"
+Execution halted
+Sensitivity script finished.

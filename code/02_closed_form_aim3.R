@@ -16,63 +16,42 @@
 pacman::p_load(tidyverse, glue, readr, scales)
 
 theme_set(theme_minimal())
+source("code/common_parameters.R")
+scenario_set <- Sys.getenv("SCENARIO_SET", unset = "main")
+if (!scenario_set %in% c("main", "supp")) {
+  stop("SCENARIO_SET must be 'main' or 'supp'")
+}
+output_root <- file.path("results", scenario_set)
+dir.create(file.path(output_root, "tables"), showWarnings = FALSE, recursive = TRUE)
 
 # --- 2. SCENARIOS & INPUT DATA ----------------------------------------------
 
+params <- get_common_params()
+
 # Odds-ratio scenarios (same as in 01_run_simulations.R)
-or_arrest        <- c(A = 1.00, B = 18.8, C = 0.79, D = 1.40, E = 0.30)
-or_conservative  <- c(A = 1.00, B =  2.0, C = 0.70, D = 1.20, E = 0.80)
+or_arrest_raw    <- params$or_arrest
+or_arrest_shrunk <- params$or_arrest_shrunk_k05
+or_conservative  <- params$or_conservative
 
-scenario_definitions <- tribble(
-  ~scenario_name, ~or_vector,
-  "ARREST",        or_arrest,
-  "Conservative",  or_conservative
-)
-
-# Prevalence and baseline risks (from 01_run_simulations.R)
-# Updated to use overall prevalence (both treatment and control arms combined)
-# From Swets et al. CID Supplementary Table 2:
-# Group A: 60+55=115, Group B: 52+55=107, Group C: 138+138=276, Group D: 69+52=121, Group E: 69+70=139
-# Total: 115+107+276+121+139 = 758
-freq_arrest <- c(A = 115/758, B = 107/758, C = 276/758, D = 121/758, E = 139/758)
-# Updated mortality data based on paper (overall mortality across both arms)
-# From Swets et al. CID Supplementary Table 2:
-# Group A: (13+12)/(60+55)=25/115=21.7%, Group B: (0+8)/(52+55)=8/107=7.5%, 
-# Group C: (29+24)/(138+138)=53/276=19.2%, Group D: (11+11)/(69+52)=22/121=18.2%, 
-# Group E: (3+1)/(69+70)=4/139=2.9%
-p0_arrest_raw      <- c(A = 25/115, B = 8/107, C = 53/276, D = 22/121, E = 4/139)
-
-# --- Continuity correction helper -------------------------------------------
-# FIX: Generalize the previously hard-coded continuity correction that was only
-# applied to Group B. We replicate the original correction form (0.5/(n+0.5))
-# whenever a 0 event count would produce p == 0.
-apply_zero_cc <- function(p_vec, freq_vec, add = 0.5) {
-  # p_vec: vector of raw risks (events/n)
-  # freq_vec: denominators (n) on the same scale/order as p_vec
-  # For elements where p_vec == 0, replace with add / (n + add)
-  out <- p_vec
-  zero_idx <- which(p_vec == 0)
-  if (length(zero_idx)) {
-    out[zero_idx] <- add / (freq_vec[zero_idx] + add)
-  }
-  out
+scenario_definitions <- if (scenario_set == "main") {
+  tribble(
+    ~scenario_name,   ~or_vector,
+    "ARREST_raw",     or_arrest_raw
+  )
+} else {
+  tribble(
+    ~scenario_name,   ~or_vector,
+    "ARREST_shrunk",  or_arrest_shrunk
+  )
 }
 
-# Apply the continuity correction
-p0_arrest_adjusted <- apply_zero_cc(p0_arrest_raw, freq_arrest)
+# Prevalence and baseline risks (overall mortality across both arms)
+freq_arrest        <- params$freq_arrest
+p0_arrest_adjusted <- params$p0_overall
 
 # Sensitivity/specificity test grid (including the “Perfect” test)
-sens_spec_scenarios <- tribble(
-  ~test_type,            ~sensitivity, ~specificity,
-  "Perfect (100%)",            1.00,         1.00,
-  "Near-Perfect",       0.99,         0.99,
-  "High Sens/High Spec",0.95,         0.95,
-  "High Sens/Low Spec", 0.95,         0.70,
-  "Low Sens/High Spec", 0.70,         0.95,
-  "Balanced/Moderate",  0.80,         0.80
-)
-
-target_groups <- c("B", "C", "D", "E")
+sens_spec_scenarios <- params$sens_spec_scenarios
+target_groups <- params$target_groups_aim3
 
 # Constants for power calculation
 alpha          <- 0.05               # two-sided
@@ -234,12 +213,14 @@ results_closed <- pmap_dfr(all_cases, function(scenario_name, or_vector,
 
 # --- 5. OUTPUT ---------------------------------------------------------------
 
-# Ensure output directory exists -------------------------------------------------
-dir.create("results/tables", showWarnings = FALSE, recursive = TRUE)
+results_closed <- results_closed %>% mutate(scenario_set = scenario_set)
+write_tsv(
+  results_closed,
+  file.path(output_root, "tables/aim3_closed_form_summary.tsv")
+)
 
-write_tsv(results_closed,
-          "results/tables/aim3_closed_form_summary.tsv")
+cat("Closed-form Aim 3 results saved to", file.path(output_root, "tables/aim3_closed_form_summary.tsv"), "\n")
 
-cat("Closed-form Aim 3 results saved to results/tables/aim3_closed_form_summary.tsv\n")
-
-results_closed %>% gt::gt()
+if (Sys.getenv("PRINT_GT", unset = "1") == "1") {
+  results_closed %>% gt::gt()
+}

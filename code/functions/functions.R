@@ -82,7 +82,7 @@ misclassify_group <- function(sim_data, accuracy, freq_vector, seed = NULL) {
     #' @param or_vector Numeric vector of odds ratios for the treatment effect in each subgroup.
     #' @param freq_vector Numeric vector of frequencies (proportions) for each subgroup. Must sum to 1 or will be normalized.
     #' @param n Integer, the total number of participants to simulate.
-    #' @param p0_vector Numeric vector of baseline event probabilities in the control group for each subgroup. If NULL, defaults to 0.3 for all.
+    #' @param p0_vector Numeric vector of baseline event probabilities for each subgroup. If NULL, defaults to 0.3 for all.
     #' @param seed Integer, seed for random number generation for reproducibility.
     #'
     #' @return A tibble with columns: id, group (true subgroup), treatment (0/1), success (0/1 outcome).
@@ -175,7 +175,7 @@ misclassify_group <- function(sim_data, accuracy, freq_vector, seed = NULL) {
     #' @param or_vector Numeric vector of true odds ratios per subgroup.
     #' @param freq_vector Numeric vector of true frequencies per subgroup.
     #' @param n Integer, total sample size per simulation run.
-    #' @param p0_vector Numeric vector of baseline event probabilities (control group) per subgroup.
+    #' @param p0_vector Numeric vector of baseline event probabilities per subgroup.
     #' @param accuracy Numeric, the probability of correct subgroup classification (0 to 1).
     #' @param seed Integer, base seed for reproducibility across repetitions.
     #' @param n_reps Integer, the number of simulation repetitions to run.
@@ -184,7 +184,7 @@ misclassify_group <- function(sim_data, accuracy, freq_vector, seed = NULL) {
     #' @return A tibble containing the combined results from all repetitions, 
     #'   with an added column 'k' indicating the repetition number.
     #' @export
-    replicate_sims <- function(or_vector, freq_vector, n, p0_vector = NULL, accuracy = 1, seed = 123, n_reps = 100, true_overall_beta) {
+    replicate_sims <- function(or_vector, freq_vector, n, p0_vector = NULL, accuracy = 1, seed = 123, n_reps = 100, true_overall_beta = NA_real_) {
       # Set base seed for the overall replication process
       set.seed(seed)
       
@@ -421,7 +421,13 @@ freq_arrest <- c(A = 115/758, B = 107/758, C = 276/758, D = 121/758, E = 139/758
 # Group C: (29+24)/(138+138)=53/276=19.2%, Group D: (11+11)/(69+52)=22/121=18.2%, 
 # Group E: (3+1)/(69+70)=4/139=2.9%
 p0_arrest_raw <- c(A = 25/115, B = 8/107, C = 53/276, D = 22/121, E = 4/139)
-n0_B <- 107; p0_B_corrected <- 0.5 / (n0_B + 0.5); p0_arrest_adjusted <- p0_arrest_raw; p0_arrest_adjusted["B"] <- p0_B_corrected
+n_overall <- c(A = 115, B = 107, C = 276, D = 121, E = 139)
+apply_zero_cc <- function(p_vec, n_vec, add = 0.5) {
+  zero_idx <- which(p_vec == 0)
+  if (length(zero_idx)) p_vec[zero_idx] <- add / (n_vec[zero_idx] + add)
+  p_vec
+}
+p0_arrest_adjusted <- apply_zero_cc(p0_arrest_raw, n_overall)
 
 # BEGIN shared parameters loader ------------------------------------------------
 common_opts <- c("code/common_parameters.R", "../code/common_parameters.R", "../../code/common_parameters.R")
@@ -431,7 +437,7 @@ if (!is.na(common_file)) {
   params_common <- get_common_params()
   attach(params_common, warn.conflicts = FALSE)
   # provide compatibility aliases expected by legacy code
-  p0_arrest_adjusted <- p0_ctrl
+  p0_arrest_adjusted <- p0_overall
   freq_arrest        <- freq_arrest
 }
 # END shared parameters loader ------------------------------------------------

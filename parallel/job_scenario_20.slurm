@@ -1,10 +1,11 @@
 #!/bin/bash
 #SBATCH --job-name=aim3_scenario_20
-#SBATCH --output=logs/aim3_scenario_20_%j.log
-#SBATCH --error=logs/aim3_scenario_20_%j.err
+#SBATCH --output=logs/aim3_scenario_20_%%j.log
+#SBATCH --error=logs/aim3_scenario_20_%%j.err
 #SBATCH --time=04:00:00
 #SBATCH --mem=6G
 #SBATCH --cpus-per-task=16
+
 
 # Load R module (adjust as needed for your cluster)
 module load languages/R
@@ -13,6 +14,6 @@ module load languages/R
 cd /user/work/fh6520/sab_het/parallel
 
 # Run the scenario
-echo "Starting scenario 20 at $(date)"
+echo "Starting scenario 20 at \\$(date)"
 Rscript aim3_parallel.R 20
-echo "Completed scenario 20 at $(date)"
+echo "Completed scenario 20 at \\$(date)"

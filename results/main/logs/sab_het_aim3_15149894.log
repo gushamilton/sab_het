@@ -1,0 +1,397 @@
+cpu-bind=MASK - bp1-compute057, task  0  0 [3510667]: mask 0x1e02b01e02b0 set
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) slurm/23.11.6-77s5
+Starting Aim 3 simulation at Tue Dec 30 13:42:27 GMT 2025
+SLURM_CPUS_PER_TASK = 16
+--- Loading Packages ---
+--- Defining Simulation Parameters ---
+--- Parallel processing enabled on 16 cores ---
+
+--- STARTING AIM 3: Enrichment Trial (Sens/Spec Scenarios) ---
+
+[1/24] Searching: Group 'B', Sens: 1, Spec: 1, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=100%
+    NNS=2,000 -> Power=100%
+    NNS=1,000 -> Power=100%
+    NNS=500 -> Power=100%
+    NNS=250 -> Power=92%
+    NNS=125 -> Power=23%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=187 -> Power=76%
+    Testing NNS=218 -> Power=90%
+    Testing NNS=202 -> Power=88%
+    Testing NNS=194 -> Power=81%
+    Testing NNS=190 -> Power=84%
+    Testing NNS=188 -> Power=76%
+    Testing NNS=189 -> Power=78%
+
+[2/24] Searching: Group 'C', Sens: 1, Spec: 1, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=38%
+    NNS=8,000 -> Power=68%
+    NNS=16,000 -> Power=94%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=12,000 -> Power=88%
+    Testing NNS=10,000 -> Power=76%
+    Testing NNS=11,000 -> Power=86%
+    Testing NNS=10,500 -> Power=77%
+    Testing NNS=10,750 -> Power=82%
+    Testing NNS=10,625 -> Power=73%
+    Testing NNS=10,687 -> Power=79%
+    Testing NNS=10,718 -> Power=82%
+
+[3/24] Searching: Group 'D', Sens: 1, Spec: 1, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=38%
+    NNS=8,000 -> Power=70%
+    NNS=16,000 -> Power=92%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=12,000 -> Power=80%
+    Testing NNS=10,000 -> Power=76%
+    Testing NNS=11,000 -> Power=82%
+    Testing NNS=10,500 -> Power=85%
+    Testing NNS=10,250 -> Power=80%
+    Testing NNS=10,125 -> Power=75%
+    Testing NNS=10,187 -> Power=80%
+    Testing NNS=10,156 -> Power=79%
+
+[4/24] Searching: Group 'E', Sens: 1, Spec: 1, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=55%
+    NNS=8,000 -> Power=82%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=6,000 -> Power=70%
+    Testing NNS=7,000 -> Power=78%
+    Testing NNS=7,500 -> Power=82%
+    Testing NNS=7,250 -> Power=80%
+    Testing NNS=7,125 -> Power=80%
+    Testing NNS=7,062 -> Power=78%
+    Testing NNS=7,093 -> Power=78%
+    Testing NNS=7,109 -> Power=81%
+
+[5/24] Searching: Group 'B', Sens: 0.99, Spec: 0.99, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=100%
+    NNS=2,000 -> Power=100%
+    NNS=1,000 -> Power=100%
+    NNS=500 -> Power=100%
+    NNS=250 -> Power=92%
+    NNS=125 -> Power=26%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=187 -> Power=76%
+    Testing NNS=218 -> Power=88%
+    Testing NNS=202 -> Power=86%
+    Testing NNS=194 -> Power=84%
+    Testing NNS=190 -> Power=84%
+    Testing NNS=188 -> Power=78%
+    Testing NNS=189 -> Power=80%
+
+[6/24] Searching: Group 'C', Sens: 0.99, Spec: 0.99, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=36%
+    NNS=8,000 -> Power=64%
+    NNS=16,000 -> Power=88%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=12,000 -> Power=82%
+    Testing NNS=10,000 -> Power=70%
+    Testing NNS=11,000 -> Power=78%
+    Testing NNS=11,500 -> Power=76%
+    Testing NNS=11,750 -> Power=76%
+    Testing NNS=11,875 -> Power=81%
+    Testing NNS=11,812 -> Power=78%
+    Testing NNS=11,843 -> Power=79%
+
+[7/24] Searching: Group 'D', Sens: 0.99, Spec: 0.99, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=44%
+    NNS=8,000 -> Power=74%
+    NNS=16,000 -> Power=93%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=12,000 -> Power=84%
+    Testing NNS=10,000 -> Power=78%
+    Testing NNS=11,000 -> Power=86%
+    Testing NNS=10,500 -> Power=88%
+    Testing NNS=10,250 -> Power=85%
+    Testing NNS=10,125 -> Power=79%
+    Testing NNS=10,187 -> Power=84%
+    Testing NNS=10,156 -> Power=85%
+
+[8/24] Searching: Group 'E', Sens: 0.99, Spec: 0.99, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=26%
+    NNS=8,000 -> Power=39%
+    NNS=16,000 -> Power=72%
+    NNS=32,000 -> Power=95%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=24,000 -> Power=90%
+    Testing NNS=20,000 -> Power=82%
+    Testing NNS=18,000 -> Power=82%
+    Testing NNS=17,000 -> Power=76%
+    Testing NNS=17,500 -> Power=76%
+    Testing NNS=17,750 -> Power=80%
+    Testing NNS=17,625 -> Power=73%
+    Testing NNS=17,687 -> Power=80%
+
+[9/24] Searching: Group 'B', Sens: 0.95, Spec: 0.95, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=100%
+    NNS=2,000 -> Power=100%
+    NNS=1,000 -> Power=100%
+    NNS=500 -> Power=100%
+    NNS=250 -> Power=80%
+    NNS=125 -> Power=37%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=187 -> Power=68%
+    Testing NNS=218 -> Power=76%
+    Testing NNS=234 -> Power=83%
+    Testing NNS=226 -> Power=80%
+    Testing NNS=222 -> Power=86%
+    Testing NNS=220 -> Power=81%
+    Testing NNS=219 -> Power=85%
+
+[10/24] Searching: Group 'C', Sens: 0.95, Spec: 0.95, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=22%
+    NNS=8,000 -> Power=32%
+    NNS=16,000 -> Power=52%
+    NNS=32,000 -> Power=85%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=24,000 -> Power=73%
+    Testing NNS=28,000 -> Power=84%
+    Testing NNS=26,000 -> Power=75%
+    Testing NNS=27,000 -> Power=77%
+    Testing NNS=27,500 -> Power=80%
+    Testing NNS=27,750 -> Power=77%
+    Testing NNS=27,875 -> Power=82%
+    Testing NNS=27,812 -> Power=78%
+
+[11/24] Searching: Group 'D', Sens: 0.95, Spec: 0.95, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=52%
+    NNS=8,000 -> Power=86%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=6,000 -> Power=71%
+    Testing NNS=7,000 -> Power=77%
+    Testing NNS=7,500 -> Power=80%
+    Testing NNS=7,250 -> Power=80%
+    Testing NNS=7,375 -> Power=78%
+    Testing NNS=7,437 -> Power=81%
+    Testing NNS=7,406 -> Power=73%
+    Testing NNS=7,421 -> Power=80%
+
+[12/24] Searching: Group 'E', Sens: 0.95, Spec: 0.95, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=6%
+    NNS=8,000 -> Power=2%
+    NNS=16,000 -> Power=2%
+    NNS=32,000 -> Power=4%
+    NNS=64,000 -> Power=8%
+    NNS=128,000 -> Power=5%
+    NNS=256,000 -> Power=6%
+    NNS=512,000 -> Power=4%
+    NNS=1,024,000 -> Power=6%
+  Power goal not reached below 1e+06 NNS.
+
+[13/24] Searching: Group 'B', Sens: 0.95, Spec: 0.7, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=100%
+    NNS=2,000 -> Power=100%
+    NNS=1,000 -> Power=98%
+    NNS=500 -> Power=86%
+    NNS=250 -> Power=56%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=375 -> Power=76%
+    Testing NNS=437 -> Power=82%
+    Testing NNS=406 -> Power=79%
+    Testing NNS=421 -> Power=79%
+    Testing NNS=429 -> Power=80%
+    Testing NNS=425 -> Power=81%
+    Testing NNS=423 -> Power=80%
+    Testing NNS=424 -> Power=82%
+
+[14/24] Searching: Group 'C', Sens: 0.95, Spec: 0.7, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=29%
+    NNS=8,000 -> Power=48%
+    NNS=16,000 -> Power=76%
+    NNS=32,000 -> Power=100%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=24,000 -> Power=91%
+    Testing NNS=20,000 -> Power=88%
+    Testing NNS=18,000 -> Power=83%
+    Testing NNS=17,000 -> Power=79%
+    Testing NNS=17,500 -> Power=80%
+    Testing NNS=17,250 -> Power=82%
+    Testing NNS=17,125 -> Power=81%
+    Testing NNS=17,062 -> Power=81%
+
+[15/24] Searching: Group 'D', Sens: 0.95, Spec: 0.7, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=93%
+    NNS=2,000 -> Power=60%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=3,000 -> Power=84%
+    Testing NNS=2,500 -> Power=78%
+    Testing NNS=2,750 -> Power=78%
+    Testing NNS=2,875 -> Power=82%
+    Testing NNS=2,812 -> Power=76%
+    Testing NNS=2,843 -> Power=78%
+    Testing NNS=2,859 -> Power=80%
+    Testing NNS=2,867 -> Power=80%
+
+[16/24] Searching: Group 'E', Sens: 0.95, Spec: 0.7, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=75%
+    NNS=8,000 -> Power=98%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=6,000 -> Power=88%
+    Testing NNS=5,000 -> Power=84%
+    Testing NNS=4,500 -> Power=78%
+    Testing NNS=4,750 -> Power=72%
+    Testing NNS=4,875 -> Power=81%
+    Testing NNS=4,812 -> Power=81%
+    Testing NNS=4,781 -> Power=78%
+    Testing NNS=4,796 -> Power=82%
+
+[17/24] Searching: Group 'B', Sens: 0.7, Spec: 0.95, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=100%
+    NNS=2,000 -> Power=100%
+    NNS=1,000 -> Power=100%
+    NNS=500 -> Power=92%
+    NNS=250 -> Power=64%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=375 -> Power=86%
+    Testing NNS=312 -> Power=78%
+    Testing NNS=343 -> Power=82%
+    Testing NNS=327 -> Power=74%
+    Testing NNS=335 -> Power=83%
+    Testing NNS=331 -> Power=82%
+    Testing NNS=329 -> Power=80%
+    Testing NNS=328 -> Power=78%
+
+[18/24] Searching: Group 'C', Sens: 0.7, Spec: 0.95, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=12%
+    NNS=8,000 -> Power=16%
+    NNS=16,000 -> Power=26%
+    NNS=32,000 -> Power=52%
+    NNS=64,000 -> Power=80%
+    NNS=128,000 -> Power=98%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=96,000 -> Power=94%
+    Testing NNS=80,000 -> Power=88%
+    Testing NNS=72,000 -> Power=86%
+    Testing NNS=68,000 -> Power=85%
+    Testing NNS=66,000 -> Power=78%
+    Testing NNS=67,000 -> Power=86%
+    Testing NNS=66,500 -> Power=84%
+    Testing NNS=66,250 -> Power=90%
+
+[19/24] Searching: Group 'D', Sens: 0.7, Spec: 0.95, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=46%
+    NNS=8,000 -> Power=84%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=6,000 -> Power=64%
+    Testing NNS=7,000 -> Power=70%
+    Testing NNS=7,500 -> Power=76%
+    Testing NNS=7,750 -> Power=71%
+    Testing NNS=7,875 -> Power=69%
+    Testing NNS=7,937 -> Power=76%
+    Testing NNS=7,968 -> Power=73%
+    Testing NNS=7,984 -> Power=76%
+
+[20/24] Searching: Group 'E', Sens: 0.7, Spec: 0.95, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=6%
+    NNS=8,000 -> Power=8%
+    NNS=16,000 -> Power=8%
+    NNS=32,000 -> Power=16%
+    NNS=64,000 -> Power=22%
+    NNS=128,000 -> Power=40%
+    NNS=256,000 -> Power=68%
+    NNS=512,000 -> Power=92%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=384,000 -> Power=87%
+    Testing NNS=320,000 -> Power=77%
+    Testing NNS=352,000 -> Power=84%
+    Testing NNS=336,000 -> Power=82%
+    Testing NNS=328,000 -> Power=80%
+    Testing NNS=324,000 -> Power=77%
+    Testing NNS=326,000 -> Power=80%
+    Testing NNS=325,000 -> Power=79%
+
+[21/24] Searching: Group 'B', Sens: 0.8, Spec: 0.8, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=100%
+    NNS=2,000 -> Power=100%
+    NNS=1,000 -> Power=99%
+    NNS=500 -> Power=85%
+    NNS=250 -> Power=55%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=375 -> Power=76%
+    Testing NNS=437 -> Power=84%
+    Testing NNS=406 -> Power=78%
+    Testing NNS=421 -> Power=76%
+    Testing NNS=429 -> Power=77%
+    Testing NNS=433 -> Power=76%
+    Testing NNS=435 -> Power=76%
+    Testing NNS=436 -> Power=76%
+
+[22/24] Searching: Group 'C', Sens: 0.8, Spec: 0.8, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=12%
+    NNS=8,000 -> Power=18%
+    NNS=16,000 -> Power=32%
+    NNS=32,000 -> Power=60%
+    NNS=64,000 -> Power=89%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=48,000 -> Power=80%
+    Testing NNS=56,000 -> Power=86%
+    Testing NNS=52,000 -> Power=78%
+    Testing NNS=54,000 -> Power=78%
+    Testing NNS=55,000 -> Power=84%
+    Testing NNS=54,500 -> Power=80%
+    Testing NNS=54,250 -> Power=85%
+    Testing NNS=54,125 -> Power=83%
+
+[23/24] Searching: Group 'D', Sens: 0.8, Spec: 0.8, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=78%
+    NNS=8,000 -> Power=97%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=6,000 -> Power=94%
+    Testing NNS=5,000 -> Power=87%
+    Testing NNS=4,500 -> Power=86%
+    Testing NNS=4,250 -> Power=83%
+    Testing NNS=4,125 -> Power=84%
+    Testing NNS=4,062 -> Power=82%
+    Testing NNS=4,031 -> Power=84%
+    Testing NNS=4,015 -> Power=84%
+
+[24/24] Searching: Group 'E', Sens: 0.8, Spec: 0.8, Scenario: ARREST_raw
+  Phase 1: Finding power bracket...
+    NNS=4,000 -> Power=50%
+    NNS=8,000 -> Power=78%
+    NNS=16,000 -> Power=97%
+  Phase 2: Refining NNS with binary search...
+    Testing NNS=12,000 -> Power=95%
+    Testing NNS=10,000 -> Power=84%
+    Testing NNS=9,000 -> Power=85%
+    Testing NNS=8,500 -> Power=84%
+    Testing NNS=8,250 -> Power=80%
+    Testing NNS=8,375 -> Power=83%
+    Testing NNS=8,312 -> Power=83%
+    Testing NNS=8,281 -> Power=82%
+Warning message:
+Removed 1 row containing missing values or values outside the scale range
+(`geom_point()`). 
+--- AIM 3 COMPLETE --- (Duration: 152.2 minutes) ---
+
+
+--- AIM 3 SIMULATION COMPLETE ---
+Simulation script finished.

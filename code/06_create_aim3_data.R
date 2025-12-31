@@ -7,9 +7,18 @@ library(gt)
 library(scales)
 library(patchwork)
 
+# Choose which scenario set to process
+scenario_set <- Sys.getenv("SCENARIO_SET", unset = "main")
+if (!scenario_set %in% c("main", "supp")) {
+  stop("SCENARIO_SET must be 'main' or 'supp'")
+}
+output_root <- file.path("results", scenario_set)
+dir.create(file.path(output_root, "objects"), showWarnings = FALSE, recursive = TRUE)
+dir.create(file.path(output_root, "tables"), showWarnings = FALSE, recursive = TRUE)
+
 # Load the data
-parallel_results <- read_tsv("parallel/results/tables/aim3_sens_spec_summary.tsv")
-closed_form_results <- read_tsv("results/tables/aim3_closed_form_summary.tsv")
+parallel_results <- read_tsv(file.path(output_root, "tables/aim3_sens_spec_summary.tsv"))
+closed_form_results <- read_tsv(file.path(output_root, "tables/aim3_closed_form_summary.tsv"))
 
 # Clean and prepare the data
 parallel_clean <- parallel_results %>%
@@ -151,24 +160,24 @@ bias_comparison <- parallel_clean %>%
   theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "bottom")
 
 # Save the results for use in QMD
-saveRDS(summary_table, "results/objects/aim3_combined_summary.rds")
-saveRDS(gt_table, "results/objects/aim3_combined_gt_table.rds")
-saveRDS(nns_comparison, "results/objects/aim3_nns_comparison_plot.rds") 
-saveRDS(nnr_comparison, "results/objects/aim3_nnr_comparison_plot.rds")
-saveRDS(bias_comparison, "results/objects/aim3_bias_comparison_plot.rds")
+saveRDS(summary_table, file.path(output_root, "objects/aim3_combined_summary.rds"))
+saveRDS(gt_table, file.path(output_root, "objects/aim3_combined_gt_table.rds"))
+saveRDS(nns_comparison, file.path(output_root, "objects/aim3_nns_comparison_plot.rds"))
+saveRDS(nnr_comparison, file.path(output_root, "objects/aim3_nnr_comparison_plot.rds"))
+saveRDS(bias_comparison, file.path(output_root, "objects/aim3_bias_comparison_plot.rds"))
 
 # Also save the combined data for potential further analysis
-saveRDS(combined_results, "results/objects/aim3_combined_data.rds")
+saveRDS(combined_results, file.path(output_root, "objects/aim3_combined_data.rds"))
 
 # Save summary table as TSV for easy inspection
-write_tsv(summary_table, "results/tables/aim3_combined_summary.tsv")
+write_tsv(summary_table, file.path(output_root, "tables/aim3_combined_summary.tsv"))
 
-cat("Aim 3 results created and saved to results/objects/ and results/tables/\n")
+cat("Aim 3 results created and saved to", file.path(output_root, "objects/"), "and", file.path(output_root, "tables/"), "\n")
 cat("Files created:\n")
-cat("- results/objects/aim3_combined_summary.rds\n")
-cat("- results/objects/aim3_combined_gt_table.rds\n")
-cat("- results/objects/aim3_nns_comparison_plot.rds\n")
-cat("- results/objects/aim3_nnr_comparison_plot.rds\n")
-cat("- results/objects/aim3_bias_comparison_plot.rds\n")
-cat("- results/objects/aim3_combined_data.rds\n")
-cat("- results/tables/aim3_combined_summary.tsv\n") 
+cat("-", file.path(output_root, "objects/aim3_combined_summary.rds"), "\n")
+cat("-", file.path(output_root, "objects/aim3_combined_gt_table.rds"), "\n")
+cat("-", file.path(output_root, "objects/aim3_nns_comparison_plot.rds"), "\n")
+cat("-", file.path(output_root, "objects/aim3_nnr_comparison_plot.rds"), "\n")
+cat("-", file.path(output_root, "objects/aim3_bias_comparison_plot.rds"), "\n")
+cat("-", file.path(output_root, "objects/aim3_combined_data.rds"), "\n")
+cat("-", file.path(output_root, "tables/aim3_combined_summary.tsv"), "\n")

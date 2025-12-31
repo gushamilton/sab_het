@@ -11,49 +11,52 @@ pacman::p_load(tidyverse, broom, furrr, scales)
 
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 source("code/functions/functions.R")
+source("code/common_parameters.R")
 set.seed(20240423)
 
 # Create results directories
-dir.create("results", showWarnings = FALSE)
-dir.create("results/plots", showWarnings = FALSE)
-dir.create("results/objects", showWarnings = FALSE)
-dir.create("results/tables", showWarnings = FALSE)
+scenario_set <- Sys.getenv("SCENARIO_SET", unset = "main")
+if (!scenario_set %in% c("main", "supp")) {
+  stop("SCENARIO_SET must be 'main' or 'supp'")
+}
+output_root <- file.path("results", scenario_set)
+dir.create(output_root, showWarnings = FALSE, recursive = TRUE)
+dir.create(file.path(output_root, "plots"), showWarnings = FALSE, recursive = TRUE)
+dir.create(file.path(output_root, "objects"), showWarnings = FALSE, recursive = TRUE)
+dir.create(file.path(output_root, "tables"), showWarnings = FALSE, recursive = TRUE)
 
 # --- 2. DEFINE SIMULATION PARAMETERS ---
 message("--- Defining Simulation Parameters ---")
 
 # --- Repetitions and Parallel Cores ---
-n_reps_aim2 <- 1000
+n_reps_aim2 <- as.integer(Sys.getenv("N_REPS_AIM2", unset = "1000"))
 n_cores <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK", unset = parallel::detectCores() - 1))
 if (is.na(n_cores) || n_cores < 1) n_cores <- 1
 plan(multisession, workers = n_cores)
 message(paste("--- Parallel processing enabled on", n_cores, "cores ---"))
 
-# --- Define the two main OR scenarios ---
-or_arrest <- c(A = 1.0, B = 18.8, C = 0.79, D = 1.4, E = 0.3)
-or_conservative <- c(A = 1.0, B = 2.0, C = 0.7, D = 1.2, E = 0.8)
+params <- get_common_params()
 
-scenario_definitions <- tribble(
-  ~scenario_name, ~or_vector,
-  "ARREST",        or_arrest,
-  "Conservative",  or_conservative
-)
+# --- Define OR scenarios ---
+or_arrest_raw    <- params$or_arrest
+or_arrest_shrunk <- params$or_arrest_shrunk_k05
+or_conservative  <- params$or_conservative
 
-# --- Shared Parameters ---
-# Updated to use overall prevalence (both treatment and control arms combined)
-# From Swets et al. CID Supplementary Table 2:
-# Group A: 60+55=115, Group B: 52+55=107, Group C: 138+138=276, Group D: 69+52=121, Group E: 69+70=139
-# Total: 115+107+276+121+139 = 758
-freq_arrest        <- c(A = 115/758, B = 107/758, C = 276/758, D = 121/758, E = 139/758)
-# Updated mortality data based on paper (overall mortality across both arms)
-# From Swets et al. CID Supplementary Table 2:
-# Group A: (13+12)/(60+55)=25/115=21.7%, Group B: (0+8)/(52+55)=8/107=7.5%, 
-# Group C: (29+24)/(138+138)=53/276=19.2%, Group D: (11+11)/(69+52)=22/121=18.2%, 
-# Group E: (3+1)/(69+70)=4/139=2.9%
-p0_arrest_raw      <- c(A = 25/115, B = 8/107, C = 53/276, D = 22/121, E = 4/139)
-p0_B_corrected     <- 0.5 / (107 + 0.5)
-p0_arrest_adjusted <- p0_arrest_raw
-p0_arrest_adjusted["B"] <- p0_B_corrected
+scenario_definitions <- if (scenario_set == "main") {
+  tribble(
+    ~scenario_name,   ~or_vector,
+    "ARREST_raw",     or_arrest_raw
+  )
+} else {
+  tribble(
+    ~scenario_name,   ~or_vector,
+    "ARREST_shrunk",  or_arrest_shrunk
+  )
+}
+
+# --- Shared Parameters (overall mortality across both arms) ---
+freq_arrest        <- params$freq_arrest
+p0_arrest_adjusted <- params$p0_overall
 alpha_bonferroni   <- 0.05 / 5
 alpha_overall      <- 0.05
 
@@ -62,7 +65,8 @@ message("\n--- STARTING AIM 2: Impact of Accuracy ---")
 start_time_aim2 <- Sys.time()
 
 # --- Pre-calculate the true marginal OR for each scenario ---
-message("--- Pre-calculating true marginal ORs with large simulation (N=10M) ---")
+true_or_n <- as.integer(Sys.getenv("TRUE_OR_N", unset = "10000000"))
+message(paste("--- Pre-calculating true marginal ORs with large simulation (N=", format(true_or_n, big.mark = ","), ") ---", sep = ""))
 true_marginal_ors <- scenario_definitions %>%
   mutate(
     true_overall_beta = map_dbl(or_vector, function(or_vec) {
@@ -70,7 +74,7 @@ true_marginal_ors <- scenario_definitions %>%
         or_vector = or_vec,
         freq_vector = freq_arrest,
         p0_vector = p0_arrest_adjusted,
-        n = 10e6, # 10 million
+        n = true_or_n,
         seed = 20240729
       )
       
@@ -93,8 +97,8 @@ results_aim2 <- map_dfr(1:nrow(scenario_definitions), ~{
     
   message(paste("  Running Aim 2 for scenario:", scenario))
   
-  accuracy_levels <- c(1.0, 0.99, 0.95, 0.9, 0.8, 0.7)
-  n_fixed <- 20000
+  accuracy_levels <- seq(0.7, 1.0, by = 0.05)
+  n_fixed <- 10000
   
   future_map_dfr(accuracy_levels, function(acc) {
     replicate_sims(
@@ -141,17 +145,15 @@ plot_aim2_power <- summary_aim2 %>%
   geom_line() + geom_point() + facet_wrap(~ scenario_name) + 
   labs(title="Aim 2: Power vs. Accuracy", x="Accuracy", y="Power")
 
-plot_aim2_bias_arrest <- ggplot(summary_aim2 %>% filter(group != "Overall" & scenario_name == "ARREST"), 
-                                aes(x = accuracy, y = bias, color = group)) + 
+primary_scenario_name <- if (scenario_set == "main") "ARREST_raw" else "ARREST_shrunk"
+
+plot_aim2_bias_arrest <- ggplot(summary_aim2 %>% filter(group != "Overall" & scenario_name == primary_scenario_name), 
+                               aes(x = accuracy, y = bias, color = group)) + 
   geom_line() + geom_point() + facet_wrap(scenario_name ~ group, scales="free_y") + 
   labs(title="Aim 2: Bias vs. Accuracy (ARREST)", x="Accuracy", y="Bias") + 
   geom_hline(yintercept = 0, linetype = "dashed")
 
-plot_aim2_bias_conservative <- ggplot(summary_aim2 %>% filter(group != "Overall" & scenario_name == "Conservative"), 
-                                     aes(x = accuracy, y = bias, color = group)) + 
-  geom_line() + geom_point() + facet_wrap(scenario_name ~ group, scales="free_y") + 
-  labs(title="Aim 2: Bias vs. Accuracy (Conservative)", x="Accuracy", y="Bias") + 
-  geom_hline(yintercept = 0, linetype = "dashed")
+plot_aim2_bias_conservative <- NULL
 
 plot_aim2_wrong_dir <- summary_aim2 %>%
   ggplot(aes(x = accuracy, y = wrong_dir, color = group)) +
@@ -159,16 +161,23 @@ plot_aim2_wrong_dir <- summary_aim2 %>%
   labs(title="Aim 2: Wrong Direction % vs. Accuracy", x="Accuracy", y="Wrong Direction %")
 
 # --- 4. SAVE RESULTS ---
-write_tsv(summary_aim2, "results/tables/aim2_accuracy_summary.tsv")
-write_tsv(results_aim2, "results/tables/aim2_raw_results.tsv.gz")
-ggsave("results/plots/aim2_power_vs_accuracy.pdf", plot_aim2_power, width = 10, height = 6)
-ggsave("results/plots/aim2_bias_vs_accuracy_arrest.pdf", plot_aim2_bias_arrest, width = 10, height = 6)
-ggsave("results/plots/aim2_bias_vs_accuracy_conservative.pdf", plot_aim2_bias_conservative, width = 10, height = 6)
-ggsave("results/plots/aim2_wrongdir_vs_accuracy.pdf", plot_aim2_wrong_dir, width = 10, height = 6)
-saveRDS(plot_aim2_power, "results/objects/aim2_power_plot.rds")
-saveRDS(plot_aim2_bias_arrest, "results/objects/aim2_bias_arrest_plot.rds")
-saveRDS(plot_aim2_bias_conservative, "results/objects/aim2_bias_conservative_plot.rds")
-saveRDS(plot_aim2_wrong_dir, "results/objects/aim2_wrong_dir_plot.rds")
+summary_aim2 <- summary_aim2 %>% mutate(scenario_set = scenario_set)
+results_aim2 <- results_aim2 %>% mutate(scenario_set = scenario_set)
+
+write_tsv(summary_aim2, file.path(output_root, "tables/aim2_accuracy_summary.tsv"))
+write_tsv(results_aim2, file.path(output_root, "tables/aim2_raw_results.tsv.gz"))
+ggsave(file.path(output_root, "plots/aim2_power_vs_accuracy.pdf"), plot_aim2_power, width = 10, height = 6)
+ggsave(file.path(output_root, "plots/aim2_bias_vs_accuracy_arrest.pdf"), plot_aim2_bias_arrest, width = 10, height = 6)
+if (!is.null(plot_aim2_bias_conservative)) {
+  ggsave(file.path(output_root, "plots/aim2_bias_vs_accuracy_conservative.pdf"), plot_aim2_bias_conservative, width = 10, height = 6)
+}
+ggsave(file.path(output_root, "plots/aim2_wrongdir_vs_accuracy.pdf"), plot_aim2_wrong_dir, width = 10, height = 6)
+saveRDS(plot_aim2_power, file.path(output_root, "objects/aim2_power_plot.rds"))
+saveRDS(plot_aim2_bias_arrest, file.path(output_root, "objects/aim2_bias_arrest_plot.rds"))
+if (!is.null(plot_aim2_bias_conservative)) {
+  saveRDS(plot_aim2_bias_conservative, file.path(output_root, "objects/aim2_bias_conservative_plot.rds"))
+}
+saveRDS(plot_aim2_wrong_dir, file.path(output_root, "objects/aim2_wrong_dir_plot.rds"))
 
 message(paste("--- AIM 2 COMPLETE --- (Duration:", round(difftime(Sys.time(), start_time_aim2, units = "mins"), 1), "minutes) ---"))
 message("\n--- AIM 2 SIMULATION COMPLETE ---") 

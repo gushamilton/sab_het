@@ -17,44 +17,32 @@ source("../code/common_parameters.R")
 params <- get_common_params()
 attach(params, warn.conflicts = FALSE)
 
+# Output paths
+scenario_set <- Sys.getenv("SCENARIO_SET", unset = "main")
+if (!scenario_set %in% c("main", "supp")) {
+  stop("SCENARIO_SET must be 'main' or 'supp'")
+}
+output_root <- file.path("..", "results", scenario_set)
+
 # --- 2. DEFINE SCENARIO PARAMETERS (same as parallel script) ---
-# --- Define the two main OR scenarios ---
-or_arrest <- c(A = 1.0, B = 18.8, C = 0.79, D = 1.4, E = 0.3)
-or_conservative <- c(A = 1.0, B = 2.0, C = 0.7, D = 1.2, E = 0.8)
+or_arrest_raw    <- or_arrest
+or_arrest_shrunk <- or_arrest_shrunk_k05
+or_conservative  <- or_conservative
 
-scenario_definitions <- tribble(
-  ~scenario_name, ~or_vector,
-  "ARREST",        or_arrest,
-  "Conservative",  or_conservative
-)
-
-# --- Shared Parameters ---
-# Updated to use overall prevalence (both treatment and control arms combined)
-# From Swets et al. CID Supplementary Table 2:
-# Group A: 60+55=115, Group B: 52+55=107, Group C: 138+138=276, Group D: 69+52=121, Group E: 69+70=139
-# Total: 115+107+276+121+139 = 758
-freq_arrest        <- c(A = 115/758, B = 107/758, C = 276/758, D = 121/758, E = 139/758)
-# Updated mortality data based on paper (overall mortality across both arms)
-# From Swets et al. CID Supplementary Table 2:
-# Group A: (13+12)/(60+55)=25/115=21.7%, Group B: (0+8)/(52+55)=8/107=7.5%, 
-# Group C: (29+24)/(138+138)=53/276=19.2%, Group D: (11+11)/(69+52)=22/121=18.2%, 
-# Group E: (3+1)/(69+70)=4/139=2.9%
-p0_arrest_raw      <- c(A = 25/115, B = 8/107, C = 53/276, D = 22/121, E = 4/139)
-p0_B_corrected     <- 0.5 / (107 + 0.5)
-p0_arrest_adjusted <- p0_ctrl
-p0_arrest_adjusted["B"] <- p0_B_corrected
+scenario_definitions <- if (scenario_set == "main") {
+  tribble(
+    ~scenario_name,   ~or_vector,
+    "ARREST_shrunk",  or_arrest_shrunk
+  )
+} else {
+  tribble(
+    ~scenario_name,   ~or_vector,
+    "ARREST_raw",     or_arrest_raw,
+    "Conservative",   or_conservative
+  )
+}
 
 # --- 4. DEFINE ALL SCENARIOS ---
-sens_spec_scenarios <- tribble(
-  ~test_type,                  ~sensitivity, ~specificity,
-  "Perfect (100%)",            1.00,         1.00,
-  "Near-Perfect",              0.99,         0.99,
-  "High Sens/High Spec",       0.95,         0.95,
-  "High Sens/Low Spec",        0.95,         0.70,
-  "Low Sens/High Spec",        0.70,         0.95,
-  "Balanced/Moderate",         0.80,         0.80
-)
-target_groups_aim3 <- c("B", "C", "D", "E")
 
 all_aim3_scenarios <- expand_grid(
   scenario_definitions,
@@ -68,7 +56,7 @@ message(paste("--- Collecting results for", total_scenarios, "scenarios ---"))
 # --- 3. COLLECT SUMMARY RESULTS ---
 message("--- Collecting summary results ---")
 
-summary_files <- list.files("../results", pattern = "aim3_summary_scenario_.*\\.tsv", full.names = TRUE)
+summary_files <- list.files(output_root, pattern = "aim3_summary_scenario_.*\\.tsv", full.names = TRUE)
 message(paste("Found", length(summary_files), "summary files"))
 
 if (length(summary_files) == 0) {
@@ -94,7 +82,7 @@ summary_results_final <- all_aim3_scenarios %>%
 # --- 4. COLLECT DETAILED RESULTS ---
 message("--- Collecting detailed results ---")
 
-detailed_files <- list.files("../results", pattern = "aim3_detailed_scenario_.*\\.tsv", full.names = TRUE)
+detailed_files <- list.files(output_root, pattern = "aim3_detailed_scenario_.*\\.tsv", full.names = TRUE)
 message(paste("Found", length(detailed_files), "detailed files"))
 
 if (length(detailed_files) > 0) {

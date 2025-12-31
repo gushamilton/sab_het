@@ -1,0 +1,22 @@
+cpu-bind=MASK - bp1-compute121, task  0  0 [1724965]: mask 0xaa28a0aa28a set
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) slurm/23.11.6-77s5
+Starting Aim 2 simulation at Tue Dec 30 13:42:27 GMT 2025
+SLURM_CPUS_PER_TASK = 16
+--- Loading Packages ---
+--- Defining Simulation Parameters ---
+--- Parallel processing enabled on 16 cores ---
+
+--- STARTING AIM 2: Impact of Accuracy ---
+--- Pre-calculating true marginal ORs with large simulation (N=10,000,000) ---
+# A tibble: 1 x 2
+  scenario_name true_overall_beta
+  <chr>                     <dbl>
+1 ARREST_raw                0.459
+  Running Aim 2 for scenario: ARREST_raw
+--- AIM 2 COMPLETE --- (Duration: 7.9 minutes) ---
+
+--- AIM 2 SIMULATION COMPLETE ---
+Simulation script finished.

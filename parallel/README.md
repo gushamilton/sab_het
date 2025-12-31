@@ -8,7 +8,7 @@ This directory contains scripts to run AIM 3 simulations in parallel using SLURM
 - `aim3_collect.R` - Collects and combines results from all scenarios
 - `aim3.sh` - Bash script that launches parallel SLURM jobs
 - `test_parallel.R` - Test script to verify the approach works
-- `results/` - Directory where individual scenario results are saved
+- `results/` - Directory where individual scenario results are saved (under `results/main` or `results/supp`)
 
 ## Usage
 
@@ -18,7 +18,7 @@ Test that everything works with a single scenario:
 
 ```bash
 cd parallel
-Rscript test_parallel.R
+SCENARIO_SET=main Rscript test_parallel.R
 ```
 
 This will run scenario 1 (ARREST, Perfect test, Group B) with fewer replications to verify the setup works.
@@ -29,7 +29,7 @@ Launch all 48 scenarios in parallel:
 
 ```bash
 cd parallel
-./aim3.sh
+SCENARIO_SET=main ./aim3.sh
 ```
 
 By default, this will run up to 16 concurrent jobs. You can specify a different limit:
@@ -58,20 +58,20 @@ The `aim3.sh` script automatically runs the collection script when all jobs comp
 
 ```bash
 cd parallel
-Rscript aim3_collect.R
+SCENARIO_SET=main Rscript aim3_collect.R
 ```
 
 ## Output Files
 
 ### Individual Scenario Results
-- `results/aim3_summary_scenario_XXX.tsv` - Summary results for each scenario
-- `results/aim3_detailed_scenario_XXX.tsv` - Detailed results for each scenario
+- `../results/<scenario_set>/aim3_summary_scenario_XXX.tsv` - Summary results for each scenario
+- `../results/<scenario_set>/aim3_detailed_scenario_XXX.tsv` - Detailed results for each scenario
 
 ### Final Combined Results
-- `../results/tables/aim3_sens_spec_summary.tsv` - Combined summary results
-- `../results/tables/aim3_detailed_all_scenarios.tsv` - Combined detailed results
-- `../results/plots/aim3_nns_summary.pdf` - Final plot
-- `../results/objects/aim3_plot.rds` - R plot object
+- `../results/<scenario_set>/tables/aim3_sens_spec_summary.tsv` - Combined summary results
+- `../results/<scenario_set>/tables/aim3_detailed_all_scenarios.tsv` - Combined detailed results
+- `../results/<scenario_set>/plots/aim3_nns_summary.pdf` - Final plot
+- `../results/<scenario_set>/objects/aim3_plot.rds` - R plot object
 
 ## Enhanced Metrics
 
@@ -121,7 +121,7 @@ Rscript aim3_parallel.R <scenario_id>
 ### Collection Fails
 If the collection script fails, check that all summary files exist:
 ```bash
-cd parallel/results
+cd ../results/<scenario_set>
 ls aim3_summary_scenario_*.tsv | wc -l
 ```
 
