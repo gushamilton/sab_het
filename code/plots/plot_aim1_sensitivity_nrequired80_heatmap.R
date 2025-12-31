@@ -56,6 +56,12 @@ n_required <- cohort_params %>%
   filter(group != "A") %>%
   mutate(group = factor(group, levels = c("B", "C", "D", "E")))
 
+plot_title <- if (scenario_set == "supp") {
+  "Aim 1 Sensitivity: Required N for 80% Power (Sensitivity)"
+} else {
+  "Aim 1 Sensitivity: Required N for 80% Power"
+}
+
 plot <- ggplot(n_required, aes(x = group, y = cohort, fill = n_required)) +
   geom_tile(color = "white", linewidth = 0.3) +
   geom_text(aes(label = label), size = 3) +
@@ -67,7 +73,7 @@ plot <- ggplot(n_required, aes(x = group, y = cohort, fill = n_required)) +
     name = "Required N\n(80% power)"
   ) +
   labs(
-    title = "Aim 1 Sensitivity: Required N for 80% Power",
+    title = plot_title,
     x = "Subphenotype",
     y = "Cohort"
   )

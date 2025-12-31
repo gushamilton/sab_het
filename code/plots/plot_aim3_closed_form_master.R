@@ -38,8 +38,10 @@ nnr_plot <- closed %>%
   labs(x = "Test Type", y = "NNR (log scale)", color = "Target Group") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
+plot_title <- if (scenario_set == "supp") "Aim 3 Closed Form (Sensitivity)" else NULL
+
 final_plot <- (nns_plot / nnr_plot) +
-  plot_annotation(tag_levels = "A") +
+  plot_annotation(tag_levels = "A", title = plot_title) +
   plot_layout(guides = "collect") &
   theme(legend.position = "bottom")
 

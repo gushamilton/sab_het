@@ -1,4 +1,4 @@
-cpu-bind=MASK - bp1-compute017, task  0  0 [1882955]: mask 0xf000000f000 set
+cpu-bind=MASK - bp1-compute017, task  0  0 [1897575]: mask 0xf000000f000 set
 The following modules were not unloaded:
   (Use "module --force purge" to unload all):
 
@@ -6,5 +6,3 @@ The following modules were not unloaded:
 --- Loading Packages ---
 --- Parallel processing enabled on 8 cores ---
 --- STARTING AIM 3 FIXED-ENROLLED REPLICATES ---
-Saved: results/main/tables/aim3_fixed_enrolled_replicates.tsv.gz
---- AIM 3 FIXED-ENROLLED COMPLETE --- (Duration: 21.1 minutes) ---

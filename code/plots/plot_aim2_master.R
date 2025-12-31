@@ -82,8 +82,10 @@ replicate_plot <- ggplot(replicates, aes(x = group, y = beta, color = group)) +
   labs(x = "Subphenotype", y = "Beta (log OR)", color = "Group") +
   theme(strip.text = element_text(size = 11, face = "bold"))
 
+plot_title <- if (scenario_set == "supp") "Aim 2 (Sensitivity)" else NULL
+
 final_plot <- ((power_plot | bias_plot) / replicate_plot) +
-  plot_annotation(tag_levels = "A") +
+  plot_annotation(tag_levels = "A", title = plot_title) +
   plot_layout(guides = "collect", heights = c(1, 1.3)) &
   theme(legend.position = "bottom")
 

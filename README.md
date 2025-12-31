@@ -1,7 +1,9 @@
 # SAB HTE simulation study
 
 This repo runs simulation and closed-form analyses for heterogenous treatment effects
-in Staphylococcus aureus bacteremia (SAB) subphenotypes.
+in Staphylococcus aureus bacteremia (SAB) subphenotypes, to accompany the paper:
+"Impact of subphenotype misclassification on detecting heterogeneous treatment effects
+in Staphylococcus aureus bacteraemia: A simulation study."
 
 ## Key choices (current)
 - Baseline risk: overall mortality across both arms (p0_overall).
@@ -15,9 +17,9 @@ in Staphylococcus aureus bacteremia (SAB) subphenotypes.
 - `code/` main scripts and shared parameters
 - `code/functions/` core simulation utilities
 - `scripts/` runnable helpers (smoke test, run-all)
-- `results/main/` primary outputs (ARREST_shrunk)
-- `results/supp/` supplementary outputs (ARREST_raw + Conservative)
-- `paper/` manuscript QMD and rendered HTML
+- `results/main/` primary outputs (ARREST_raw)
+- `results/supp/` sensitivity outputs (ARREST_shrunk, k=0.5)
+- `old/archive_YYYYMMDD/` archived plots and manuscript drafts
 
 ## How to run
 Smoke test (fast, main only):
@@ -57,13 +59,32 @@ SCENARIO_SET=main Rscript code/06_create_aim3_data.R
 - `AIM3_TEST_MODE=1`: limit Aim 3 to a single scenario for smoke tests
 - `PRINT_GT=0`: suppress GT output in closed-form script
 
-## Outputs (key files)
-- Aim 1: `results/*/tables/aim1_power_summary.tsv`, `results/*/plots/aim1_power_vs_samplesize.pdf`
-- Aim 2: `results/*/tables/aim2_accuracy_summary.tsv`, `results/*/plots/aim2_power_vs_accuracy.pdf`
-- Aim 3 sim: `results/*/tables/aim3_sens_spec_summary.tsv`, `results/*/plots/aim3_nns_summary.pdf`
-- Aim 3 closed form: `results/*/tables/aim3_closed_form_summary.tsv`
-- Aim 3 combined: `results/*/tables/aim3_combined_summary.tsv`
+## Outputs (core figures)
+Main (ARREST_raw):
+- Aim 1 (log): `results/main/plots/aim1_power_vs_samplesize_log.pdf`
+- Cohort summary master: `results/main/plots/cohort_summary_master.pdf`
+- Aim 2 master: `results/main/plots/aim2_master.pdf`
+- Aim 2 wrong direction: `results/main/plots/aim2_wrongdir_vs_accuracy.pdf`
+- Aim 3 closed form master: `results/main/plots/aim3_closed_form_master.pdf`
+- Aim 3 replicate betas (fixed enrolled): `results/main/plots/aim3_replicate_betas_fixed_enrolled.pdf`
+
+Sensitivity (ARREST_shrunk, k=0.5):
+- Aim 1 (log): `results/supp/plots/aim1_power_vs_samplesize_log.pdf`
+- Cohort summary master: `results/supp/plots/cohort_summary_master.pdf`
+- Aim 2 master: `results/supp/plots/aim2_master.pdf`
+- Aim 2 wrong direction: `results/supp/plots/aim2_wrongdir_vs_accuracy.pdf`
+- Aim 3 closed form master: `results/supp/plots/aim3_closed_form_master.pdf`
+- Aim 3 replicate betas (fixed enrolled): `results/supp/plots/aim3_replicate_betas_fixed_enrolled.pdf`
+
+## Outputs (core tables)
+- Aim 1 power table: `results/main/tables/aim1_power_table.html`
+- Aim 2 accuracy table: `results/main/tables/aim2_accuracy_table.html`
+- Aim 3 closed-form table: `results/main/tables/aim3_closed_form_table.html`
+- Aim 3 simulation summary (S2): `results/main/tables/aim3_table_S2.html`
+
+## Closed-form vs simulation
+- Aim 1 uses closed-form by default with optional simulation validation.
+- Aim 3 reports both closed-form (primary NNS/NNR) and simulation comparisons.
 
 ## Notes
 - Aim 3 simulations can take the longest; check logs in `results/*/logs/`.
-- The manuscript is rendered from `paper/sab_hte_paper_draft_1.qmd`.
