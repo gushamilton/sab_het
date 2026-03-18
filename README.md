@@ -12,7 +12,6 @@ This repository contains the code and final materials for the SAB heterogeneous 
 
 ## Key outputs
 
-- Final manuscript: `paper/SAB_HET_2.0_edited.docx`
 - Supplementary methods: `paper/supplementary_methods.md`
 - Final figures: `results/paper/final/figures/`
 - Final tables: `results/paper/final/tables/`
