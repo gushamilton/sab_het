@@ -1,25 +1,15 @@
-# Ignore shell script files
-*.sh
+# Local archival worktree
+old/
 
-# Common R files to ignore
-.Rhistory
-.RData
-.Ruserdata
+# Temporary manuscript backups and scratch files
+paper/*.backup_*.docx
+paper/fig_tmp/
+paper/archive/
+paper/SAB_HET_2.0.docx
+paper/methods_edits_log.md
 
-# R package files
-*.Rcheck/
-*.tar.gz
-*.tgz
+# Runtime output/logs not intended for public release
+logs/
 
-# Temporary files
-*.tmp
-*.temp
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db 
+# Obsolete duplicate final figure retained only in local history
+results/paper/final/figures/Figure4_ordinal_binary_summary.pdf

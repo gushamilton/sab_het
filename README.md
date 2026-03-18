@@ -1,90 +1,27 @@
-# SAB HTE simulation study
+# SAB HTE Simulation Study
 
-This repo runs simulation and closed-form analyses for heterogenous treatment effects
-in Staphylococcus aureus bacteremia (SAB) subphenotypes, to accompany the paper:
-"Impact of subphenotype misclassification on detecting heterogeneous treatment effects
-in Staphylococcus aureus bacteraemia: A simulation study."
+This repository contains the code and final materials for the SAB heterogeneous treatment effect simulation study.
 
-## Key choices (current)
-- Baseline risk: overall mortality across both arms (p0_overall).
-- Subphenotype prevalences: overall counts across both arms.
-- Main scenario: ARREST raw ORs.
-- Supplementary scenarios: ARREST ORs with log-OR shrinkage k=0.5.
-- Aim 2: fixed N = 10,000, accuracy grid 0.70 to 1.00.
-- Aim 3: sens/spec grid in `code/common_parameters.R`, adaptive NNS search capped at 1,000,000.
+## What is included
 
-## Structure
-- `code/` main scripts and shared parameters
-- `code/functions/` core simulation utilities
-- `scripts/` runnable helpers (smoke test, run-all)
-- `results/main/` primary outputs (ARREST_raw)
-- `results/supp/` sensitivity outputs (ARREST_shrunk, k=0.5)
-- `old/archive_YYYYMMDD/` archived plots and manuscript drafts
+- `paper/`: manuscript files, supplementary methods, and paper figure-generation helpers.
+- `code/`: analysis scripts used to generate the paper results.
+- `results/paper/final/`: final figures and tables used in the manuscript.
+- `scripts/`: local helper scripts.
+- `slurm/`: batch submission scripts.
 
-## How to run
-Smoke test (fast, main only):
-```
-./scripts/00_smoke_test.sh
-```
+## Key outputs
 
-Main analyses (Aim 1/2/3 + closed-form + combine):
-```
-./scripts/01_run_all_main.sh
-```
+- Final manuscript: `paper/SAB_HET_2.0_edited.docx`
+- Supplementary methods: `paper/supplementary_methods.md`
+- Final figures: `results/paper/final/figures/`
+- Final tables: `results/paper/final/tables/`
 
-Supplementary analyses:
-```
-./scripts/02_run_all_supp.sh
-```
+## Reproducibility
 
-You can also run individual aims:
-```
-SCENARIO_SET=main Rscript code/03_run_aim1.R
-SCENARIO_SET=main Rscript code/04_run_aim2.R
-SCENARIO_SET=main Rscript code/05_run_aim3.R
-SCENARIO_SET=main Rscript code/02_closed_form_aim3.R
-SCENARIO_SET=main Rscript code/06_create_aim3_data.R
-```
-
-### Useful env vars
-- `SCENARIO_SET`: `main` or `supp` (default: `main`)
-- `N_REPS_AIM1_2`: Aim 1/2 reps (default: 1000)
-- `AIM1_MODE`: `closed_form` (default) or `sim`
-- `AIM1_VALIDATE`: set to `1` to run a small sim check for Aim 1
-- `AIM1_VALIDATE_SIZES`: comma list for validation N (default: `1000,5000,10000,20000`)
-- `N_REPS_AIM1_VALIDATE`: validation reps (default: 200)
-- `N_REPS_AIM2`: Aim 2 reps (default: 1000)
-- `N_REPS_AIM3`: Aim 3 reps (default: 200)
-- `TRUE_OR_N`: sample size for Aim 2 overall OR calibration (default: 10,000,000)
-- `AIM3_TEST_MODE=1`: limit Aim 3 to a single scenario for smoke tests
-- `PRINT_GT=0`: suppress GT output in closed-form script
-
-## Outputs (core figures)
-Main (ARREST_raw):
-- Aim 1 (log): `results/main/plots/aim1_power_vs_samplesize_log.pdf`
-- Cohort summary master: `results/main/plots/cohort_summary_master.pdf`
-- Aim 2 master: `results/main/plots/aim2_master.pdf`
-- Aim 2 wrong direction: `results/main/plots/aim2_wrongdir_vs_accuracy.pdf`
-- Aim 3 closed form master: `results/main/plots/aim3_closed_form_master.pdf`
-- Aim 3 replicate betas (fixed enrolled): `results/main/plots/aim3_replicate_betas_fixed_enrolled.pdf`
-
-Sensitivity (ARREST_shrunk, k=0.5):
-- Aim 1 (log): `results/supp/plots/aim1_power_vs_samplesize_log.pdf`
-- Cohort summary master: `results/supp/plots/cohort_summary_master.pdf`
-- Aim 2 master: `results/supp/plots/aim2_master.pdf`
-- Aim 2 wrong direction: `results/supp/plots/aim2_wrongdir_vs_accuracy.pdf`
-- Aim 3 closed form master: `results/supp/plots/aim3_closed_form_master.pdf`
-- Aim 3 replicate betas (fixed enrolled): `results/supp/plots/aim3_replicate_betas_fixed_enrolled.pdf`
-
-## Outputs (core tables)
-- Aim 1 power table: `results/main/tables/aim1_power_table.html`
-- Aim 2 accuracy table: `results/main/tables/aim2_accuracy_table.html`
-- Aim 3 closed-form table: `results/main/tables/aim3_closed_form_table.html`
-- Aim 3 simulation summary (S2): `results/main/tables/aim3_table_S2.html`
-
-## Closed-form vs simulation
-- Aim 1 uses closed-form by default with optional simulation validation.
-- Aim 3 reports both closed-form (primary NNS/NNR) and simulation comparisons.
+The final paper assets are built from the scripts in `code/` and the manuscript helpers in `paper/`.
+Figure and table ordering is defined in `results/paper/final/figures/figure_order.tsv` and `results/paper/final/tables/table_order.tsv`.
 
 ## Notes
-- Aim 3 simulations can take the longest; check logs in `results/*/logs/`.
+
+The local archive under `old/` is kept for working history and is not part of the public release.

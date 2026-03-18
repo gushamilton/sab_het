@@ -1,0 +1,6 @@
+figure_id	source	target	purpose
+Figure 1	results/core_figures/plots/figure1_accuracy_dilution_patchwork.pdf	Figure1_misclassification_accuracy.pdf	Impact of classification accuracy on power and bias
+Figure 2	results/core_figures/plots/figure3.pdf	Figure2_cohort_conditionality.pdf	Cohort prevalence/mortality conditionality and required N
+Figure 3	results/core_figures/plots/figure2_enrichment_master.pdf	Figure3_enrichment_feasibility.pdf	Enrichment feasibility (NNS/NNR/bias)
+Figure 4	paper/ordinal_outcome_two_panel.pdf	Figure4_ordinal_category_shift.pdf	Ordinal outcome category shifts under PO and nonPO
+Figure 5	results/supp/ordinal_nonPO_comparison/plots/ordinal_nonPO_patchwork_paper_final_independent_20260313.pdf	Figure5_ordinal_binary_summary.pdf	Ordinal versus binary outcome performance (PO vs nonPO patchwork)

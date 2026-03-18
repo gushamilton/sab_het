@@ -1,0 +1,10 @@
+table_id	path	purpose
+Table 1	results/paper/final/tables/Table1_main_parameters.tsv	Main simulation assumptions
+Table 2	results/paper/final/tables/Table2_ordinal_PO_vs_nonPO_power_bias.tsv	Main ordinal result: PO vs nonPO, power and bias
+Table S1	results/paper/final/tables/TableS1_main_binary_operating_characteristics.tsv	Detailed main binary operating characteristics
+Table S2	results/paper/final/tables/TableS2_cohort_required_n.tsv	Cohort-conditional required N
+Table S3	results/paper/final/tables/TableS3_enrichment_summary.tsv	Enrichment feasibility detail
+Table S4	results/paper/final/tables/TableS4_ordinal_binary_metrics_bias_key_n.tsv	Ordinal vs binary key-N metrics + bias
+Table S5	results/paper/final/tables/TableS5_ordinal_type1.tsv	Ordinal/binary Type I calibration
+Table S6	results/paper/final/tables/TableS6_ordinal_power_bias_tradeoff_key_n.tsv	Ordinal power-bias tradeoff
+Table S7	results/paper/final/tables/TableS7_ordinal_PO_nonPO_calibration.tsv	PO vs nonPO model calibration

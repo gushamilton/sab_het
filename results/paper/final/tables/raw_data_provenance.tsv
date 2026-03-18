@@ -1,0 +1,6 @@
+dataset	path
+Main binary raw	results/main/data/main_binary_raw.tsv
+Main binary metrics	results/main/data/main_binary_metrics.tsv
+Supplement 3 raw	results/supp/data/supp3_binary_vs_ordinal_raw_acc100.tsv.gz
+Supplement 3 metrics	results/supp/tables/supp3_binary_vs_ordinal_metrics_acc100.tsv
+PO/nonPO raw	results/supp/ordinal_nonPO_comparison/data/ordinal_nonPO_comparison_raw_paper_final_independent_20260313.tsv.gz

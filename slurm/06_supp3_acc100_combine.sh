@@ -1,9 +1,9 @@
 #!/bin/bash
-#SBATCH --job-name=aim2_supp
+#SBATCH --job-name=sab_s3_a100_merge
 #SBATCH --partition=short
-#SBATCH --time=02:00:00
-#SBATCH --mem=16G
-#SBATCH --cpus-per-task=8
+#SBATCH --time=01:00:00
+#SBATCH --mem=8G
+#SBATCH --cpus-per-task=2
 #SBATCH --account=sscm013902
 #SBATCH --output=logs/%x_%j.out
 #SBATCH --error=logs/%x_%j.err
@@ -16,5 +16,7 @@ module load languages/R/4.5.1
 
 cd /user/work/fh6520/bc4/sab_het
 
-echo "[legacy wrapper] aim2_supp.slurm -> code/05_run_cohort_variation.R"
-Rscript code/05_run_cohort_variation.R
+export ACCURACY=1
+export CHUNK_TAGS=chunk1,chunk2,chunk3
+
+Rscript code/09_combine_supp3_chunks.R

@@ -1,4 +1,0 @@
-# A tibble: 1 x 2
-  scenario_name true_overall_beta
-  <chr>                     <dbl>
-1 ARREST_shrunk             0.161

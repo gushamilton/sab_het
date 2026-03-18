@@ -1,0 +1,6 @@
+subphenotype	label	prevalence	baseline_mortality	or_arrest_raw	or_arrest_shrunk
+A	Elderly/comorbid	0.155	0.117	1	1
+B	Nosocomial IV	0.134	0.01	18.8	4.3
+C	Metastatic	0.356	0.08	0.79	0.89
+D	CKD	0.178	0.159	1.4	1.18
+E	IDU	0.178	0.014	0.3	0.54

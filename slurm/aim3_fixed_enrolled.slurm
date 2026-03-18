@@ -16,7 +16,5 @@ module load languages/R/4.5.1
 
 cd /user/work/fh6520/bc4/sab_het
 
-SCENARIO_SET=main \
-AIM3_TARGET_ENROLLED=5000 \
-N_REPS_AIM3_FIXED=500 \
-Rscript code/05b_run_aim3_fixed_enrolled.R
+echo "[legacy wrapper] aim3_fixed_enrolled.slurm -> code/04_run_enrichment.R"
+Rscript code/04_run_enrichment.R
