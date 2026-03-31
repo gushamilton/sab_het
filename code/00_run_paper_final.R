@@ -26,7 +26,7 @@ run_with_env <- function(script_path, env = list()) {
 
 quick_mode <- tolower(Sys.getenv("PAPER_QUICK", unset = "0")) %in% c("1", "true", "yes")
 acc <- as.numeric(Sys.getenv("PAPER_ACCURACY", unset = "1.00"))
-nonpo_tag <- Sys.getenv("NONPO_RUN_TAG", unset = "paper_final")
+nonpo_tag <- Sys.getenv("NONPO_RUN_TAG", unset = "ordinal6_figure5_20260325")
 skip_nonpo <- tolower(Sys.getenv("PAPER_SKIP_NONPO", unset = "0")) %in% c("1", "true", "yes")
 skip_assets <- tolower(Sys.getenv("PAPER_SKIP_ASSETS", unset = "0")) %in% c("1", "true", "yes")
 
@@ -54,6 +54,7 @@ fig1_env <- list(
 
 ordinal_env <- list(
   ACCURACY = sprintf("%.2f", acc),
+  ORDINAL_POINTS = Sys.getenv("ORDINAL_POINTS", unset = "6"),
   N_REPS_ORDINAL = if (quick_mode) "50" else Sys.getenv("N_REPS_ORDINAL", unset = "1000"),
   ORDINAL_SAMPLE_SIZES = if (quick_mode) "500,1000,2000" else Sys.getenv("ORDINAL_SAMPLE_SIZES", unset = ""),
   RUN_ORDER = Sys.getenv("RUN_ORDER", unset = "binary,ordinal"),
@@ -77,6 +78,7 @@ run_with_env("code/13_plot_figure3_cohort_summary.R")
 
 run_with_env("code/06_run_ordinal_comparison.R", env = ordinal_env)
 run_with_env("code/26_build_core_figure4_ordinal.R", env = list(ACCURACY = sprintf("%.2f", acc)))
+run_with_env("code/30_build_paper_ordinal_shift_figure.R")
 
 if (!skip_nonpo) {
   # PO vs non-PO analysis retained for manuscript Table 2 and supplementary detail.
@@ -95,6 +97,13 @@ if (!skip_nonpo) {
 }
 
 if (!skip_assets) {
+  run_with_env(
+    "code/31_plot_ordinal_power_5pt_vs_6pt.R",
+    env = list(
+      RUN_TAG_5PT = Sys.getenv("RUN_TAG_5PT", unset = "paper_final_5pt_20260324"),
+      RUN_TAG_6PT = nonpo_tag
+    )
+  )
   run_with_env(
     "code/28_build_paper_final_assets.R",
     env = list(

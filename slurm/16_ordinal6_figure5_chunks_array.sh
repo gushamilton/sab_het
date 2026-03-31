@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=sab_nonpo_chunk
+#SBATCH --job-name=sab_ord6_chunk
 #SBATCH --partition=short,compute
 #SBATCH --time=02:00:00
 #SBATCH --mem=8G
@@ -20,20 +20,21 @@ cd /user/work/fh6520/bc4/sab_het
 chunk_id="${SLURM_ARRAY_TASK_ID}"
 chunk_count="${SLURM_ARRAY_TASK_COUNT}"
 
-base_tag="${NONPO_BASE_TAG:-paper_final_array}"
-n_reps_total="${N_REPS_NONPO_TOTAL:-1000}"
-reps_per_chunk="${N_REPS_NONPO_PER_CHUNK:-$(( n_reps_total / chunk_count ))}"
+base_tag="${ORD6_BASE_TAG:-ordinal6_figure5}"
+n_reps_total="${N_REPS_ORD6_TOTAL:-1000}"
+reps_per_chunk="${N_REPS_ORD6_PER_CHUNK:-$(( n_reps_total / chunk_count ))}"
 rep_offset="$(( (chunk_id - 1) * reps_per_chunk ))"
 
 if [[ "$(( reps_per_chunk * chunk_count ))" -ne "$n_reps_total" ]]; then
-  echo "N_REPS_NONPO_TOTAL (${n_reps_total}) must be divisible by array task count (${chunk_count})."
+  echo "N_REPS_ORD6_TOTAL (${n_reps_total}) must be divisible by array task count (${chunk_count})."
   exit 1
 fi
 
 chunk_tag="${base_tag}_chunk${chunk_id}"
 
-echo "[$(date -Is)] Starting nonPO chunk ${chunk_id}/${chunk_count} tag=${chunk_tag} reps=${reps_per_chunk} offset=${rep_offset}"
+echo "[$(date -Is)] Starting 6-point Figure 5 chunk ${chunk_id}/${chunk_count} tag=${chunk_tag} reps=${reps_per_chunk} offset=${rep_offset}"
 
+export ORDINAL_POINTS=6
 export RUN_TAG="${chunk_tag}"
 export N_REPS_DOOR="${reps_per_chunk}"
 export REP_OFFSET="${rep_offset}"
@@ -44,4 +45,4 @@ if [[ -n "${NONPO_SAMPLE_SIZES:-}" ]]; then export SAMPLE_SIZES="${NONPO_SAMPLE_
 
 Rscript code/15_run_ordinal_nonPO_comparison.R
 
-echo "[$(date -Is)] Finished nonPO chunk ${chunk_id}/${chunk_count} tag=${chunk_tag}"
+echo "[$(date -Is)] Finished 6-point Figure 5 chunk ${chunk_id}/${chunk_count} tag=${chunk_tag}"

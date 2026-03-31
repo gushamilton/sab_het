@@ -8,16 +8,34 @@ source("code/01_parameters.R")
 
 params <- get_parameters()
 subphenotypes <- params$subphenotype_table
-ordinal_labels <- params$ordinal_baseline$label
+ordinal_points <- as.integer(Sys.getenv("ORDINAL_POINTS", unset = "6"))
+if (ordinal_points == 6) {
+  ordinal_labels <- c(
+    "Dead",
+    "ICU/ventilated",
+    "Still hospitalised",
+    "Discharged to rehab",
+    "Discharged with complications",
+    "Discharged well"
+  )
+} else if (ordinal_points == 5) {
+  ordinal_labels <- params$ordinal_baseline$label
+} else {
+  stop("ORDINAL_POINTS must be 5 or 6.", call. = FALSE)
+}
 
 accuracy <- as.numeric(Sys.getenv("ACCURACY", unset = "1.00"))
 acc_label <- sprintf("acc%03d", as.integer(round(accuracy * 100)))
 chunk_tags <- Sys.getenv("CHUNK_TAGS", unset = "")
+chunk_count <- as.integer(Sys.getenv("CHUNK_COUNT", unset = "0"))
 
-if (!nzchar(chunk_tags)) {
-  stop("Set CHUNK_TAGS as comma-separated RUN_TAG values (e.g. chunk1,chunk2,chunk3).")
+if (nzchar(chunk_tags)) {
+  tags <- strsplit(chunk_tags, ",")[[1]]
+} else if (!is.na(chunk_count) && chunk_count > 0) {
+  tags <- paste0("chunk", seq_len(chunk_count))
+} else {
+  stop("Set CHUNK_TAGS or CHUNK_COUNT for chunked Supplement 3 combine.")
 }
-tags <- strsplit(chunk_tags, ",")[[1]]
 
 output_root <- file.path("results", "supp")
 dir.create(file.path(output_root, "tables"), showWarnings = FALSE, recursive = TRUE)

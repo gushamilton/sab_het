@@ -4,21 +4,24 @@ from matplotlib.patches import Patch
 from pathlib import Path
 import os
 
-# ----- Data: model-derived pooled 6-level distributions -----
-# Inputs mirror code/01_parameters.R and code/15_run_ordinal_nonPO_comparison.R
+# ----- Data: legacy 5-level sensitivity distributions -----
+# This helper is retained only for the 5-point sensitivity comparison. The
+# main manuscript-facing ordinal figures are now built in R from the 6-point
+# setup in code/30_build_paper_ordinal_shift_figure.R.
 groups = ["A", "B", "C", "D", "E"]
-baseline_dead = np.array([0.117, 0.010, 0.080, 0.159, 0.014], dtype=float)
-or_shrunk = np.array([1.0, 4.3, 0.89, 1.18, 0.54], dtype=float)
-survivor_split = np.array([0.08, 0.12, 0.20, 0.25, 0.35], dtype=float)
+baseline_dead = np.array([0.217, 0.075, 0.192, 0.182, 0.029], dtype=float)
+or_shrunk = np.array([1.00, 4.34, 0.89, 1.19, 0.56], dtype=float)
+survivor_split = np.array([0.05, 0.10, 0.20, 0.50], dtype=float)
+survivor_split = survivor_split / survivor_split.sum()
 
 # Order is worst -> best
 categories = [
-    "Death", "ICU", "Hospital", "Complications", "Discharged", "Recovered"
+    "Death", "ICU/ventilated", "Still hospitalised", "Discharged with complications", "Discharged well"
 ]
 
 def build_cum_control(p_dead):
     nondeath = np.cumsum((1 - p_dead) * survivor_split)
-    return np.array([p_dead, p_dead + nondeath[0], p_dead + nondeath[1], p_dead + nondeath[2], p_dead + nondeath[3]])
+    return np.concatenate(([p_dead], p_dead + nondeath[:-1]))
 
 def probs_from_cum(cum):
     return np.diff(np.concatenate(([0], cum, [1])))
@@ -32,7 +35,7 @@ def subgroup_po_probs(p_dead, or_value):
 def subgroup_nonpo_probs_threshold(p_dead, or_death):
     cum_ctrl = build_cum_control(p_dead)
     theta = np.log(cum_ctrl / (1 - cum_ctrl))
-    betas = np.array([np.log(or_death), 0.0, 0.0, 0.0, 0.0], dtype=float)
+    betas = np.concatenate(([np.log(or_death)], np.zeros(len(theta) - 1, dtype=float)))
     cum_trt = 1 / (1 + np.exp(-(theta + betas)))
     return probs_from_cum(cum_ctrl), probs_from_cum(cum_trt)
 
@@ -158,7 +161,7 @@ legend_handles = [Patch(facecolor=col, edgecolor="none", label=cat) for cat, col
 fig.legend(
     handles=legend_handles,
     loc="lower center",
-    ncol=6,
+    ncol=len(categories),
     frameon=False,
     bbox_to_anchor=(0.5, -0.02),
     fontsize=10.5

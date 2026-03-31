@@ -32,6 +32,33 @@ simulate_binary_trial <- function(or_vector, prevalence, baseline_mortality, n, 
     select(id, group, treatment, outcome)
 }
 
+derive_survivor_split <- function(ordinal_baseline_probs) {
+  survivor_probs <- ordinal_baseline_probs[-1]
+  survivor_probs / sum(survivor_probs)
+}
+
+build_ordinal_probs_from_death <- function(p_dead, survivor_split) {
+  c(p_dead, (1 - p_dead) * survivor_split)
+}
+
+get_po_ordinal_probs <- function(p_dead, survivor_split, or_value) {
+  control_probs <- build_ordinal_probs_from_death(p_dead, survivor_split)
+  cumulative_probs <- cumsum(control_probs)[-length(control_probs)]
+  intercepts <- qlogis(cumulative_probs)
+
+  to_probs <- function(eta) {
+    cumulative <- plogis(eta)
+    probs <- diff(c(0, cumulative, 1))
+    probs <- pmax(probs, 0)
+    probs / sum(probs)
+  }
+
+  list(
+    control = to_probs(intercepts),
+    treatment = to_probs(intercepts + log(or_value))
+  )
+}
+
 misclassify_groups <- function(true_group, prevalence, accuracy, seed = 123) {
   set.seed(seed)
   group_labels <- names(prevalence)
@@ -75,14 +102,12 @@ fit_logistic_or <- function(data) {
   tibble(log_or_hat = treatment_row$estimate, se = treatment_row$std.error)
 }
 
-simulate_ordinal_trial <- function(or_vector, prevalence, baseline_probs, n, seed = 123) {
+simulate_ordinal_trial <- function(or_vector, prevalence, baseline_mortality, survivor_split, n, seed = 123) {
   set.seed(seed)
 
   group_labels <- names(or_vector)
   prevalence <- prevalence[group_labels]
-
-  cumulative_probs <- cumsum(baseline_probs)[-length(baseline_probs)]
-  intercepts <- qlogis(cumulative_probs)
+  baseline_mortality <- baseline_mortality[group_labels]
 
   tibble(
     id = seq_len(n),
@@ -90,15 +115,17 @@ simulate_ordinal_trial <- function(or_vector, prevalence, baseline_probs, n, see
     treatment = rbinom(n, 1, 0.5)
   ) %>%
     mutate(
-      log_or = log(or_vector[group]),
-      eta = map2(log_or, treatment, ~ intercepts + .x * .y),
-      cumulative = map(eta, plogis)
-    ) %>%
-    mutate(
-      probs = map(cumulative, function(cum_probs) {
-        probs <- diff(c(0, cum_probs, 1))
-        probs <- pmax(probs, 0)
-        probs / sum(probs)
+      probs = map2(group, treatment, function(group_label, trt) {
+        po_probs <- get_po_ordinal_probs(
+          p_dead = baseline_mortality[[group_label]],
+          survivor_split = survivor_split,
+          or_value = or_vector[[group_label]]
+        )
+        if (trt == 1) {
+          po_probs$treatment
+        } else {
+          po_probs$control
+        }
       }),
       outcome = map_int(probs, ~ sample(seq_along(.x), size = 1, prob = .x))
     ) %>%

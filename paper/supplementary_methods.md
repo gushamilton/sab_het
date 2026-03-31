@@ -29,11 +29,11 @@ For binary analyses, death was generated from subgroup-specific baseline risk an
 The publication ordinal analyses used a six-level outcome, ordered from worst to best:
 
 1. Death
-2. ICU
-3. Hospital
-4. Complications
-5. Discharged
-6. Recovered
+2. ICU/ventilated
+3. Still hospitalised
+4. Discharged to rehab
+5. Discharged with complications
+6. Discharged well
 
 Two ordinal data-generating mechanisms were considered:
 
@@ -57,7 +57,7 @@ For each replicate and subgroup, treatment effects were estimated using:
 
 For the core misclassification-accuracy analysis (Figure 1), total trial size was fixed at 20,000 participants while classification accuracy varied from 70% to 100%.
 
-For the ordinal PO versus non-PO comparison, the final manuscript figures use a six-level ordinal outcome, with the main power comparison shown at n = 3,000 and the illustrative category-shift figure generated for a representative subgroup using the same six-level scale.
+For the ordinal PO versus non-PO comparison, the main manuscript figures use a six-level ordinal outcome, with the main power comparison shown at n = 3,000 and the illustrative category-shift figure generated for a representative subgroup using the same six-level scale. The detailed numerical comparison is provided in Supplementary Table S8. A five-level version is retained as a sensitivity analysis and summarised in Supplementary Figure S1.
 
 Power was defined using two-sided hypothesis testing with effect-direction consistency. Type I error was assessed in null-effect subgroups.
 
@@ -73,4 +73,4 @@ Additional supplementary summaries included mean signed bias, mean absolute bias
 
 ## Supplementary Notes
 
-All analyses were fully prespecified and script-generated, with figures and tables produced directly from simulation outputs to minimize transcription error.
+All analyses were fully prespecified and script-generated, with figures and tables produced directly from simulation outputs to minimize transcription error. Publication-facing supplementary tables were formatted from the canonical simulation outputs with rounded values and explicit column labels for reporting clarity.

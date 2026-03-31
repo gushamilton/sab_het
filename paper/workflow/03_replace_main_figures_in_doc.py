@@ -6,9 +6,40 @@ from pathlib import Path
 from docx import Document
 from docx.shared import Inches
 
-ROOT = Path(__file__).resolve().parents[1]
-DOC_PATH = ROOT / 'paper' / 'SAB_HET_2.0_edited.docx'
+ROOT = Path(__file__).resolve().parents[2]
 FIG_DIR = ROOT / 'paper' / 'fig_tmp'
+
+
+def resolve_doc_path(root: Path) -> Path:
+    paper_dir = root / 'paper'
+    env_path = Path(__import__('os').environ['MANUSCRIPT_DOC']) if 'MANUSCRIPT_DOC' in __import__('os').environ else None
+    if env_path is not None:
+        return env_path
+
+    preferred = paper_dir / 'SAB_HET_2.1_JU.docx'
+    if preferred.exists():
+        return preferred
+
+    preferred = paper_dir / 'SAB_HET_2.0_edited.docx'
+    if preferred.exists():
+        return preferred
+
+    backups = sorted(
+        paper_dir.glob('SAB_HET_2.0_edited.backup_*.docx'),
+        key=lambda path: path.stat().st_mtime,
+        reverse=True,
+    )
+    if backups:
+        return backups[0]
+
+    fallback = paper_dir / 'SAB_HET_2.0.docx'
+    if fallback.exists():
+        return fallback
+
+    raise FileNotFoundError(f'No manuscript doc found in {paper_dir}')
+
+
+DOC_PATH = resolve_doc_path(ROOT)
 
 FIG_MAP = {
     'Figure 1:': FIG_DIR / 'Figure1.png',

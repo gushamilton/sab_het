@@ -14,9 +14,9 @@ subphenotype_table <- tibble(
     "IDU"
   ),
   prevalence = c(0.155, 0.134, 0.356, 0.178, 0.178),
-  baseline_mortality = c(0.117, 0.010, 0.080, 0.159, 0.014),
-  or_arrest_raw = c(1.0, 18.8, 0.79, 1.40, 0.30),
-  or_arrest_shrunk = c(1.0, 4.3, 0.89, 1.18, 0.54)
+  baseline_mortality = c(0.217, 0.075, 0.192, 0.182, 0.029),
+  or_arrest_raw = c(1.00, 18.8, 0.79, 1.42, 0.31),
+  or_arrest_shrunk = c(1.00, 4.34, 0.89, 1.19, 0.56)
 )
 
 sample_sizes <- c(500, 1000, 1500, 2000, 3000, 5000, 10000, 20000)
@@ -25,6 +25,9 @@ accuracy_grid <- seq(0.70, 1.00, by = 0.05)
 alpha_primary <- 0.05
 alpha_bonferroni <- 0.01
 
+# Five-level sensitivity baseline retained for the supplementary 5-point
+# comparison; the main manuscript-facing ordinal analyses now default to a
+# six-level setup defined within the analysis scripts.
 ordinal_baseline <- tibble(
   level = 1:5,
   label = c(

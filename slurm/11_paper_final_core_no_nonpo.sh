@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=sab_paper_core
-#SBATCH --partition=compute
-#SBATCH --time=18:00:00
-#SBATCH --mem=24G
+#SBATCH --partition=short,compute
+#SBATCH --time=06:00:00
+#SBATCH --mem=16G
 #SBATCH --cpus-per-task=4
 #SBATCH --account=sscm013902
 #SBATCH --output=logs/%x_%j.out

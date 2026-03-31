@@ -33,10 +33,13 @@ raw_results <- read_tsv(input_path, show_col_types = FALSE) %>%
   )
 
 available_n <- sort(unique(raw_results$sample_size))
-power_n <- 3000
+power_n <- as.integer(Sys.getenv("POWER_N", unset = "3000"))
+replicate_n <- as.integer(Sys.getenv("REPLICATE_N", unset = "20000"))
 if (!(power_n %in% available_n)) {
-  stop("Requested power_n=", power_n, " not in available sample sizes: ",
-       paste(available_n, collapse = ", "))
+  power_n <- max(available_n[available_n <= power_n], na.rm = TRUE)
+}
+if (!(replicate_n %in% available_n)) {
+  replicate_n <- max(available_n, na.rm = TRUE)
 }
 
 model_colours <- c(
@@ -46,7 +49,7 @@ model_colours <- c(
 
 make_scaled_replicate_plot <- function(dgm_name, panel_title) {
   plot_data <- raw_results %>%
-    filter(sample_size == 20000, dgm == dgm_name, group != "A") %>%
+    filter(sample_size == replicate_n, dgm == dgm_name, group != "A") %>%
     mutate(
       scaled_error = (log_or_hat - log_or_true) / abs(log_or_true)
     ) %>%
@@ -71,7 +74,7 @@ make_scaled_replicate_plot <- function(dgm_name, panel_title) {
     scale_color_manual(values = model_colours) +
     labs(
       title = panel_title,
-      subtitle = "Replicates as (estimate - truth) / |truth| at N = 20,000 (trimmed 1st-99th percentile)",
+      subtitle = paste0("Replicates as (estimate - truth) / |truth| at N = ", scales::comma(replicate_n), " (trimmed 1st-99th percentile)"),
       x = "Subphenotype",
       y = "Scaled error relative to true effect",
       color = "Model"

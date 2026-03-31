@@ -16,6 +16,17 @@ subphenotypes <- params$subphenotype_table
 or_vector <- setNames(subphenotypes$or_arrest_shrunk, subphenotypes$subphenotype)
 prevalence <- setNames(subphenotypes$prevalence, subphenotypes$subphenotype)
 baseline <- setNames(subphenotypes$baseline_mortality, subphenotypes$subphenotype)
+ordinal_points <- as.integer(Sys.getenv("ORDINAL_POINTS", unset = "6"))
+if (ordinal_points == 5) {
+  ordinal_baseline <- params$ordinal_baseline$prevalence
+  survivor_split <- derive_survivor_split(ordinal_baseline)
+} else if (ordinal_points == 6) {
+  # Legacy paper-facing 6-point setup: death plus five non-death levels.
+  survivor_split <- c(0.08, 0.12, 0.20, 0.25, 0.35)
+} else {
+  stop("ORDINAL_POINTS must be 5 or 6.", call. = FALSE)
+}
+ordinal_levels <- seq_len(ordinal_points)
 
 sample_sizes <- params$sample_sizes
 sample_override <- Sys.getenv("SAMPLE_SIZES", unset = "")
@@ -30,10 +41,10 @@ rep_offset <- as.integer(Sys.getenv("REP_OFFSET", unset = "0"))
 alpha <- params$alpha_primary
 calibration_n <- as.integer(Sys.getenv("CALIBRATION_N", unset = "200000"))
 skip_cal <- tolower(Sys.getenv("SKIP_CALIBRATION", unset = "0")) %in% c("1", "true", "yes")
+calibration_only <- tolower(Sys.getenv("CALIBRATION_ONLY", unset = "0")) %in% c("1", "true", "yes")
 run_tag <- Sys.getenv("RUN_TAG", unset = "")
 tag_suffix <- if (nzchar(run_tag)) paste0("_", run_tag) else ""
 
-survivor_split <- c(0.08, 0.12, 0.20, 0.25, 0.35)
 stopifnot(abs(sum(survivor_split) - 1) < 1e-8)
 
 output_root <- "results/supp/ordinal_nonPO_comparison"
@@ -43,10 +54,10 @@ for (d in c("data", "tables", "plots")) {
 
 build_cum_control <- function(p_dead, survivor_split) {
   nondeath <- cumsum((1 - p_dead) * survivor_split)
-  c(p_dead, p_dead + nondeath[1:4])
+  c(p_dead, p_dead + head(nondeath, -1))
 }
 
-simulate_ordinal6_trial <- function(or_vector, prevalence, baseline, n, seed) {
+simulate_po_ordinal_trial <- function(or_vector, prevalence, baseline, n, seed) {
   set.seed(seed)
   groups <- names(or_vector)
 
@@ -65,10 +76,10 @@ simulate_ordinal6_trial <- function(or_vector, prevalence, baseline, n, seed) {
     probs <- diff(c(0, cum_t, 1))
     probs <- pmax(probs, 0)
     probs <- probs / sum(probs)
-    sample(1:6, size = 1, prob = probs)
+    sample(ordinal_levels, size = 1, prob = probs)
   })
 
-  dat %>% mutate(outcome6 = out)
+  dat %>% mutate(outcome_ord = out)
 }
 
 rescaled_nonpo_probs <- function(p_dead, survivor_split, or_death) {
@@ -79,7 +90,7 @@ rescaled_nonpo_probs <- function(p_dead, survivor_split, or_death) {
   odds1 <- odds0 * or_death
   p_dead_t <- odds1 / (1 + odds1)
 
-  surv_w <- p_ctrl[2:6] / sum(p_ctrl[2:6])
+  surv_w <- p_ctrl[-1] / sum(p_ctrl[-1])
   p_trt <- c(p_dead_t, (1 - p_dead_t) * surv_w)
 
   list(control = p_ctrl, treatment = p_trt)
@@ -101,10 +112,10 @@ simulate_nonPO_trial <- function(or_vector, prevalence, baseline, n, seed) {
     p0 <- baseline[[g]]
     d <- rescaled_nonpo_probs(p0, survivor_split, or_vector[[g]])
     probs <- if (t == 1) d$treatment else d$control
-    sample(1:6, size = 1, prob = probs)
+    sample(ordinal_levels, size = 1, prob = probs)
   })
 
-  dat %>% mutate(outcome6 = out)
+  dat %>% mutate(outcome_ord = out)
 }
 
 probs_from_po_params <- function(theta, beta, trt) {
@@ -120,9 +131,9 @@ compute_nonPO_polr_truth <- function(p_dead, survivor_split, or_death) {
 
   nll <- function(par) {
     t1 <- par[1]
-    inc <- exp(par[2:5])
+    inc <- exp(par[2:(length(p0) - 1)])
     theta <- c(t1, t1 + cumsum(inc))
-    beta <- par[6]
+    beta <- par[length(p0)]
 
     q0 <- probs_from_po_params(theta, beta, trt = 0)
     q1 <- probs_from_po_params(theta, beta, trt = 1)
@@ -130,7 +141,7 @@ compute_nonPO_polr_truth <- function(p_dead, survivor_split, or_death) {
     -(sum(p0 * log(q0)) + sum(p1 * log(q1)))
   }
 
-  init_theta <- qlogis(cumsum(p0)[1:5])
+  init_theta <- qlogis(cumsum(p0)[1:(length(p0) - 1)])
   init_par <- c(
     init_theta[1],
     log(pmax(diff(init_theta), 1e-3)),
@@ -138,7 +149,7 @@ compute_nonPO_polr_truth <- function(p_dead, survivor_split, or_death) {
   )
 
   fit <- optim(init_par, nll, method = "BFGS", control = list(maxit = 2000))
-  as.numeric(fit$par[6])
+  as.numeric(fit$par[length(p0)])
 }
 
 true_log_or_polr_nonPO <- setNames(
@@ -205,11 +216,11 @@ fit_all_models_by_group <- function(sim_data) {
     d <- sim_data %>% filter(observed_group == g)
 
     polr_fit <- fit_polr_or(
-      d %>% transmute(treatment, outcome = outcome6)
+      d %>% transmute(treatment, outcome = outcome_ord)
     ) %>% mutate(model_type = "Ordinal (polr)")
 
     bin_fit <- fit_logistic_or(
-      d %>% transmute(treatment, outcome = as.integer(outcome6 == 1))
+      d %>% transmute(treatment, outcome = as.integer(outcome_ord == 1))
     ) %>% mutate(model_type = "Binary (death)")
 
     bind_rows(polr_fit, bin_fit) %>% mutate(group = g)
@@ -218,7 +229,7 @@ fit_all_models_by_group <- function(sim_data) {
 
 run_scenario <- function(n, accuracy, dgm, n_reps, seed_base, rep_offset = 0L) {
   sim_fn <- if (dgm == "PO") {
-    function(...) simulate_ordinal6_trial(...)
+    function(...) simulate_po_ordinal_trial(...)
   } else {
     function(...) simulate_nonPO_trial(...)
   }
@@ -248,7 +259,7 @@ run_scenario <- function(n, accuracy, dgm, n_reps, seed_base, rep_offset = 0L) {
 
 calibrate_once <- function(n, dgm, seed = 999) {
   sim_fn <- if (dgm == "PO") {
-    function(...) simulate_ordinal6_trial(...)
+    function(...) simulate_po_ordinal_trial(...)
   } else {
     function(...) simulate_nonPO_trial(...)
   }
@@ -282,6 +293,11 @@ if (!skip_cal) {
     calibration,
     file.path(output_root, "tables", paste0("ordinal_nonPO_comparison_calibration", tag_suffix, ".tsv"))
   )
+}
+
+if (calibration_only) {
+  message("Calibration-only mode complete.")
+  quit(save = "no", status = 0)
 }
 
 dgm_grid <- expand_grid(

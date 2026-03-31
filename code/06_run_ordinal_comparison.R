@@ -14,9 +14,24 @@ subphenotypes <- params$subphenotype_table
 or_vector <- setNames(subphenotypes$or_arrest_shrunk, subphenotypes$subphenotype)
 prevalence <- setNames(subphenotypes$prevalence, subphenotypes$subphenotype)
 baseline <- setNames(subphenotypes$baseline_mortality, subphenotypes$subphenotype)
-
-ordinal_baseline <- params$ordinal_baseline$prevalence
-ordinal_labels <- params$ordinal_baseline$label
+ordinal_points <- as.integer(Sys.getenv("ORDINAL_POINTS", unset = "6"))
+if (ordinal_points == 6) {
+  ordinal_labels <- c(
+    "Dead",
+    "ICU/ventilated",
+    "Still hospitalised",
+    "Discharged to rehab",
+    "Discharged with complications",
+    "Discharged well"
+  )
+  survivor_split <- c(0.08, 0.12, 0.20, 0.25, 0.35)
+} else if (ordinal_points == 5) {
+  ordinal_baseline <- params$ordinal_baseline$prevalence
+  ordinal_labels <- params$ordinal_baseline$label
+  survivor_split <- derive_survivor_split(ordinal_baseline)
+} else {
+  stop("ORDINAL_POINTS must be 5 or 6.", call. = FALSE)
+}
 
 accuracy <- as.numeric(Sys.getenv("ACCURACY", unset = "0.80"))
 sample_sizes <- params$ordinal_sample_sizes
@@ -43,23 +58,16 @@ dir.create(file.path(output_root, "data"), showWarnings = FALSE, recursive = TRU
 acc_label <- sprintf("acc%03d", as.integer(round(accuracy * 100)))
 tag_suffix <- if (nzchar(run_tag)) paste0("_", run_tag) else ""
 
-get_expected_ordinal_probs <- function(or_value, baseline_probs) {
-  cumulative_probs <- cumsum(baseline_probs)[-length(baseline_probs)]
-  intercepts <- qlogis(cumulative_probs)
-  eta_control <- intercepts
-  eta_treated <- intercepts + log(or_value)
-
-  to_probs <- function(eta) {
-    cumulative <- plogis(eta)
-    probs <- diff(c(0, cumulative, 1))
-    probs <- pmax(probs, 0)
-    probs / sum(probs)
-  }
-
+get_expected_ordinal_probs <- function(or_value, p_dead, survivor_split) {
+  po_probs <- get_po_ordinal_probs(
+    p_dead = p_dead,
+    survivor_split = survivor_split,
+    or_value = or_value
+  )
   tibble(
-    level = seq_along(baseline_probs),
-    prob_control = to_probs(eta_control),
-    prob_treated = to_probs(eta_treated)
+    level = seq_along(po_probs$control),
+    prob_control = po_probs$control,
+    prob_treated = po_probs$treatment
   )
 }
 
@@ -79,7 +87,14 @@ run_binary_scenario <- function(n, n_reps, seed_base) {
 run_ordinal_scenario <- function(n, n_reps, seed_base) {
   groups <- names(or_vector)
   map_dfr(seq_len(n_reps), function(rep_id) {
-    sim_data <- simulate_ordinal_trial(or_vector, prevalence, ordinal_baseline, n, seed = seed_base + rep_id)
+    sim_data <- simulate_ordinal_trial(
+      or_vector = or_vector,
+      prevalence = prevalence,
+      baseline_mortality = baseline,
+      survivor_split = survivor_split,
+      n = n,
+      seed = seed_base + rep_id
+    )
     sim_data$observed_group <- misclassify_groups(sim_data$group, prevalence, accuracy, seed = seed_base + rep_id + 20000)
 
     map_dfr(groups, function(group_label) {
@@ -278,7 +293,11 @@ ggsave(
 )
 
 ordinal_shift <- map_dfr(names(or_vector), function(group_label) {
-  probs <- get_expected_ordinal_probs(or_vector[[group_label]], ordinal_baseline)
+  probs <- get_expected_ordinal_probs(
+    or_value = or_vector[[group_label]],
+    p_dead = baseline[[group_label]],
+    survivor_split = survivor_split
+  )
   bind_rows(
     probs %>%
       transmute(

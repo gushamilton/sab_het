@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=sab_nonpo_final
+#SBATCH --job-name=sab_ord6_final
 #SBATCH --partition=short,compute
 #SBATCH --time=02:00:00
 #SBATCH --mem=8G
@@ -16,10 +16,8 @@ module load languages/R/4.5.1
 
 cd /user/work/fh6520/bc4/sab_het
 
-base_tag="${NONPO_BASE_TAG:-paper_final_array}"
-chunk_count="${NONPO_CHUNK_COUNT:-8}"
-
-echo "[$(date -Is)] Combining nonPO chunks for base tag ${base_tag}"
+base_tag="${ORD6_BASE_TAG:-ordinal6_figure5}"
+chunk_count="${ORD6_CHUNK_COUNT:-8}"
 
 chunk_tags=""
 for i in $(seq 1 "${chunk_count}"); do
@@ -35,13 +33,13 @@ export CHUNK_TAGS="${chunk_tags}"
 export FINAL_RUN_TAG="${base_tag}"
 Rscript code/29_combine_ordinal_nonPO_chunks.R
 
-echo "[$(date -Is)] Building nonPO summaries and manuscript assets for tag ${base_tag}"
-
 RUN_TAG="${base_tag}" Rscript code/22_summarise_relative_rmse_nonpo.R
 RUN_TAG="${base_tag}" Rscript code/20_plot_ordinal_po_nonpo_patchwork.R
 RUN_TAG="${base_tag}" Rscript code/21_plot_ordinal_po_nonpo_centered_bias_patchwork.R
 RUN_TAG="${base_tag}" Rscript code/23_plot_split_bias_by_model_nonpo.R
 
-PAPER_ACCURACY="${PAPER_ACCURACY:-1.00}" NONPO_RUN_TAG="${base_tag}" Rscript code/28_build_paper_final_assets.R
+mkdir -p results/paper/final/figures
+cp "results/supp/ordinal_nonPO_comparison/plots/ordinal_nonPO_patchwork_${base_tag}.pdf" \
+   "results/paper/final/figures/Figure5_ordinal_binary_summary_6point.pdf"
 
-echo "[$(date -Is)] Finished nonPO finalize + paper asset build"
+echo "[$(date -Is)] Finished 6-point Figure 5 finalize for ${base_tag}"

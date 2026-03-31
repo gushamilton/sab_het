@@ -17,6 +17,7 @@ module load languages/R/4.5.1
 cd /user/work/fh6520/bc4/sab_het
 
 export ACCURACY=1
-export CHUNK_TAGS=chunk1,chunk2,chunk3
+export ORDINAL_POINTS=6
+export CHUNK_COUNT="${CHUNK_COUNT:-15}"
 
 Rscript code/09_combine_supp3_chunks.R
