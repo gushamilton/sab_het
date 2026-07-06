@@ -141,14 +141,14 @@ if (3000 %in% available_nonpo_n) {
 # ---------------------------------------------------------------------
 table1 <- subphenotypes %>%
   transmute(
-    `Subphenotype` = subphenotype,
+    `Subgroup` = subphenotype,
     `Clinical label` = label,
     `Frequency in ARREST placebo arm (%)` = fmt_pct1(prevalence),
     `Baseline 84-day mortality across both arms (%)` = fmt_pct1(baseline_mortality),
     `Original OR for 84-day mortality` = fmt_num2(or_arrest_raw),
     `Conservative OR for 84-day mortality` = fmt_num2(or_arrest_shrunk)
   ) %>%
-  arrange(`Subphenotype`)
+  arrange(`Subgroup`)
 readr::write_tsv(table1, file.path(tab_out, "Table1_main_parameters.tsv"))
 
 table2_main <- main_metrics %>%
@@ -174,14 +174,14 @@ tableS1 <- main_metrics %>%
   transmute(
     `Total trial size` = fmt_int(sample_size),
     `Classification accuracy` = if_else(accuracy == 1.0, "100%", paste0(round(100 * accuracy), "%")),
-    `Subphenotype` = group,
+    `Subgroup` = group,
     `Clinical label` = group_label,
     `Type I error` = fmt_prob3(type1),
     `Power` = fmt_prob3(power),
     `Type S error` = fmt_prob3(type_s),
     `Type M error` = fmt_num2(type_m)
   ) %>%
-  arrange(as.integer(gsub(",", "", `Total trial size`)), `Classification accuracy`, `Subphenotype`)
+  arrange(as.integer(gsub(",", "", `Total trial size`)), `Classification accuracy`, `Subgroup`)
 readr::write_tsv(tableS1, file.path(tab_out, "TableS1_main_binary_operating_characteristics.tsv"))
 
 tableS2 <- supp2_req %>%
@@ -192,13 +192,13 @@ tableS2 <- supp2_req %>%
   mutate(n_total_required = n_required / prevalence) %>%
   transmute(
     `Cohort` = cohort,
-    `Subphenotype` = subphenotype,
+    `Subgroup` = subphenotype,
     `Prevalence (%)` = fmt_pct1(prevalence),
     `Baseline mortality (%)` = fmt_pct1(mortality),
     `Required N within subgroup` = fmt_num2_or_inf(n_required),
     `Required total trial N` = fmt_num2_or_inf(n_total_required)
   ) %>%
-  arrange(`Cohort`, `Subphenotype`)
+  arrange(`Cohort`, `Subgroup`)
 readr::write_tsv(tableS2, file.path(tab_out, "TableS2_cohort_required_n.tsv"))
 
 tableS3 <- supp1 %>%
@@ -218,7 +218,7 @@ tableS3 <- supp1 %>%
     `Test-performance scenario` = test_type,
     `Sensitivity (%)` = sensitivity,
     `Specificity (%)` = specificity,
-    `Target subphenotype` = target_group,
+    `Target subgroup` = target_group,
     `Required N randomised` = n_required,
     `Number needed to screen` = nns,
     `Enrolment rate` = enrol_rate,
@@ -226,7 +226,7 @@ tableS3 <- supp1 %>%
     `Observed OR after enrichment` = observed_or,
     `Bias in log-OR` = bias_log_or
   ) %>%
-  arrange(`Target subphenotype`, desc(`Sensitivity (%)`), desc(`Specificity (%)`))
+  arrange(`Target subgroup`, desc(`Sensitivity (%)`), desc(`Specificity (%)`))
 readr::write_tsv(tableS3, file.path(tab_out, "TableS3_enrichment_summary.tsv"))
 
 tableS4 <- supp3_metrics %>%
@@ -243,7 +243,7 @@ tableS4 <- supp3_metrics %>%
   transmute(
     `Total trial size` = fmt_int(sample_size),
     `Outcome type` = outcome_type,
-    `Subphenotype` = group,
+    `Subgroup` = group,
     `Type I error` = fmt_prob3(type1),
     `Power` = fmt_prob3(power),
     `Type S error` = fmt_prob3(type_s),
@@ -271,7 +271,7 @@ tableS6 <- supp3_tradeoff %>%
   arrange(sample_size, group) %>%
   transmute(
     `Total trial size` = fmt_int(sample_size),
-    `Subphenotype` = group,
+    `Subgroup` = group,
     `Binary power` = fmt_prob3(Binary),
     `Ordinal power` = fmt_prob3(Ordinal),
     `Absolute power gain` = fmt_prob3(power_gain_abs),
@@ -293,7 +293,7 @@ tableS7 <- nonpo_cal %>%
   arrange(dgm, group, model_type) %>%
   transmute(
     `Data-generating mechanism` = dgm,
-    `Subphenotype` = group,
+    `Subgroup` = group,
     `Model` = model_type,
     `True log-OR` = fmt_num3(log_or_true),
     `Estimated log-OR` = fmt_num3(log_or_hat),
@@ -318,7 +318,7 @@ tableS8 <- nonpo_metrics %>%
     `Total trial size` = fmt_int(sample_size),
     `Classification accuracy` = accuracy,
     `Data-generating mechanism` = dgm,
-    `Subphenotype` = group,
+    `Subgroup` = group,
     `Model` = model_type,
     `Power` = fmt_prob3(power),
     `Type S error` = fmt_prob3(type_s),
