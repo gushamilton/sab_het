@@ -36,6 +36,10 @@ def read_tsv(path: Path):
         return list(csv.DictReader(f, delimiter="\t"))
 
 
+def subgroup_value(row):
+    return row.get("Subgroup") or row.get("Subphenotype")
+
+
 def fmt3(x: float) -> str:
     return f"{x:.3f}"
 
@@ -113,7 +117,7 @@ def main() -> None:
             for r in tableS8_rows
             if r["Classification accuracy"] == acc
             and r["Data-generating mechanism"] == dgm
-            and r["Subphenotype"] == group
+            and subgroup_value(r) == group
             and r["Model"] == model
         )
 
@@ -180,16 +184,16 @@ def main() -> None:
         if stripped.startswith("Staphylococcus aureus bacteraemia (SAB) is clinically heterogeneous. Recently identified, reproducible subphenotypes suggest"):
             p.text = (
                 "Staphylococcus aureus bacteraemia (SAB) is clinically heterogeneous. Recently identified, reproducible "
-                "subphenotypes, that is, recurrent clinical patient groups with distinct characteristics and outcomes, "
+                "subgroups, that is, recurrent clinical patient groups with distinct characteristics and outcomes, "
                 "suggest potential for heterogeneous treatment effects (HTE), but the impact of patient misclassification "
                 "on detecting these effects is unclear, and strategies to improve detection of HTE are not yet identified."
             )
         if stripped.startswith("The statistical power to detect subphenotype-specific treatment effects in a standard two-arm RCT"):
             p.text = (
-                "The statistical power to detect subphenotype-specific treatment effects in a standard two-arm RCT, "
+                "The statistical power to detect subgroup-specific treatment effects in a standard two-arm RCT, "
                 "assuming perfect classification and the conservatively shrunk effects used here, was highly dependent "
-                "on subphenotype prevalence, baseline event rate, and effect size. The results, summarised in Table 2 "
-                "and Figure 1, show that subphenotype B was readily detectable at realistic sample sizes, reaching "
+                "on subgroup prevalence, baseline event rate, and effect size. The results, summarised in Table 2 "
+                "and Figure 1, show that subgroup B was readily detectable at realistic sample sizes, reaching "
                 "essentially complete power by n=5,000. In contrast, C and D remained only modestly powered even at "
                 "larger sample sizes, and E remained difficult under binary mortality analyses despite becoming clearly "
                 "more plausible than in earlier iterations of the simulation. Fuller operating characteristics are "
@@ -200,8 +204,8 @@ def main() -> None:
             p.text = txt.replace("Table 3 and Figure 1", "Table 2 and Figure 1")
         if stripped.startswith("Table 3: Statistical power to detect"):
             p.text = (
-                "Table 2: Statistical power to detect a subphenotype-specific effect at each sample size n. "
-                "Power was estimated from 2,000 simulated replicates. Subphenotype A has no treatment effect, "
+                "Table 2: Statistical power to detect a subgroup-specific effect at each sample size n. "
+                "Power was estimated from 2,000 simulated replicates. Subgroup A has no treatment effect, "
                 "so power is not the appropriate metric."
             )
         if stripped == "ADD TYPE1 ERROR":
@@ -274,7 +278,7 @@ def main() -> None:
     for ridx, row in enumerate(table1_rows, start=1):
         if ridx >= len(t1.rows):
             break
-        t1.cell(ridx, 0).text = row["Subphenotype"]
+        t1.cell(ridx, 0).text = subgroup_value(row)
         t1.cell(ridx, 1).text = row["Frequency in ARREST placebo arm (%)"]
         t1.cell(ridx, 2).text = row["Baseline 84-day mortality across both arms (%)"]
         t1.cell(ridx, 3).text = row["Original OR for 84-day mortality"]
@@ -287,7 +291,7 @@ def main() -> None:
     if len(doc.tables) > 1:
         doc.tables[1]._element.getparent().remove(doc.tables[1]._element)
     table2_doc_rows = [
-        ["Total trial size", "Subphenotype A (null)", "Subphenotype B", "Subphenotype C", "Subphenotype D", "Subphenotype E"],
+        ["Total trial size", "Subgroup A (null)", "Subgroup B", "Subgroup C", "Subgroup D", "Subgroup E"],
         ["", "A", "B", "C", "D", "E"],
     ]
     for row in table2_rows:
