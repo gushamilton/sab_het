@@ -1,4 +1,4 @@
-Cohort	Subphenotype	Prevalence (%)	Baseline mortality (%)	Required N within subgroup	Required total trial N
+Cohort	Subgroup	Prevalence (%)	Baseline mortality (%)	Required N within subgroup	Required total trial N
 ARREST	A	15.2	21.7	Inf	Inf
 ARREST	B	14.1	7.5	142.85	1012.00
 ARREST	C	36.4	19.2	15473.25	42495.37
