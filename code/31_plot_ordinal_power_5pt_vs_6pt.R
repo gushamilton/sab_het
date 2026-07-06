@@ -56,7 +56,7 @@ p <- ggplot(plot_df, aes(x = power_5pt, y = power_6pt, color = group, shape = ac
     subtitle = "Ordinal model only; points above the diagonal favour the 6-point scale",
     x = "Power under 5-point ordinal scale",
     y = "Power under 6-point ordinal scale",
-    color = "Subphenotype",
+    color = "Subgroup",
     shape = "Accuracy",
     size = "Total N"
   ) +
