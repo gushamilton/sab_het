@@ -1,0 +1,33 @@
+Total trial size	Classification accuracy	Data-generating mechanism	Subphenotype	Model	Power	Type S error	Type M error	Proportional bias	RMSE on log-OR scale
+3,000	100%	Death-only non-proportional	B	Binary (death)	0.999	0.000	1.01	0.013	0.326
+3,000	100%	Death-only non-proportional	B	Ordinal (polr)	0.913	0.000	1.06	0.006	0.182
+3,000	100%	Death-only non-proportional	C	Binary (death)	0.102	0.003	3.26	0.030	0.158
+3,000	100%	Death-only non-proportional	C	Ordinal (polr)	0.081	0.008	4.82	0.054	0.111
+3,000	100%	Death-only non-proportional	D	Binary (death)	0.134	0.002	3.13	0.035	0.225
+3,000	100%	Death-only non-proportional	D	Ordinal (polr)	0.090	0.006	4.19	0.084	0.152
+3,000	100%	Death-only non-proportional	E	Binary (death)	0.108	0.000	2.96	-0.551	2.439
+3,000	100%	Death-only non-proportional	E	Ordinal (polr)	0.045	0.020	9.10	0.160	0.159
+3,000	70%	Death-only non-proportional	B	Binary (death)	0.918	0.000	0.67	-0.364	0.603
+3,000	70%	Death-only non-proportional	B	Ordinal (polr)	0.615	0.000	0.85	-0.333	0.262
+3,000	70%	Death-only non-proportional	C	Binary (death)	0.030	0.016	3.35	0.849	0.194
+3,000	70%	Death-only non-proportional	C	Ordinal (polr)	0.027	0.022	4.71	0.864	0.120
+3,000	70%	Death-only non-proportional	D	Binary (death)	0.105	0.001	3.25	-0.050	0.224
+3,000	70%	Death-only non-proportional	D	Ordinal (polr)	0.070	0.003	4.17	-0.101	0.145
+3,000	70%	Death-only non-proportional	E	Binary (death)	0.039	0.022	1.33	0.936	0.639
+3,000	70%	Death-only non-proportional	E	Ordinal (polr)	0.022	0.028	9.04	1.041	0.158
+3,000	100%	Proportional-odds	B	Binary (death)	0.999	0.000	1.01	0.013	0.326
+3,000	100%	Proportional-odds	B	Ordinal (polr)	1.000	0.000	1.01	0.006	0.189
+3,000	100%	Proportional-odds	C	Binary (death)	0.109	0.003	3.33	0.004	0.160
+3,000	100%	Proportional-odds	C	Ordinal (polr)	0.183	0.004	2.40	0.012	0.112
+3,000	100%	Proportional-odds	D	Binary (death)	0.123	0.002	3.20	0.035	0.227
+3,000	100%	Proportional-odds	D	Ordinal (polr)	0.214	0.002	2.23	0.038	0.153
+3,000	100%	Proportional-odds	E	Binary (death)	0.108	0.000	2.96	-0.551	2.439
+3,000	100%	Proportional-odds	E	Ordinal (polr)	0.943	0.000	1.03	0.004	0.164
+3,000	70%	Proportional-odds	B	Binary (death)	0.927	0.000	0.66	-0.365	0.603
+3,000	70%	Proportional-odds	B	Ordinal (polr)	0.998	0.000	0.61	-0.393	0.603
+3,000	70%	Proportional-odds	C	Binary (death)	0.031	0.019	3.40	0.839	0.192
+3,000	70%	Proportional-odds	C	Ordinal (polr)	0.044	0.007	2.26	0.630	0.132
+3,000	70%	Proportional-odds	D	Binary (death)	0.104	0.002	3.30	-0.076	0.228
+3,000	70%	Proportional-odds	D	Ordinal (polr)	0.132	0.001	2.14	-0.247	0.153
+3,000	70%	Proportional-odds	E	Binary (death)	0.025	0.020	1.38	0.944	0.641
+3,000	70%	Proportional-odds	E	Ordinal (polr)	0.506	0.000	0.73	0.474	0.316
