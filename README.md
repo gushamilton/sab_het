@@ -15,11 +15,14 @@ This repository contains the code and final materials for the SAB heterogeneous 
 - Supplementary methods: `paper/supplementary_methods.md`
 - Final figures: `results/paper/final/figures/`
 - Final tables: `results/paper/final/tables/`
+- Publication asset manifest: `results/paper/final/README.md`
 
 ## Reproducibility
 
 The final paper assets are built from the scripts in `code/` and the manuscript helpers in `paper/`.
 Figure and table ordering is defined in `results/paper/final/figures/figure_order.tsv` and `results/paper/final/tables/table_order.tsv`.
+
+The committed final tables and figures are the publication-facing assets used to check the manuscript values. Large raw simulation outputs are reproducible from the analysis scripts and are not all tracked in Git.
 
 ## Notes
 
