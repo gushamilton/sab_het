@@ -226,7 +226,7 @@ def main() -> None:
         if stripped.startswith("Figure 4:"):
             p.text = (
                 "Figure 4: Ordinal outcome category shifts under proportional-odds (A) and non-proportional "
-                "(death-only) effects (B) for subphenotype B. Stacked bars show the control and treatment "
+                "(death-only) effects (B) for subgroup B. Stacked bars show the control and treatment "
                 "distributions across the six ordered categories (death, ICU/ventilated, still hospitalised, discharged to rehab, "
                 "discharged with complications, discharged well). Within the non-proportional panel, survivor categories retain their "
                 "relative composition and change only through rescaling after the treatment-associated shift in death."
@@ -234,23 +234,23 @@ def main() -> None:
         if stripped.startswith("It is important to understand how conditional these estimates are on the cohort under study"):
             p.text = (
                 "It is important to understand how conditional these estimates are on the cohort under study, because "
-                "sample-size calculations are made before a trial starts and the extent to which subphenotype prevalence "
+                "sample-size calculations are made before a trial starts and the extent to which subgroup prevalence "
                 "and mortality vary across settings is uncertain. We therefore reran the analyses using data from several "
-                "cohorts with differing subphenotype prevalences and mortality, assuming perfect classification. For most "
-                "subphenotypes, the required sample size varied substantially by setting, in some cases by as much as "
+                "cohorts with differing subgroup prevalences and mortality, assuming perfect classification. For most "
+                "subgroups, the required sample size varied substantially by setting, in some cases by as much as "
                 "five-fold (Figure 2; Supplementary Table S2)."
             )
         if stripped.startswith("We evaluated the impact of five hypothetical diagnostic tests ranging from mediocre to near-perfect accuracy"):
             p.text = (
                 "We evaluated the impact of five hypothetical diagnostic tests ranging from mediocre to near-perfect "
-                "accuracy on the number needed to screen (NNS) and number needed to randomize (NNR). For subphenotype B, "
+                "accuracy on the number needed to screen (NNS) and number needed to randomise (NNR). For subgroup B, "
                 "which combines a large treatment effect (OR 4.3 after shrinkage) with moderate frequency (13%), enrichment "
                 "remained realistic: NNS ranged from about 1,100 with a near-perfect test (99%/99%) to about 3,300 with "
                 "a balanced test (80%/80%), with corresponding NNR values of roughly 140 to 930 participants (Figure 3; "
                 "Supplementary Table S3). Biased estimates were still present, as expected. In contrast, for the other "
-                "subphenotypes enrichment remained unattractive or infeasible even with excellent classifiers. Type I "
-                "error in the null subgroup (A) remained close to nominal in the main simulation (n=20,000), ranging "
-                "from 4.7% at 100% accuracy to 5.9% at 70% accuracy."
+                "subgroups enrichment remained unattractive or infeasible even with excellent classifiers. Type I "
+                "error in the null subgroup (A) was 5.0% at 100% accuracy and rose to 7.0% at 70% accuracy in the "
+                "deliberately large n=20,000 simulation."
             )
         if "[ADD DATA]" in txt:
             p.text = txt.replace("[ADD DATA]", add_data)
@@ -266,11 +266,11 @@ def main() -> None:
             )
 
     t1 = doc.tables[0]
-    t1.cell(0, 0).text = "Subphenotype"
+    t1.cell(0, 0).text = "Subgroup"
     t1.cell(0, 1).text = "Frequency in ARREST placebo arm (%)"
-    t1.cell(0, 2).text = "Baseline mortality across both arms (%)"
-    t1.cell(0, 3).text = "Original OR for 84d mortality"
-    t1.cell(0, 4).text = "Conservative OR for 84d mortality"
+    t1.cell(0, 2).text = "ARREST 84-day mortality (%)"
+    t1.cell(0, 3).text = "ARREST OR for 84-day mortality"
+    t1.cell(0, 4).text = "Shrunk OR for 84-day mortality"
     for ridx, row in enumerate(table1_rows, start=1):
         if ridx >= len(t1.rows):
             break
