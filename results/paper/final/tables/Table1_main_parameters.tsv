@@ -1,4 +1,4 @@
-Subphenotype	Clinical label	Frequency in ARREST placebo arm (%)	Baseline 84-day mortality across both arms (%)	Original OR for 84-day mortality	Conservative OR for 84-day mortality
+Subgroup	Clinical label	Frequency in ARREST placebo arm (%)	Baseline 84-day mortality across both arms (%)	Original OR for 84-day mortality	Conservative OR for 84-day mortality
 A	Elderly/comorbid	15.5	21.7	1.00	1.00
 B	Nosocomial IV	13.4	7.5	18.80	4.34
 C	Metastatic	35.6	19.2	0.79	0.89
