@@ -1,4 +1,4 @@
-Test-performance scenario	Sensitivity (%)	Specificity (%)	Target subphenotype	Required N randomised	Number needed to screen	Enrolment rate	True OR	Observed OR after enrichment	Bias in log-OR
+Test-performance scenario	Sensitivity (%)	Specificity (%)	Target subgroup	Required N randomised	Number needed to screen	Enrolment rate	True OR	Observed OR after enrichment	Bias in log-OR
 Near-perfect	99.0	99.0	B	160	1,130	0.141	4.34	3.90	-0.107
 High/High	95.0	95.0	B	244	1,429	0.170	4.34	2.85	-0.421
 High Sens/Low Spec	95.0	70.0	B	1,273	3,287	0.387	4.34	1.54	-1.035
