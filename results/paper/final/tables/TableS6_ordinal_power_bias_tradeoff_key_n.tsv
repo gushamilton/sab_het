@@ -1,4 +1,4 @@
-Total trial size	Subphenotype	Binary power	Ordinal power	Absolute power gain	Relative power gain	Binary mean absolute bias in log-OR	Ordinal mean absolute bias in log-OR	Binary mean signed bias in log-OR	Ordinal mean signed bias in log-OR	Change in absolute bias	Change in signed bias
+Total trial size	Subgroup	Binary power	Ordinal power	Absolute power gain	Relative power gain	Binary mean absolute bias in log-OR	Ordinal mean absolute bias in log-OR	Binary mean signed bias in log-OR	Ordinal mean signed bias in log-OR	Change in absolute bias	Change in signed bias
 2,500	B	1.000	1.000	0.000	0.00	0.278	0.167	0.035	0.001	-0.111	-0.034
 2,500	C	0.090	0.153	0.063	0.70	0.133	0.093	-0.001	-0.002	-0.040	-0.001
 2,500	D	0.105	0.173	0.068	0.65	0.193	0.132	0.009	0.003	-0.062	-0.005
