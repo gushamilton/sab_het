@@ -1,4 +1,4 @@
-Total trial size	Classification accuracy	Subphenotype	Clinical label	Type I error	Power	Type S error	Type M error
+Total trial size	Classification accuracy	Subgroup	Clinical label	Type I error	Power	Type S error	Type M error
 5,000	100%	A	Elderly/comorbid	0.043			
 5,000	100%	B	Nosocomial IV		1.000	0.000	1.01
 5,000	100%	C	Metastatic		0.155	0.001	2.55
