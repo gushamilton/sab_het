@@ -1,6 +1,6 @@
-subphenotype	label	prevalence	baseline_mortality	or_arrest_raw	or_arrest_shrunk
-A	Elderly/comorbid	0.155	0.117	1	1
-B	Nosocomial IV	0.134	0.01	18.8	4.3
-C	Metastatic	0.356	0.08	0.79	0.89
-D	CKD	0.178	0.159	1.4	1.18
-E	IDU	0.178	0.014	0.3	0.54
+Subphenotype	Clinical label	Frequency in ARREST placebo arm (%)	Baseline 84-day mortality across both arms (%)	Original OR for 84-day mortality	Conservative OR for 84-day mortality
+A	Elderly/comorbid	15.5	21.7	1.00	1.00
+B	Nosocomial IV	13.4	7.5	18.80	4.34
+C	Metastatic	35.6	19.2	0.79	0.89
+D	CKD	17.8	18.2	1.42	1.19
+E	IDU	17.8	2.9	0.31	0.56
