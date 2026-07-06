@@ -1,1 +1,21 @@
-dgm	group	model_type	log_or_true	log_or_hat	raw_bias	prop_bias
+Data-generating mechanism	Subphenotype	Model	True log-OR	Estimated log-OR	Raw bias	Proportional bias
+Death-only non-proportional	A	Binary (death)	0.000	0.010	0.010	
+Death-only non-proportional	A	Ordinal (polr)	-0.000	0.023	0.023	
+Death-only non-proportional	B	Binary (death)	1.468	1.496	0.028	0.019
+Death-only non-proportional	B	Ordinal (polr)	0.589	0.594	0.005	0.008
+Death-only non-proportional	C	Binary (death)	-0.117	-0.137	-0.020	-0.175
+Death-only non-proportional	C	Ordinal (polr)	-0.055	-0.063	-0.008	-0.155
+Death-only non-proportional	D	Binary (death)	0.174	0.129	-0.045	-0.260
+Death-only non-proportional	D	Ordinal (polr)	0.086	0.067	-0.018	-0.213
+Death-only non-proportional	E	Binary (death)	-0.580	-0.633	-0.053	-0.091
+Death-only non-proportional	E	Ordinal (polr)	-0.040	-0.072	-0.031	-0.774
+Proportional-odds	A	Binary (death)	0.000	0.010	0.010	
+Proportional-odds	A	Ordinal (polr)	0.000	0.023	0.023	
+Proportional-odds	B	Binary (death)	1.468	1.496	0.028	0.019
+Proportional-odds	B	Ordinal (polr)	1.468	1.470	0.002	0.002
+Proportional-odds	C	Binary (death)	-0.117	-0.147	-0.031	-0.263
+Proportional-odds	C	Ordinal (polr)	-0.117	-0.130	-0.014	-0.117
+Proportional-odds	D	Binary (death)	0.174	0.114	-0.060	-0.344
+Proportional-odds	D	Ordinal (polr)	0.174	0.143	-0.031	-0.179
+Proportional-odds	E	Binary (death)	-0.580	-0.633	-0.053	-0.091
+Proportional-odds	E	Ordinal (polr)	-0.580	-0.612	-0.032	-0.055
