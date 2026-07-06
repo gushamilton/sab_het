@@ -1,4 +1,4 @@
-Total trial size	Outcome type	Subphenotype	Type I error	Power	Type S error	Type M error	Mean absolute bias in log-OR	Mean signed bias in log-OR
+Total trial size	Outcome type	Subgroup	Type I error	Power	Type S error	Type M error	Mean absolute bias in log-OR	Mean signed bias in log-OR
 2,500	Binary (death)	A	0.047					
 2,500	Binary (death)	B		1.000	0.000	1.02	0.278	0.035
 2,500	Binary (death)	C		0.090	0.005	3.58	0.133	-0.001
