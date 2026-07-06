@@ -1,31 +1,31 @@
-sample_size	outcome_type	type1	accuracy
-500	Binary	0.018	1
-500	Ordinal	0.056	1
-750	Binary	0.04	1
-750	Ordinal	0.054	1
-1000	Binary	0.031	1
-1000	Ordinal	0.044	1
-1250	Binary	0.047	1
-1250	Ordinal	0.058	1
-1500	Binary	0.04	1
-1500	Ordinal	0.055	1
-1750	Binary	0.054	1
-1750	Ordinal	0.044	1
-2000	Binary	0.054	1
-2000	Ordinal	0.055	1
-2500	Binary	0.044	1
-2500	Ordinal	0.056	1
-3000	Binary	0.045	1
-3000	Ordinal	0.041	1
-4000	Binary	0.031	1
-4000	Ordinal	0.05	1
-5000	Binary	0.043	1
-5000	Ordinal	0.047	1
-7500	Binary	0.046	1
-7500	Ordinal	0.046	1
-10000	Binary	0.048	1
-10000	Ordinal	0.052	1
-15000	Binary	0.05	1
-15000	Ordinal	0.049	1
-20000	Binary	0.055	1
-20000	Ordinal	0.039	1
+Total trial size	Outcome type	Type I error	Classification accuracy
+500	Binary (death)	0.030	100%
+500	Ordinal	0.048	100%
+750	Binary (death)	0.049	100%
+750	Ordinal	0.046	100%
+1,000	Binary (death)	0.044	100%
+1,000	Ordinal	0.053	100%
+1,250	Binary (death)	0.045	100%
+1,250	Ordinal	0.055	100%
+1,500	Binary (death)	0.046	100%
+1,500	Ordinal	0.048	100%
+1,750	Binary (death)	0.048	100%
+1,750	Ordinal	0.053	100%
+2,000	Binary (death)	0.044	100%
+2,000	Ordinal	0.051	100%
+2,500	Binary (death)	0.047	100%
+2,500	Ordinal	0.053	100%
+3,000	Binary (death)	0.057	100%
+3,000	Ordinal	0.047	100%
+4,000	Binary (death)	0.043	100%
+4,000	Ordinal	0.038	100%
+5,000	Binary (death)	0.048	100%
+5,000	Ordinal	0.053	100%
+7,500	Binary (death)	0.048	100%
+7,500	Ordinal	0.043	100%
+10,000	Binary (death)	0.052	100%
+10,000	Ordinal	0.038	100%
+15,000	Binary (death)	0.062	100%
+15,000	Ordinal	0.046	100%
+20,000	Binary (death)	0.054	100%
+20,000	Ordinal	0.044	100%
