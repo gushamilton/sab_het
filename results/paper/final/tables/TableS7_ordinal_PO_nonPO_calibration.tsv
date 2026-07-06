@@ -1,4 +1,4 @@
-Data-generating mechanism	Subphenotype	Model	True log-OR	Estimated log-OR	Raw bias	Proportional bias
+Data-generating mechanism	Subgroup	Model	True log-OR	Estimated log-OR	Raw bias	Proportional bias
 Death-only non-proportional	A	Binary (death)	0.000	0.010	0.010	
 Death-only non-proportional	A	Ordinal (polr)	-0.000	0.023	0.023	
 Death-only non-proportional	B	Binary (death)	1.468	1.496	0.028	0.019
