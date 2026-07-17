@@ -23,6 +23,10 @@ if (nzchar(sample_override)) {
   sample_sizes <- as.integer(strsplit(sample_override, ",")[[1]])
 }
 accuracy_grid <- params$accuracy_grid
+accuracy_override <- Sys.getenv("ACCURACY_GRID", unset = "")
+if (nzchar(accuracy_override)) {
+  accuracy_grid <- as.numeric(strsplit(accuracy_override, ",")[[1]])
+}
 alpha_levels <- c(params$alpha_primary, params$alpha_bonferroni)
 
 n_reps <- as.integer(Sys.getenv("N_REPS_MAIN", unset = "2000"))

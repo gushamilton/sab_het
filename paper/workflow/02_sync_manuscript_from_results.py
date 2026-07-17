@@ -273,16 +273,14 @@ def main() -> None:
     t1.cell(0, 0).text = "Subgroup"
     t1.cell(0, 1).text = "Frequency in ARREST placebo arm (%)"
     t1.cell(0, 2).text = "ARREST 84-day mortality (%)"
-    t1.cell(0, 3).text = "ARREST OR for 84-day mortality"
-    t1.cell(0, 4).text = "Shrunk OR for 84-day mortality"
+    t1.cell(0, 3).text = "Primary OR for 84-day mortality"
     for ridx, row in enumerate(table1_rows, start=1):
         if ridx >= len(t1.rows):
             break
         t1.cell(ridx, 0).text = subgroup_value(row)
         t1.cell(ridx, 1).text = row["Frequency in ARREST placebo arm (%)"]
         t1.cell(ridx, 2).text = row["Baseline 84-day mortality across both arms (%)"]
-        t1.cell(ridx, 3).text = row["Original OR for 84-day mortality"]
-        t1.cell(ridx, 4).text = row["Conservative OR for 84-day mortality"]
+        t1.cell(ridx, 3).text = row["Primary OR for 84-day mortality"]
 
     table2_caption = next(
         p for p in doc.paragraphs

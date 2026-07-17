@@ -1,0 +1,17 @@
+Total trial size	Classification accuracy	Data-generating mechanism	Subgroup	Power: 5-point ordinal scale	Power: 6-point ordinal scale	Difference (5 minus 6)
+3,000	100%	Death-only non-proportional	B	0.945	0.913	+0.032
+3,000	100%	Death-only non-proportional	C	0.077	0.081	-0.004
+3,000	100%	Death-only non-proportional	D	0.074	0.090	-0.016
+3,000	100%	Death-only non-proportional	E	0.043	0.045	-0.002
+3,000	100%	Proportional-odds	B	1.000	1.000	+0.000
+3,000	100%	Proportional-odds	C	0.166	0.183	-0.017
+3,000	100%	Proportional-odds	D	0.201	0.214	-0.013
+3,000	100%	Proportional-odds	E	0.906	0.943	-0.037
+3,000	70%	Death-only non-proportional	B	0.666	0.615	+0.051
+3,000	70%	Death-only non-proportional	C	0.024	0.027	-0.003
+3,000	70%	Death-only non-proportional	D	0.058	0.070	-0.012
+3,000	70%	Death-only non-proportional	E	0.029	0.022	+0.007
+3,000	70%	Proportional-odds	B	1.000	0.998	+0.002
+3,000	70%	Proportional-odds	C	0.046	0.044	+0.002
+3,000	70%	Proportional-odds	D	0.129	0.132	-0.003
+3,000	70%	Proportional-odds	E	0.374	0.506	-0.132
