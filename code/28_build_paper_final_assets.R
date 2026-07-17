@@ -13,6 +13,7 @@ acc_label <- sprintf("acc%03d", as.integer(round(acc * 100)))
 run_tag <- Sys.getenv("RUN_TAG", unset = "")
 tag_suffix <- if (nzchar(run_tag)) paste0("_", run_tag) else ""
 nonpo_tag <- Sys.getenv("NONPO_RUN_TAG", unset = "ordinal6_figure5_20260325")
+ordinal5_tag <- Sys.getenv("ORDINAL5_RUN_TAG", unset = "ordinal5_sens_20260717")
 
 out_root <- file.path("results", "paper", "final")
 fig_out <- file.path(out_root, "figures")
@@ -64,8 +65,7 @@ figure_map <- tibble::tribble(
   "Figure 2", "results/core_figures/plots/figure3.pdf", "Figure2_cohort_conditionality.pdf", "Cohort prevalence/mortality conditionality and required N",
   "Figure 3", "results/core_figures/plots/figure2_enrichment_master.pdf", "Figure3_enrichment_feasibility.pdf", "Enrichment feasibility (NNS/NNR/bias)",
   "Figure 4", "paper/ordinal_outcome_two_panel.pdf", "Figure4_ordinal_category_shift.pdf", "Ordinal outcome category shifts under PO and nonPO",
-  "Figure 5", file.path("results", "supp", "ordinal_nonPO_comparison", "plots", paste0("ordinal_nonPO_patchwork_", nonpo_tag, ".pdf")), "Figure5_ordinal_binary_summary.pdf", "Ordinal versus binary outcome performance (PO vs nonPO patchwork)",
-  "Figure S1", "results/paper/final/figures/FigureS1_ordinal_power_5pt_vs_6pt.pdf", "FigureS1_ordinal_power_5pt_vs_6pt.pdf", "Sensitivity of ordinal power to 5-point versus 6-point outcome scales"
+  "Figure 5", file.path("results", "supp", "ordinal_nonPO_comparison", "plots", paste0("ordinal_nonPO_patchwork_", nonpo_tag, ".pdf")), "Figure5_ordinal_binary_summary.pdf", "Ordinal versus binary outcome performance (PO vs nonPO patchwork)"
 )
 
 purrr::pwalk(figure_map %>% filter(!str_detect(source, "^results/paper/final/figures/")), function(figure_id, source, target, purpose) {
@@ -100,6 +100,10 @@ supp3_tradeoff <- readr::read_tsv(
 
 nonpo_metrics <- readr::read_tsv(
   file.path("results", "supp", "ordinal_nonPO_comparison", "tables", paste0("ordinal_nonPO_comparison_metrics_", nonpo_tag, ".tsv")),
+  show_col_types = FALSE
+)
+ordinal5_metrics <- readr::read_tsv(
+  file.path("results", "supp", "ordinal_nonPO_comparison", "tables", paste0("ordinal_nonPO_comparison_metrics_", ordinal5_tag, ".tsv")),
   show_col_types = FALSE
 )
 nonpo_bias <- readr::read_tsv(
@@ -145,8 +149,7 @@ table1 <- subphenotypes %>%
     `Clinical label` = label,
     `Frequency in ARREST placebo arm (%)` = fmt_pct1(prevalence),
     `Baseline 84-day mortality across both arms (%)` = fmt_pct1(baseline_mortality),
-    `Original OR for 84-day mortality` = fmt_num2(or_arrest_raw),
-    `Conservative OR for 84-day mortality` = fmt_num2(or_arrest_shrunk)
+    `Primary OR for 84-day mortality` = fmt_num2(or_arrest_shrunk)
   ) %>%
   arrange(`Subgroup`)
 readr::write_tsv(table1, file.path(tab_out, "Table1_main_parameters.tsv"))
@@ -328,6 +331,46 @@ tableS8 <- nonpo_metrics %>%
   )
 readr::write_tsv(tableS8, file.path(tab_out, "TableS8_ordinal_PO_vs_nonPO_power_bias.tsv"))
 
+tableS9 <- ordinal5_metrics %>%
+  filter(model_type == "Ordinal (polr)", group != "A", sample_size == nonpo_key_n, accuracy %in% c(0.7, 1.0)) %>%
+  transmute(sample_size, accuracy, dgm, group, power_5pt = power) %>%
+  inner_join(
+    nonpo_metrics %>%
+      filter(model_type == "Ordinal (polr)", group != "A", sample_size == nonpo_key_n, accuracy %in% c(0.7, 1.0)) %>%
+      transmute(sample_size, accuracy, dgm, group, power_6pt = power),
+    by = c("sample_size", "accuracy", "dgm", "group")
+  ) %>%
+  mutate(
+    accuracy = if_else(accuracy == 1.0, "100%", "70%"),
+    dgm = recode(dgm, PO = "Proportional-odds", nonPO = "Death-only non-proportional")
+  ) %>%
+  arrange(accuracy, dgm, group) %>%
+  transmute(
+    `Total trial size` = fmt_int(sample_size),
+    `Classification accuracy` = accuracy,
+    `Data-generating mechanism` = dgm,
+    `Subgroup` = group,
+    `Power: 5-point ordinal scale` = fmt_prob3(power_5pt),
+    `Power: 6-point ordinal scale` = fmt_prob3(power_6pt),
+    `Difference (5 minus 6)` = sprintf("%+.3f", power_5pt - power_6pt)
+  )
+readr::write_tsv(tableS9, file.path(tab_out, "TableS9_ordinal_scale_sensitivity.tsv"))
+
+tableS10 <- main_metrics %>%
+  filter(sample_size %in% c(5000, 10000), accuracy == 1.0, alpha %in% c(params$alpha_primary, params$alpha_bonferroni)) %>%
+  mutate(metric = if_else(group == "A", "Type I error", "Power"), value = if_else(group == "A", type1, power)) %>%
+  select(sample_size, group, metric, alpha, value) %>%
+  pivot_wider(names_from = alpha, values_from = value, names_prefix = "alpha_") %>%
+  arrange(sample_size, group) %>%
+  transmute(
+    `Total trial size` = fmt_int(sample_size),
+    `Subgroup` = group,
+    `Metric` = metric,
+    `alpha = 0.05` = fmt_prob3(alpha_0.05),
+    `alpha = 0.01` = fmt_prob3(alpha_0.01)
+  )
+readr::write_tsv(tableS10, file.path(tab_out, "TableS10_binary_alpha_threshold_sensitivity.tsv"))
+
 table_map <- tibble::tribble(
   ~table_id, ~path, ~purpose,
   "Table 1", "results/paper/final/tables/Table1_main_parameters.tsv", "Main simulation assumptions",
@@ -339,7 +382,9 @@ table_map <- tibble::tribble(
   "Table S5", "results/paper/final/tables/TableS5_ordinal_type1.tsv", "Ordinal/binary Type I calibration",
   "Table S6", "results/paper/final/tables/TableS6_ordinal_power_bias_tradeoff_key_n.tsv", "Ordinal power-bias tradeoff",
   "Table S7", "results/paper/final/tables/TableS7_ordinal_PO_nonPO_calibration.tsv", "PO vs nonPO model calibration",
-  "Table S8", "results/paper/final/tables/TableS8_ordinal_PO_vs_nonPO_power_bias.tsv", "Ordinal PO vs nonPO power and bias comparison"
+  "Table S8", "results/paper/final/tables/TableS8_ordinal_PO_vs_nonPO_power_bias.tsv", "Ordinal PO vs nonPO power and bias comparison",
+  "Table S9", "results/paper/final/tables/TableS9_ordinal_scale_sensitivity.tsv", "5-point versus 6-point ordinal-scale sensitivity",
+  "Table S10", "results/paper/final/tables/TableS10_binary_alpha_threshold_sensitivity.tsv", "Binary alpha-threshold sensitivity"
 )
 readr::write_tsv(table_map, file.path(tab_out, "table_order.tsv"))
 
@@ -351,5 +396,6 @@ raw_provenance <- tibble::tribble(
   "Supplement 3 raw", file.path("results", "supp", "data", paste0("supp3_binary_vs_ordinal_raw_", acc_label, tag_suffix, ".tsv.gz")),
   "Supplement 3 metrics", file.path("results", "supp", "tables", paste0("supp3_binary_vs_ordinal_metrics_", acc_label, tag_suffix, ".tsv")),
   "PO/nonPO raw", file.path("results", "supp", "ordinal_nonPO_comparison", "data", paste0("ordinal_nonPO_comparison_raw_", nonpo_tag, ".tsv.gz"))
+  ,"5-point ordinal metrics", file.path("results", "supp", "ordinal_nonPO_comparison", "tables", paste0("ordinal_nonPO_comparison_metrics_", ordinal5_tag, ".tsv"))
 )
 readr::write_tsv(raw_provenance, file.path(tab_out, "raw_data_provenance.tsv"))

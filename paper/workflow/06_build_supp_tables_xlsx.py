@@ -20,6 +20,8 @@ TABLES = [
     ("Table S6", TAB_DIR / "TableS6_ordinal_power_bias_tradeoff_key_n.tsv"),
     ("Table S7", TAB_DIR / "TableS7_ordinal_PO_nonPO_calibration.tsv"),
     ("Table S8", TAB_DIR / "TableS8_ordinal_PO_vs_nonPO_power_bias.tsv"),
+    ("Table S9", TAB_DIR / "TableS9_ordinal_scale_sensitivity.tsv"),
+    ("Table S10", TAB_DIR / "TableS10_binary_alpha_threshold_sensitivity.tsv"),
 ]
 
 

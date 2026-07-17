@@ -15,7 +15,6 @@ subphenotype_table <- tibble(
   ),
   prevalence = c(0.155, 0.134, 0.356, 0.178, 0.178),
   baseline_mortality = c(0.217, 0.075, 0.192, 0.182, 0.029),
-  or_arrest_raw = c(1.00, 18.8, 0.79, 1.42, 0.31),
   or_arrest_shrunk = c(1.00, 4.34, 0.89, 1.19, 0.56)
 )
 

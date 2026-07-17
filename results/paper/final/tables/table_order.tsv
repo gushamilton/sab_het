@@ -9,3 +9,5 @@ Table S5	results/paper/final/tables/TableS5_ordinal_type1.tsv	Ordinal/binary Typ
 Table S6	results/paper/final/tables/TableS6_ordinal_power_bias_tradeoff_key_n.tsv	Ordinal power-bias tradeoff
 Table S7	results/paper/final/tables/TableS7_ordinal_PO_nonPO_calibration.tsv	PO vs nonPO model calibration
 Table S8	results/paper/final/tables/TableS8_ordinal_PO_vs_nonPO_power_bias.tsv	Ordinal PO vs nonPO power and bias comparison
+Table S9	results/paper/final/tables/TableS9_ordinal_scale_sensitivity.tsv	5-point versus 6-point ordinal-scale sensitivity
+Table S10	results/paper/final/tables/TableS10_binary_alpha_threshold_sensitivity.tsv	Binary alpha-threshold sensitivity

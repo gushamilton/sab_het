@@ -57,7 +57,6 @@ table1 <- subphenotypes %>%
     label,
     prevalence,
     baseline_mortality,
-    or_arrest_raw,
     or_arrest_shrunk
   ) %>%
   arrange(subphenotype)

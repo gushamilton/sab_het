@@ -98,13 +98,6 @@ if (!skip_nonpo) {
 
 if (!skip_assets) {
   run_with_env(
-    "code/31_plot_ordinal_power_5pt_vs_6pt.R",
-    env = list(
-      RUN_TAG_5PT = Sys.getenv("RUN_TAG_5PT", unset = "paper_final_5pt_20260324"),
-      RUN_TAG_6PT = nonpo_tag
-    )
-  )
-  run_with_env(
     "code/28_build_paper_final_assets.R",
     env = list(
       PAPER_ACCURACY = sprintf("%.2f", acc),
